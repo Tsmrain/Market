@@ -27,16 +27,19 @@ public class ComercianteCatalogoController {
     private final StorageService storageService;
     private final ImageOptimizationService optimizador;
     private final HistorialCategoriaRepository historialRepo;
+    private final UnidadMedidaNormalizador normalizador;
 
     public ComercianteCatalogoController(ComercianteRepository cRepo, ProductoRepository pRepo, 
                                          CategoriaRepository catRepo, StorageService sService, 
-                                         ImageOptimizationService opt, HistorialCategoriaRepository hRepo) {
+                                         ImageOptimizationService opt, HistorialCategoriaRepository hRepo,
+                                         UnidadMedidaNormalizador norm) {
         this.comercianteRepo = cRepo;
         this.productoRepo = pRepo;
         this.categoriaRepo = catRepo;
         this.storageService = sService;
         this.optimizador = opt;
         this.historialRepo = hRepo;
+        this.normalizador = norm;
     }
 
     @GetMapping
@@ -61,6 +64,8 @@ public class ComercianteCatalogoController {
             @RequestParam("nombre") String nombre,
             @RequestParam("precio") double precio,
             @RequestParam("idCategoria") Long idCategoria,
+            @RequestParam(value = "unidadMedida", required = false, defaultValue = "UNIDAD") String unidadMedida,
+            @RequestParam(value = "descripcion", required = false, defaultValue = "") String descripcion,
             @RequestParam("archivos") MultipartFile[] archivos) {
 
         Comerciante comerciante = comercianteRepo.findById(idComerciante)
@@ -73,8 +78,11 @@ public class ComercianteCatalogoController {
             throw new IllegalArgumentException("Debe subir al menos una imagen del producto.");
         }
 
+        // Gobernanza de Datos: Normalización predictiva
+        String unidadMedidaLimpia = normalizador.normalizar(unidadMedida);
+
         // Registrar producto (Creator / Information Expert)
-        Producto producto = comerciante.registrarProducto(nombre, precio, categoria);
+        Producto producto = comerciante.registrarProducto(nombre, descripcion, precio, categoria, unidadMedidaLimpia);
 
         // Procesar archivos
         for (MultipartFile archivo : archivos) {
@@ -130,7 +138,13 @@ public class ComercianteCatalogoController {
         // Actualizamos datos básicos
         String nombre = (String) payload.get("nombre");
         double precio = Double.parseDouble(payload.get("precio").toString());
-        producto.actualizarDatos(nombre, precio);
+        String unidadMedidaRaw = (String) payload.getOrDefault("unidadMedida", "UNIDAD");
+        String descripcion = (String) payload.getOrDefault("descripcion", "");
+
+        // Gobernanza de Datos: Normalización predictiva
+        String unidadMedidaLimpia = normalizador.normalizar(unidadMedidaRaw);
+
+        producto.actualizarDatos(nombre, precio, unidadMedidaLimpia, descripcion);
 
         // Manejo de Cambio de Categoría con Auditoría
         Long idCategoriaNueva = Long.valueOf(payload.get("idCategoria").toString());

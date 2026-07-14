@@ -18,8 +18,6 @@ public class ProductoDetalleDTO {
     private double promedioEstrellas;
     private List<String> comentarios;
     private List<String> galeriaUrls; 
-
-    // Nuevo campo: Lista estructurada con IDs de multimedia para poder borrar individualmente
     private List<Map<String, Object>> galeria;
 
     // NUEVOS CAMPOS: Comerciante propietario
@@ -28,6 +26,8 @@ public class ProductoDetalleDTO {
     private String telefonoComerciante;
 
     private boolean estaDisponible;
+    private String unidadMedida;
+    private String descripcion;
 
     public ProductoDetalleDTO(Producto producto) {
         this.id = producto.getId();
@@ -35,12 +35,13 @@ public class ProductoDetalleDTO {
         this.precio = producto.getPrecio();
         this.nombreCategoria = producto.getCategoria() != null ? producto.getCategoria().getNombre() : "Sin Categoría";
         this.estaDisponible = producto.isEstaDisponible();
+        this.unidadMedida = producto.getUnidadMedida();
+        this.descripcion = producto.getDescripcion() != null ? producto.getDescripcion() : "";
         this.cantidadInteresados = producto.getCantidadInteresados();
         this.promedioEstrellas = producto.getResenas().stream().mapToInt(Resena::getCalificacion).average().orElse(0.0);
         this.comentarios = producto.getResenas().stream().map(Resena::getComentario).collect(Collectors.toList());
         this.galeriaUrls = producto.getGaleria().stream().map(Multimedia::getUrl).collect(Collectors.toList());
         
-        // Estructurar galeria con ID para operaciones granulares
         this.galeria = producto.getGaleria().stream().map(m -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", m.getId());
@@ -73,4 +74,6 @@ public class ProductoDetalleDTO {
     public String getNombreComerciante() { return nombreComerciante; }
     public String getTelefonoComerciante() { return telefonoComerciante; }
     public boolean isEstaDisponible() { return estaDisponible; }
+    public String getUnidadMedida() { return unidadMedida; }
+    public String getDescripcion() { return descripcion; }
 }

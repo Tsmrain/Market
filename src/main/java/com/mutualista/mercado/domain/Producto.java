@@ -22,6 +22,12 @@ public class Producto {
     @JoinColumn(name = "categoria_id") // Quitada inmutabilidad física en la relación
     private Categoria categoria;
 
+    @Column(nullable = false)
+    private String unidadMedida = "UNIDAD";
+
+    @Column(nullable = false, length = 1000)
+    private String descripcion = "";
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "producto_id")
     private List<Resena> resenas = new ArrayList<>();
@@ -37,9 +43,19 @@ public class Producto {
     protected Producto() {} 
 
     public Producto(String nombre, double precio, Categoria categoria) {
+        this(nombre, "", precio, categoria, "UNIDAD");
+    }
+
+    public Producto(String nombre, double precio, Categoria categoria, String unidadMedida) {
+        this(nombre, "", precio, categoria, unidadMedida);
+    }
+
+    public Producto(String nombre, String descripcion, double precio, Categoria categoria, String unidadMedida) {
         this.nombre = nombre;
+        this.descripcion = descripcion != null ? descripcion : "";
         this.precio = precio;
         this.categoria = categoria;
+        this.unidadMedida = unidadMedida != null ? unidadMedida : "UNIDAD";
     }
 
     // Comportamientos
@@ -48,8 +64,18 @@ public class Producto {
     
     // REGLA 2: Actualización de datos seguros
     public void actualizarDatos(String nombre, double precio) {
+        actualizarDatos(nombre, precio, this.unidadMedida, this.descripcion);
+    }
+
+    public void actualizarDatos(String nombre, double precio, String unidadMedida) {
+        actualizarDatos(nombre, precio, unidadMedida, this.descripcion);
+    }
+
+    public void actualizarDatos(String nombre, double precio, String unidadMedida, String descripcion) {
         this.nombre = nombre;
         this.precio = precio;
+        this.unidadMedida = unidadMedida != null ? unidadMedida : "UNIDAD";
+        this.descripcion = descripcion != null ? descripcion : "";
     }
     
     public void limpiarGaleria() { this.galeria.clear(); }
@@ -91,4 +117,7 @@ public class Producto {
     public void eliminarMultimedia(Long idMultimedia) {
         this.galeria.removeIf(m -> m.getId().equals(idMultimedia));
     }
+
+    public String getUnidadMedida() { return unidadMedida; }
+    public String getDescripcion() { return descripcion; }
 }

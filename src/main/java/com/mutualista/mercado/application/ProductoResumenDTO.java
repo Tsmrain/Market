@@ -7,9 +7,9 @@ public class ProductoResumenDTO {
     private double precio;
     private String nombreCategoria;
     private String imagenPrincipal;
-    
-    // REGLA DE NEGOCIO: Exponer la disponibilidad para el catálogo transparente
     private boolean estaDisponible; 
+    private String unidadMedida;
+    private String descripcion;
 
     public ProductoResumenDTO(Producto producto) {
         this.id = producto.getId();
@@ -17,7 +17,9 @@ public class ProductoResumenDTO {
         this.precio = producto.getPrecio();
         this.nombreCategoria = producto.getCategoria() != null ? producto.getCategoria().getNombre() : "Sin Categoría";
         this.imagenPrincipal = producto.getImagenPrincipal();
-        this.estaDisponible = producto.isEstaDisponible(); // Delegación al Experto
+        this.estaDisponible = producto.isEstaDisponible();
+        this.unidadMedida = producto.getUnidadMedida();
+        this.descripcion = producto.getDescripcion() != null ? producto.getDescripcion() : "";
     }
 
     public Long getId() { return id; }
@@ -26,4 +28,6 @@ public class ProductoResumenDTO {
     public String getNombreCategoria() { return nombreCategoria; }
     public String getImagenPrincipal() { return imagenPrincipal; }
     public boolean isEstaDisponible() { return estaDisponible; }
+    public String getUnidadMedida() { return unidadMedida; }
+    public String getDescripcion() { return descripcion; }
 }

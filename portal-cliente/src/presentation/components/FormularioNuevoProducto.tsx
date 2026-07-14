@@ -14,6 +14,10 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
     const [precio, setPrecio] = useState("");
     const [idCategoria, setIdCategoria] = useState("");
     const [categorias, setCategorias] = useState<CategoriaInfo[]>([]);
+    const [unidadMedida, setUnidadMedida] = useState("UNIDAD");
+    const [esOtro, setEsOtro] = useState(false);
+    const [unidadMedidaOtro, setUnidadMedidaOtro] = useState("");
+    const [descripcion, setDescripcion] = useState("");
     const [archivos, setArchivos] = useState<File[]>([]);
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState("");
@@ -76,8 +80,10 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
             await ComercianteService.agregarProducto(
                 idComerciante,
                 nombre,
+                descripcion,
                 parseFloat(precio),
                 parseInt(idCategoria),
+                esOtro ? unidadMedidaOtro : unidadMedida,
                 archivos
             );
             alert("¡Producto creado exitosamente!");
@@ -167,7 +173,33 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                         />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div>
+                        <label htmlFor="prod-descripcion" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                            Descripción (Opcional)
+                        </label>
+                        <textarea
+                            id="prod-descripcion"
+                            placeholder="Describa los detalles, frescura o presentación del producto..."
+                            value={descripcion}
+                            onChange={e => setDescripcion(e.target.value)}
+                            rows={3}
+                            style={{
+                                width: '100%',
+                                padding: '10px 12px',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '6px',
+                                fontSize: '0.9rem',
+                                outline: 'none',
+                                boxSizing: 'border-box',
+                                background: '#ffffff',
+                                color: 'var(--text-primary)',
+                                resize: 'vertical',
+                                fontFamily: 'inherit'
+                            }}
+                        />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                         <div>
                             <label htmlFor="prod-precio" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
                                 Precio (Bs.) *
@@ -195,13 +227,13 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                         </div>
 
                         <div>
-                            <label htmlFor="prod-categoria" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
-                                Categoría *
+                            <label htmlFor="prod-unidad" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                                Unidad de Medida *
                             </label>
                             <select
-                                id="prod-categoria"
-                                value={idCategoria}
-                                onChange={e => setIdCategoria(e.target.value)}
+                                id="prod-unidad"
+                                value={unidadMedida}
+                                onChange={e => { setUnidadMedida(e.target.value); setEsOtro(e.target.value === "OTRO"); }}
                                 required
                                 style={{
                                     width: '100%',
@@ -216,13 +248,72 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                                     cursor: 'pointer'
                                 }}
                             >
-                                {categorias.map(cat => (
-                                    <option key={cat.id} value={cat.id}>
-                                        {cat.nombre}
-                                    </option>
-                                ))}
+                                <option value="UNIDAD">UNIDAD (Pieza)</option>
+                                <option value="KG">KG (Kilogramo)</option>
+                                <option value="GRAMO">GRAMO (Gramos)</option>
+                                <option value="LITRO">LITRO (Litro)</option>
+                                <option value="DOCENA">DOCENA (Docena)</option>
+                                <option value="CAJA">CAJA (Caja / Paquete)</option>
+                                <option value="OTRO">OTRO (Especificar)</option>
                             </select>
                         </div>
+                    </div>
+
+                    {esOtro && (
+                        <div style={{ marginBottom: '16px' }}>
+                            <label htmlFor="prod-unidad-otro" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                                Especificar Unidad de Medida *
+                            </label>
+                            <input
+                                id="prod-unidad-otro"
+                                type="text"
+                                placeholder="Ej. Amarro, Racimo, Carga..."
+                                value={unidadMedidaOtro}
+                                onChange={e => setUnidadMedidaOtro(e.target.value)}
+                                required
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 12px',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '6px',
+                                    fontSize: '0.9rem',
+                                    outline: 'none',
+                                    boxSizing: 'border-box',
+                                    background: '#ffffff',
+                                    color: 'var(--text-primary)'
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    <div style={{ marginBottom: '16px' }}>
+                        <label htmlFor="prod-categoria" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                            Categoría *
+                        </label>
+                        <select
+                            id="prod-categoria"
+                            value={idCategoria}
+                            onChange={e => setIdCategoria(e.target.value)}
+                            required
+                            style={{
+                                width: '100%',
+                                padding: '10px 12px',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '6px',
+                                fontSize: '0.9rem',
+                                outline: 'none',
+                                boxSizing: 'border-box',
+                                background: '#ffffff',
+                                color: 'var(--text-primary)',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {categorias.map(cat => (
+                                <option key={cat.id} value={cat.id}>
+                                    {cat.nombre}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div>

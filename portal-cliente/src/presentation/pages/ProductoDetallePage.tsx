@@ -20,7 +20,9 @@ export const ProductoDetallePage: React.FC = () => {
         e.preventDefault();
         if (!producto || !producto.idComerciante) return;
         try {
-            const url = await CatalogoService.contactarComerciante(producto.idComerciante, producto.id);
+            await CatalogoService.contactarComerciante(producto.idComerciante, producto.id).catch(() => {});
+            const message = "Hola " + (producto.nombreComerciante || "") + ". Estoy interesado en su producto: *" + producto.nombre + "* a " + producto.precio + " Bs. / " + (producto.unidadMedida || "UNIDAD") + " que vi en la app del Mercado Mutualista.";
+            const url = "https://wa.me/" + (producto.telefonoComerciante || "") + "?text=" + encodeURIComponent(message);
             window.open(url, '_blank', 'noopener,noreferrer');
         } catch (error) {
             console.error("Error al contactar comerciante", error);
@@ -271,9 +273,15 @@ export const ProductoDetallePage: React.FC = () => {
                                 <div style={{
                                     fontSize: '2rem',
                                     fontWeight: 800,
-                                    color: producto.estaDisponible ? 'var(--primary)' : 'var(--text-secondary)'
+                                    color: producto.estaDisponible ? 'var(--primary)' : 'var(--text-secondary)',
+                                    display: 'flex',
+                                    alignItems: 'baseline',
+                                    gap: '4px'
                                 }}>
-                                    {producto.precio.toFixed(2)} <span style={{ fontSize: '1.125rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Bs.</span>
+                                    <span>{producto.precio.toFixed(2)}</span>
+                                    <span style={{ fontSize: '1.125rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                                        Bs. / <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{producto.unidadMedida || 'UNIDAD'}</span>
+                                    </span>
                                 </div>
                                 {!producto.estaDisponible && (
                                     <div style={{
@@ -291,6 +299,16 @@ export const ProductoDetallePage: React.FC = () => {
                                         ⚠️ Agotado temporalmente. No se admiten pedidos de este producto.
                                     </div>
                                 )}
+                            </div>
+
+                            {/* Descripción del Producto */}
+                            <div style={{ marginBottom: '24px', textAlign: 'left' }}>
+                                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                                    Sobre este producto
+                                </h3>
+                                <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', margin: 0 }}>
+                                    {producto.descripcion || 'El comerciante no ha ingresado una descripción para este producto.'}
+                                </p>
                             </div>
                         </div>
 

@@ -146,7 +146,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                         fontWeight: 700,
                         lineHeight: '1.3',
                         color: 'var(--text-primary)',
-                        margin: '0 0 8px 0',
+                        margin: '0 0 4px 0',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
@@ -155,6 +155,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                     }}>
                         {producto.nombre}
                     </h3>
+                    
+                    <p style={{
+                        fontSize: '0.8rem',
+                        color: 'var(--text-secondary)',
+                        margin: '0 0 8px 0',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        lineHeight: '1.4',
+                        height: '2.24rem'
+                    }}>
+                        {producto.descripcion || 'Sin descripción'}
+                    </p>
                 </div>
 
                 <div style={{ marginTop: '8px' }}>
@@ -163,9 +177,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                         fontSize: '1.25rem',
                         fontWeight: 800,
                         color: 'var(--primary)',
-                        marginBottom: '12px'
+                        marginBottom: '12px',
+                        display: 'flex',
+                        alignItems: 'baseline',
+                        gap: '2px'
                     }}>
-                        {producto.precio.toFixed(2)} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Bs.</span>
+                        <span>{producto.precio.toFixed(2)}</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                            Bs. / <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{producto.unidadMedida || 'UNIDAD'}</span>
+                        </span>
                     </div>
 
                     <Link to={`/productos/${producto.id}`} style={{ textDecoration: 'none' }}>

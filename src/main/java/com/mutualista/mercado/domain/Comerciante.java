@@ -48,7 +48,15 @@ public class Comerciante {
     }
 
     public Producto registrarProducto(String nombre, double precio, Categoria categoria) {
-        Producto nuevoProducto = new Producto(nombre, precio, categoria);
+        return registrarProducto(nombre, "", precio, categoria, "UNIDAD");
+    }
+
+    public Producto registrarProducto(String nombre, double precio, Categoria categoria, String unidadMedida) {
+        return registrarProducto(nombre, "", precio, categoria, unidadMedida);
+    }
+
+    public Producto registrarProducto(String nombre, String descripcion, double precio, Categoria categoria, String unidadMedida) {
+        Producto nuevoProducto = new Producto(nombre, descripcion, precio, categoria, unidadMedida);
         this.catalogo.add(nuevoProducto);
         return nuevoProducto;
     }

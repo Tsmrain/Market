@@ -89,12 +89,12 @@ public class PortalClienteController {
         comerciante.registrarClicContacto();
         comercianteRepo.save(comerciante);
         
-        String mensaje = "Hola " + comerciante.getNombre() + ". ";
+        String mensaje = "";
         if (idProducto != null) {
             Producto producto = productoRepo.findById(idProducto).orElseThrow();
-            mensaje += "Estoy interesado en su producto: *" + producto.getNombre() + "* que vi en el Mercado Mutualista.";
+            mensaje = "Hola " + comerciante.getNombre() + ". Estoy interesado en su producto: *" + producto.getNombre() + "* a " + producto.getPrecio() + " Bs. / " + producto.getUnidadMedida() + " que vi en la app del Mercado Mutualista.";
         } else {
-            mensaje += "Me comunico desde el catálogo del Mercado Mutualista.";
+            mensaje = "Hola " + comerciante.getNombre() + ". Me comunico desde el catálogo de la app del Mercado Mutualista.";
         }
 
         String urlContacto = whatsAppAdapter.generarEnlace(comerciante.getTelefono(), mensaje);
