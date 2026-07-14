@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
-import { CatalogoService } from '../../application/CatalogoService';
+import { ComercianteService } from '../../application/ComercianteService';
 import { FormularioNuevoProducto } from '../components/FormularioNuevoProducto';
 import type { ProductoComerciante } from '../../domain/models';
 
@@ -27,7 +27,7 @@ export const GestionCatalogo: React.FC = () => {
         const cargar = async () => {
             setCargando(true);
             try {
-                const data = await CatalogoService.obtenerMisProductos(usuario.id);
+                const data = await ComercianteService.obtenerMisProductos(usuario.id);
                 setProductos(data);
             } catch (err: any) {
                 console.error(err);
@@ -42,7 +42,7 @@ export const GestionCatalogo: React.FC = () => {
     const handleAlternarDisponibilidad = async (idProducto: number) => {
         if (!usuario) return;
         try {
-            await CatalogoService.alternarDisponibilidad(usuario.id, idProducto);
+            await ComercianteService.alternarDisponibilidad(usuario.id, idProducto);
             
             // Actualizar estado local inmediatamente
             setProductos(prev => prev.map(p => {
@@ -62,7 +62,7 @@ export const GestionCatalogo: React.FC = () => {
         if (!confirmar) return;
 
         try {
-            await CatalogoService.eliminarProducto(usuario.id, idProducto);
+            await ComercianteService.eliminarProducto(usuario.id, idProducto);
             
             // Remover del estado local inmediatamente
             setProductos(prev => prev.filter(p => p.id !== idProducto));
@@ -183,9 +183,9 @@ export const GestionCatalogo: React.FC = () => {
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
-                            + Agregar Nuevo Producto
+                            Agregar Nuevo Producto
                         </button>
                     </div>
 

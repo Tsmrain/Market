@@ -25,4 +25,10 @@ public interface ProductoRepository extends CrudRepository<Producto, Long>, Pagi
     // Consulta para el Panel del Comerciante: Muestra todos sus productos que NO estén eliminados (incluso los no disponibles)
     @Query("SELECT p FROM Comerciante c JOIN c.catalogo p WHERE c.id = :idComerciante AND p.eliminado = false")
     List<Producto> findByComercianteIdAndEliminadoFalse(@Param("idComerciante") Long idComerciante);
+
+    long countByEliminadoFalse();
+
+    // NUEVO: Agregación para Gráficos (Information Expert)
+    @Query("SELECT p.categoria.nombre, COUNT(p) FROM Producto p WHERE p.eliminado = false GROUP BY p.categoria.nombre")
+    List<Object[]> countProductosPorCategoria();
 }

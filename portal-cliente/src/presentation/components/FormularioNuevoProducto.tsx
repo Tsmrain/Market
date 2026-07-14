@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CatalogoService } from '../../application/CatalogoService';
+import { ComercianteService } from '../../application/ComercianteService';
 import type { CategoriaInfo } from '../../domain/models';
 
 interface FormularioNuevoProductoProps {
@@ -37,6 +38,12 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files;
         if (!fileList) return;
+        if (fileList.length > 5) {
+            alert("No puedes seleccionar más de 5 archivos multimedia.");
+            e.target.value = ""; // Limpiar input
+            setArchivos([]);
+            return;
+        }
         setArchivos(Array.from(fileList));
     };
 
@@ -66,7 +73,7 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
 
         setCargando(true);
         try {
-            await CatalogoService.agregarProducto(
+            await ComercianteService.agregarProducto(
                 idComerciante,
                 nombre,
                 parseFloat(precio),
@@ -226,7 +233,7 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                             id="prod-archivos"
                             type="file"
                             multiple
-                            accept="image/*"
+                            accept="image/*,video/mp4"
                             onChange={handleFileChange}
                             required
                             style={{

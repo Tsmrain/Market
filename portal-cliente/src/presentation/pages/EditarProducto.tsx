@@ -2,19 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
 import { CatalogoService } from '../../application/CatalogoService';
+import { ComercianteService } from '../../application/ComercianteService';
+import type { CategoriaInfo } from '../../domain/models';
 
 export const EditarProducto: React.FC = () => {
     const { usuario, esComerciante } = useAuthController();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
+    // Text & Category fields
     const [nombre, setNombre] = useState("");
     const [precio, setPrecio] = useState("");
-    const [nombreCategoria, setNombreCategoria] = useState("");
-    const [archivos, setArchivos] = useState<File[]>([]);
+    const [idCategoria, setIdCategoria] = useState("");
+    const [categorias, setCategorias] = useState<CategoriaInfo[]>([]);
+
+    // Multimedia gallery state
+    const [galeriaActual, setGaleriaActual] = useState<Array<{ id: number; url: string; tipo: string }>>([]);
+    const [archivosNuevos, setArchivosNuevos] = useState<File[]>([]);
+
+    // Loading states
     const [cargando, setCargando] = useState(false);
+    const [cargandoMultimedia, setCargandoMultimedia] = useState(false);
     const [buscando, setBuscando] = useState(true);
     const [error, setError] = useState("");
+    const [mensaje, setMensaje] = useState("");
 
     // 1. Validar guardia de sesión
     useEffect(() => {
@@ -23,63 +34,127 @@ export const EditarProducto: React.FC = () => {
         }
     }, [usuario, esComerciante, navigate]);
 
-    // 2. Cargar detalle actual del producto
-    useEffect(() => {
+    // 2. Cargar detalle actual del producto y lista de categorías
+    const cargarDatos = async () => {
         if (!id) return;
-        const cargarDetalle = async () => {
-            setBuscando(true);
-            try {
-                const prod = await CatalogoService.obtenerDetalle(parseInt(id));
-                setNombre(prod.nombre);
-                setPrecio(prod.precio.toString());
-                setNombreCategoria(prod.nombreCategoria);
-            } catch (err: any) {
-                console.error(err);
-                setError("No se pudo cargar la información del producto.");
-            } finally {
-                setBuscando(false);
-            }
-        };
-        cargarDetalle();
-    }, [id]);
+        setBuscando(true);
+        try {
+            const cats = await CatalogoService.obtenerTodasLasCategorias();
+            setCategorias(cats);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const fileList = e.target.files;
-        if (!fileList) return;
-        setArchivos(Array.from(fileList));
+            const prod = await CatalogoService.obtenerDetalle(parseInt(id));
+            setNombre(prod.nombre);
+            setPrecio(prod.precio.toString());
+            
+            // Buscar la categoría del producto en la lista cargada
+            const catEncontrada = cats.find(c => c.nombre === prod.nombreCategoria);
+            if (catEncontrada) {
+                setIdCategoria(catEncontrada.id.toString());
+            }
+
+            // Cargar galería estructurada
+            if (prod.galeria) {
+                setGaleriaActual(prod.galeria);
+            } else {
+                // Fallback por si la respuesta no la trae estructurada
+                setGaleriaActual(prod.galeriaUrls.map((url, index) => ({ id: index, url, tipo: 'imagen' })));
+            }
+        } catch (err: any) {
+            console.error(err);
+            setError("No se pudo cargar la información del producto.");
+        } finally {
+            setBuscando(false);
+        }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    useEffect(() => {
+        cargarDatos();
+    }, [id]);
+
+    // 3. Modificar datos de texto y categoría (JSON PUT)
+    const handleGuardarDatosTexto = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+        setMensaje("");
 
-        if (!nombre.trim() || !precio.trim() || !id) return;
+        if (!nombre.trim() || !precio.trim() || !idCategoria || !id || !usuario) return;
 
-        // Validar tamaño máximo de archivos en cliente (Max 5MB)
+        setCargando(true);
+        try {
+            await ComercianteService.editarProducto(
+                usuario.id,
+                parseInt(id),
+                nombre,
+                parseFloat(precio),
+                parseInt(idCategoria)
+            );
+            alert("¡Producto y categoría actualizados correctamente (Auditado)!");
+            navigate('/panel/catalogo');
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message || "Error al actualizar los datos del producto.");
+        } finally {
+            setCargando(false);
+        }
+    };
+
+    // 4. Subir nuevos archivos multimedia
+    const handleSubirArchivos = async () => {
+        setError("");
+        setMensaje("");
+
+        if (archivosNuevos.length === 0 || !id || !usuario) {
+            setError("Selecciona al menos un archivo para subir.");
+            return;
+        }
+
+        if (galeriaActual.length + archivosNuevos.length > 5) {
+            setError(`Límite excedido. Un producto puede tener máximo 5 archivos multimedia (Tienes ${galeriaActual.length} cargados).`);
+            return;
+        }
+
+        // Validar tamaño máximo de archivos (Max 5MB)
         const limiteSize = 5 * 1024 * 1024;
-        for (const archivo of archivos) {
+        for (const archivo of archivosNuevos) {
             if (archivo.size > limiteSize) {
-                alert(`El archivo ${archivo.name} supera los 5MB permitidos. Por favor reduce su tamaño.`);
+                setError(`El archivo ${archivo.name} supera los 5MB permitidos.`);
                 return;
             }
         }
 
-        setCargando(true);
+        setCargandoMultimedia(true);
         try {
-            await CatalogoService.editarProducto(
-                usuario!.id,
-                parseInt(id),
-                nombre,
-                parseFloat(precio),
-                archivos
-            );
-            alert("¡Producto editado exitosamente!");
-            navigate('/panel/catalogo');
+            await ComercianteService.subirMultimedia(usuario.id, parseInt(id), archivosNuevos);
+            setMensaje("Archivos cargados con éxito.");
+            setArchivosNuevos([]);
+            // Recargar imágenes
+            cargarDatos();
         } catch (err: any) {
             console.error(err);
-            setError(err.message || "Error al actualizar el producto.");
+            setError(err.message || "Error al subir imágenes.");
         } finally {
-            setCargando(false);
+            setCargandoMultimedia(false);
+        }
+    };
+
+    // 5. Eliminar foto granular
+    const handleEliminarFoto = async (idMultimedia: number) => {
+        const confirmar = window.confirm("¿Está seguro de eliminar esta imagen de la galería?");
+        if (!confirmar) return;
+
+        setError("");
+        setMensaje("");
+        setCargandoMultimedia(true);
+        try {
+            await ComercianteService.eliminarMultimedia(usuario!.id, parseInt(id!), idMultimedia);
+            setMensaje("Imagen eliminada de la galería.");
+            // Recargar imágenes
+            cargarDatos();
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message || "Error al eliminar la imagen.");
+        } finally {
+            setCargandoMultimedia(false);
         }
     };
 
@@ -112,7 +187,7 @@ export const EditarProducto: React.FC = () => {
                     <span style={{ fontWeight: 800, fontSize: '1.1rem' }}>Panel de Comerciante</span>
                 </div>
                 <Link to="/panel/catalogo" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, background: 'rgba(255,255,255,0.15)', padding: '6px 12px', borderRadius: '4px' }}>
-                    ← Cancelar y Volver
+                    ← Volver al Catálogo
                 </Link>
             </header>
 
@@ -120,7 +195,7 @@ export const EditarProducto: React.FC = () => {
             <main style={{
                 flexGrow: 1,
                 padding: '40px 24px',
-                maxWidth: '550px',
+                maxWidth: '650px',
                 width: '100%',
                 margin: '0 auto',
                 boxSizing: 'border-box'
@@ -137,8 +212,23 @@ export const EditarProducto: React.FC = () => {
                         Editar Producto
                     </h2>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0 0 24px 0' }}>
-                        Modifica los datos del producto seleccionado. Recuerda que la categoría no puede cambiarse.
+                        Modifica los datos del producto seleccionado de forma independiente a sus fotos de catálogo.
                     </p>
+
+                    {mensaje && (
+                        <div style={{
+                            background: 'rgba(34, 197, 94, 0.05)',
+                            border: '1px solid rgba(34, 197, 94, 0.2)',
+                            color: '#22c55e',
+                            padding: '12px',
+                            borderRadius: '6px',
+                            fontSize: '0.85rem',
+                            marginBottom: '20px',
+                            fontWeight: 500
+                        }}>
+                            {mensaje}
+                        </div>
+                    )}
 
                     {error && (
                         <div style={{
@@ -160,114 +250,173 @@ export const EditarProducto: React.FC = () => {
                             Cargando información del producto...
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <div>
-                                <label htmlFor="edit-nombre" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                                    Nombre del Producto *
-                                </label>
-                                <input
-                                    id="edit-nombre"
-                                    type="text"
-                                    value={nombre}
-                                    onChange={e => setNombre(e.target.value)}
-                                    required
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px 12px',
-                                        border: '1px solid var(--border-color)',
-                                        borderRadius: '6px',
-                                        fontSize: '0.95rem',
-                                        outline: 'none',
-                                        boxSizing: 'border-box',
-                                        background: '#ffffff',
-                                        color: 'var(--text-primary)'
-                                    }}
-                                />
-                            </div>
-
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                            {/* Sección 1: Información textual y Categoría */}
+                            <form id="edit-product-form" onSubmit={handleGuardarDatosTexto} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                 <div>
-                                    <label htmlFor="edit-precio" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                                        Precio (Bs.) *
+                                    <label htmlFor="edit-nombre" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                                        Nombre del Producto *
                                     </label>
                                     <input
-                                        id="edit-precio"
-                                        type="number"
-                                        step="0.01"
-                                        value={precio}
-                                        onChange={e => setPrecio(e.target.value)}
+                                        id="edit-nombre"
+                                        type="text"
+                                        value={nombre}
+                                        onChange={e => setNombre(e.target.value)}
                                         required
-                                        style={{
-                                            width: '100%',
-                                            padding: '10px 12px',
-                                            border: '1px solid var(--border-color)',
-                                            borderRadius: '6px',
-                                            fontSize: '0.95rem',
-                                            outline: 'none',
-                                            boxSizing: 'border-box',
-                                            background: '#ffffff',
-                                            color: 'var(--text-primary)'
-                                        }}
+                                        style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.95rem', boxSizing: 'border-box' }}
                                     />
                                 </div>
 
-                                <div>
-                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                                        Categoría (Inmutable)
-                                    </label>
-                                    <div style={{
-                                        padding: '10px 12px',
-                                        border: '1px solid var(--border-color)',
-                                        background: 'var(--primary-bg)',
-                                        color: 'var(--primary-dark)',
-                                        borderRadius: '6px',
-                                        fontSize: '0.95rem',
-                                        fontWeight: 600,
-                                        cursor: 'not-allowed'
-                                    }}>
-                                        {nombreCategoria || 'Sin Categoría'}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                                    <div>
+                                        <label htmlFor="edit-precio" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                                            Precio (Bs.) *
+                                        </label>
+                                        <input
+                                            id="edit-precio"
+                                            type="number"
+                                            step="0.01"
+                                            value={precio}
+                                            onChange={e => setPrecio(e.target.value)}
+                                            required
+                                            style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.95rem', boxSizing: 'border-box' }}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="edit-categoria" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                                            Categoría *
+                                        </label>
+                                        <select
+                                            id="edit-categoria"
+                                            value={idCategoria}
+                                            onChange={e => setIdCategoria(e.target.value)}
+                                            required
+                                            style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.95rem', boxSizing: 'border-box', background: '#ffffff' }}
+                                        >
+                                            {categorias.map(cat => (
+                                                <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
-                            </div>
 
+                            </form>
+
+                            <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: 0 }} />
+
+                            {/* Sección 2: CRUD de Galería Multimedia */}
                             <div>
-                                <label htmlFor="edit-archivos" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                                    Cargar Nuevas Fotos (Opcional)
-                                </label>
-                                <input
-                                    id="edit-archivos"
-                                    type="file"
-                                    multiple
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px 10px',
-                                        border: '1px solid var(--border-color)',
-                                        borderRadius: '6px',
-                                        fontSize: '0.85rem',
-                                        outline: 'none',
-                                        boxSizing: 'border-box',
-                                        background: '#f9fafb',
-                                        color: 'var(--text-secondary)'
-                                    }}
-                                />
+                                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 8px 0' }}>
+                                    Galería Multimedia (Máx. 5 fotos)
+                                </h3>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 16px 0' }}>
+                                    La primera imagen listada en la galería es la que se mostrará como portada principal en el catálogo.
+                                </p>
+
+                                {/* Listado de multimedia actual */}
                                 <div style={{
-                                    marginTop: '8px',
-                                    fontSize: '0.75rem',
-                                    color: 'var(--secondary)',
-                                    background: 'rgba(217, 108, 43, 0.06)',
-                                    padding: '8px 12px',
-                                    borderRadius: '4px',
-                                    border: '1px dashed rgba(217, 108, 43, 0.2)',
-                                    lineHeight: '1.4'
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
+                                    gap: '12px',
+                                    marginBottom: '20px'
                                 }}>
-                                    ⚠️ <strong>Nota:</strong> Si seleccionas nuevas fotos, las anteriores se borrarán y la primera será tu nueva portada del catálogo.
+                                    {galeriaActual.map((item) => (
+                                        <div key={item.id} style={{
+                                            position: 'relative',
+                                            borderRadius: '6px',
+                                            border: '1px solid var(--border-color)',
+                                            height: '110px',
+                                            overflow: 'hidden',
+                                            background: '#f3f4f6',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}>
+                                            {item.tipo === 'video' ? (
+                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                                                    </svg>
+                                                    <span style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Video</span>
+                                                </div>
+                                            ) : (
+                                                <img src={`http://localhost:8080${item.url}`} alt="Multimedia" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            )}
+
+                                            {/* Botón rojo de borrar individual */}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleEliminarFoto(item.id)}
+                                                disabled={cargandoMultimedia}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '4px',
+                                                    right: '4px',
+                                                    background: '#ef4444',
+                                                    color: '#ffffff',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    width: '24px',
+                                                    height: '24px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.8rem',
+                                                    boxShadow: 'var(--shadow-sm)'
+                                                }}
+                                                title="Eliminar"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {galeriaActual.length === 0 && (
+                                        <div style={{ gridColumn: '1 / -1', padding: '16px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.8rem', border: '1px dashed var(--border-color)', borderRadius: '6px' }}>
+                                            No hay imágenes registradas para este producto
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Formulario para subir nuevas imágenes */}
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                                        Subir nuevos archivos (Fotos / Videos)
+                                    </label>
+                                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                        <input
+                                            type="file"
+                                            multiple
+                                            accept="image/*,video/mp4"
+                                            onChange={e => setArchivosNuevos(e.target.files ? Array.from(e.target.files) : [])}
+                                            style={{ fontSize: '0.85rem' }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleSubirArchivos}
+                                            disabled={cargandoMultimedia || archivosNuevos.length === 0}
+                                            style={{
+                                                background: 'var(--secondary)',
+                                                color: '#ffffff',
+                                                padding: '8px 16px',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                fontWeight: 700,
+                                                fontSize: '0.85rem',
+                                                cursor: (cargandoMultimedia || archivosNuevos.length === 0) ? 'not-allowed' : 'pointer'
+                                            }}
+                                        >
+                                            {cargandoMultimedia ? 'Subiendo...' : 'Subir Archivos'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
                             <button
                                 type="submit"
+                                form="edit-product-form"
                                 disabled={cargando}
                                 style={{
                                     background: 'var(--secondary)',
@@ -278,17 +427,17 @@ export const EditarProducto: React.FC = () => {
                                     fontWeight: 700,
                                     fontSize: '0.95rem',
                                     cursor: cargando ? 'not-allowed' : 'pointer',
-                                    marginTop: '12px',
                                     width: '100%',
                                     boxShadow: 'var(--shadow-sm)',
-                                    transition: 'background var(--transition-speed)'
+                                    transition: 'background var(--transition-speed)',
+                                    marginTop: '32px'
                                 }}
                                 onMouseEnter={(e) => { if (!cargando) e.currentTarget.style.background = 'var(--primary-dark)'; }}
                                 onMouseLeave={(e) => { if (!cargando) e.currentTarget.style.background = 'var(--secondary)'; }}
                             >
                                 {cargando ? 'Guardando Cambios...' : 'Guardar Cambios'}
                             </button>
-                        </form>
+                        </div>
                     )}
                 </div>
             </main>

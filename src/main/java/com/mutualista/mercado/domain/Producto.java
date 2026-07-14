@@ -19,7 +19,7 @@ public class Producto {
     private boolean eliminado = false; 
 
     @ManyToOne
-    @JoinColumn(name = "categoria_id", updatable = false) // REGLA 2: La categoría es inmutable
+    @JoinColumn(name = "categoria_id") // Quitada inmutabilidad física en la relación
     private Categoria categoria;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -83,4 +83,12 @@ public class Producto {
     public boolean isEliminado() { return eliminado; }
     public List<Resena> getResenas() { return Collections.unmodifiableList(resenas); }
     public List<Multimedia> getGaleria() { return Collections.unmodifiableList(galeria); }
+
+    public void cambiarCategoria(Categoria nuevaCategoria) {
+        this.categoria = nuevaCategoria;
+    }
+
+    public void eliminarMultimedia(Long idMultimedia) {
+        this.galeria.removeIf(m -> m.getId().equals(idMultimedia));
+    }
 }

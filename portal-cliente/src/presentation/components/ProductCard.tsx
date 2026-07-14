@@ -82,12 +82,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                 overflow: 'hidden',
                 marginBottom: '12px'
             }}>
+                {!producto.estaDisponible && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '8px',
+                        left: '8px',
+                        background: '#4b5563', // Neutral gray
+                        color: '#ffffff',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        zIndex: 10,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        boxShadow: 'var(--shadow-sm)'
+                    }}>
+                        Agotado temporalmente
+                    </div>
+                )}
                 <div style={{
                     position: 'absolute',
                     top: 0, left: 0, right: 0, bottom: 0,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    filter: producto.estaDisponible ? 'none' : 'grayscale(100%) opacity(0.6)'
                 }}>
                     {producto.imagenPrincipal ? (
                         <img 
@@ -163,7 +183,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                         onMouseEnter={(e) => e.currentTarget.style.background = 'var(--primary-dark)'}
                         onMouseLeave={(e) => e.currentTarget.style.background = 'var(--secondary)'}
                         >
-                            Ver detalle / Comprar
+                            {producto.estaDisponible ? 'Ver detalle / Comprar' : 'Ver detalle'}
                         </button>
                     </Link>
                 </div>

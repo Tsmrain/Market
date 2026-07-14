@@ -33,6 +33,8 @@ export const LoginComerciante: React.FC = () => {
                 const sesion = JSON.parse(stored);
                 if (sesion.rol === 'ADMIN') {
                     navigate('/admin');
+                } else if (sesion.rol === 'SUPERADMIN') {
+                    navigate('/superadmin');
                 } else if (sesion.rol === 'COMERCIANTE') {
                     navigate('/panel');
                 } else {

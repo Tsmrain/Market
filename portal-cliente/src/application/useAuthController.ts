@@ -3,7 +3,7 @@ import { useState } from 'react';
 export interface UsuarioSesion {
     id: number;
     nombre: string;
-    rol: 'COMERCIANTE' | 'CLIENTE' | 'ADMIN';
+    rol: 'COMERCIANTE' | 'CLIENTE' | 'ADMIN' | 'SUPERADMIN';
 }
 
 export const useAuthController = () => {
@@ -21,18 +21,30 @@ export const useAuthController = () => {
     });
 
     const loginComerciante = async (ci: string, pin: string): Promise<void> => {
-        // Intercepción del Administrador para pruebas del MVP sin base de datos administrativa
-        if (ci === 'admin' && pin === '9999') {
-            const sesion: UsuarioSesion = {
-                id: 999,
-                nombre: "Administrador del Mercado",
-                rol: "ADMIN"
-            };
-            localStorage.setItem('usuario_sesion', JSON.stringify(sesion));
-            setUsuario(sesion);
-            return;
+        // 1. Intentar primero con el endpoint de Administradores y SuperAdmin
+        try {
+            const adminResponse = await fetch('http://localhost:8080/api/auth/admins/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ci, pin })
+            });
+
+            if (adminResponse.ok) {
+                const data = await adminResponse.json();
+                const sesion: UsuarioSesion = {
+                    id: data.id,
+                    nombre: data.nombre,
+                    rol: data.rol
+                };
+                localStorage.setItem('usuario_sesion', JSON.stringify(sesion));
+                setUsuario(sesion);
+                return;
+            }
+        } catch (e) {
+            // Ignorar y seguir al flujo de comerciante
         }
 
+        // 2. Flujo regular de Comerciantes si no es un Admin
         const response = await fetch('http://localhost:8080/api/auth/comerciantes/login', {
             method: 'POST',
             headers: {
@@ -114,6 +126,7 @@ export const useAuthController = () => {
         estaAutenticado: usuario !== null && usuario.id !== 500,
         esComerciante: usuario !== null && usuario.rol === 'COMERCIANTE',
         esAdmin: usuario !== null && usuario.rol === 'ADMIN',
+        esSuperAdmin: usuario !== null && usuario.rol === 'SUPERADMIN',
         esCliente: usuario !== null && usuario.rol === 'CLIENTE' && usuario.id !== 500,
         loginComerciante,
         loginCliente,

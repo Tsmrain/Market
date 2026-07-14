@@ -2,8 +2,10 @@ package com.mutualista.mercado.application;
 
 import com.mutualista.mercado.domain.Comerciante;
 import com.mutualista.mercado.domain.Cliente;
+import com.mutualista.mercado.domain.AdministradorMercado;
 import com.mutualista.mercado.repository.ComercianteRepository;
 import com.mutualista.mercado.repository.ClienteRepository;
+import com.mutualista.mercado.repository.AdministradorMercadoRepository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -17,10 +19,12 @@ public class AuthController {
 
     private final ComercianteRepository comercianteRepo;
     private final ClienteRepository clienteRepo;
+    private final AdministradorMercadoRepository adminRepo;
 
-    public AuthController(ComercianteRepository cRepo, ClienteRepository cliRepo) {
+    public AuthController(ComercianteRepository cRepo, ClienteRepository cliRepo, AdministradorMercadoRepository adminRepo) {
         this.comercianteRepo = cRepo;
         this.clienteRepo = cliRepo;
+        this.adminRepo = adminRepo;
     }
 
     @PostMapping("/comerciantes/login")
@@ -38,7 +42,33 @@ public class AuthController {
             .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Credenciales incorrectas")));
     }
 
-    // REGLA 3: Registro y Login de Clientes
+    @PostMapping("/admins/login")
+    public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest request) {
+        // SuperAdmin hardcoded credentials
+        if ("superadmin".equals(request.getCi()) && "0000".equals(request.getPin())) {
+            Map<String, Object> res = new HashMap<>();
+            res.put("mensaje", "Exito");
+            res.put("id", 0L);
+            res.put("nombre", "Super Administrador");
+            res.put("rol", "SUPERADMIN");
+            return ResponseEntity.ok(res);
+        }
+
+        // Database Admin check
+        return adminRepo.findByCiAndEliminadoFalse(request.getCi())
+            .filter(a -> a.validarPin(request.getPin()))
+            .map(a -> {
+                Map<String, Object> res = new HashMap<>();
+                res.put("mensaje", "Exito");
+                res.put("id", a.getId());
+                res.put("nombre", a.getNombre());
+                res.put("rol", "ADMIN");
+                return ResponseEntity.ok(res);
+            })
+            .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Credenciales incorrectas")));
+    }
+
+    // Registro y Login de Clientes
     @PostMapping("/clientes/registro")
     public ResponseEntity<?> registrarCliente(@RequestBody Map<String, String> payload) {
         String telefono = payload.get("celular");

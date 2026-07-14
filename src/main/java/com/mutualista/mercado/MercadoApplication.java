@@ -17,12 +17,11 @@ public class MercadoApplication {
     public CommandLineRunner initData(ComercianteRepository cRepo, CategoriaRepository catRepo, ClienteRepository cliRepo) {
         return args -> {
             Categoria carnes = catRepo.save(new Categoria(null, "Carnes"));
-            Categoria pollo = catRepo.save(new Categoria(null, "Pollo", carnes));
             Categoria verduras = catRepo.save(new Categoria(null, "Verduras"));
 
             // Regla de Negocio 2: Juan Perez ahora tiene CI "1234567", PIN "1234" y teléfono de 8 dígitos
             Comerciante com = new Comerciante("1234567", "1234", "Juan Perez", "71234567");
-            com.registrarProducto("Pollo Sofía Entero", 15.50, pollo); 
+            com.registrarProducto("Pollo Sofía Entero", 15.50, carnes); 
             com.registrarProducto("Tomate Perita", 2.50, verduras); 
             cRepo.save(com);
             

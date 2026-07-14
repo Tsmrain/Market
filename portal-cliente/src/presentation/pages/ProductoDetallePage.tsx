@@ -2,15 +2,11 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDetalleController } from '../../application/useDetalleController';
 import { CatalogoService } from '../../application/CatalogoService';
-import { UploadMultimedia } from '../components/UploadMultimedia';
-import { useAuthController } from '../../application/useAuthController';
 
 
 export const ProductoDetallePage: React.FC = () => {
     // 1. Extraemos el ID de la URL
     const { id } = useParams<{ id: string }>();
-    
-    const { esComerciante } = useAuthController();
     
     // 2. Delegamos al controlador
     const { producto, cargando, estaAutenticado, handleMeInteresa, handleResena } = useDetalleController(id);
@@ -20,22 +16,11 @@ export const ProductoDetallePage: React.FC = () => {
     const [imagenActiva, setImagenActiva] = useState<string | null>(null);
 
     // Mapea comerciante basado en nombre de producto
-    const getProductMerchant = (nombre: string) => {
-        const lower = nombre.toLowerCase();
-        if (lower.includes('tomate')) return { nombre: 'Juan Perez', id: 1 };
-        if (lower.includes('platano') || lower.includes('plátano') || lower.includes('frutilla')) return { nombre: 'Frutas Doña María', id: 101 };
-        if (lower.includes('naranja') || lower.includes('jugo')) return { nombre: 'Jugos del Pasillo A', id: 102 };
-        if (lower.includes('hamburguesa') || lower.includes('salchipapa')) return { nombre: 'Mesa Móvil de Comida Rápida (Móvil)', id: 103 };
-        if (lower.includes('arroz') || lower.includes('aceite')) return { nombre: 'Abarrotes Don Pepe', id: 104 };
-        return { nombre: 'Juan Perez', id: 1 };
-    };
-
     const handleContactar = async (e: React.MouseEvent) => {
         e.preventDefault();
-        if (!producto) return;
+        if (!producto || !producto.idComerciante) return;
         try {
-            const merchant = getProductMerchant(producto.nombre);
-            const url = await CatalogoService.contactarComerciante(merchant.id, producto.id);
+            const url = await CatalogoService.contactarComerciante(producto.idComerciante, producto.id);
             window.open(url, '_blank', 'noopener,noreferrer');
         } catch (error) {
             console.error("Error al contactar comerciante", error);
@@ -101,7 +86,6 @@ export const ProductoDetallePage: React.FC = () => {
         );
     }
 
-    const merchant = getProductMerchant(producto.nombre);
     const urls = producto.galeriaUrls || [];
     const imagenPrincipal = imagenActiva || (urls.length > 0 ? urls[0] : null);
 
@@ -236,13 +220,7 @@ export const ProductoDetallePage: React.FC = () => {
                             </div>
                         )}
 
-                        {/* Componente para subir fotos (sólo visible para comerciantes logueados) */}
-                        {esComerciante && (
-                            <UploadMultimedia 
-                                idProducto={producto.id} 
-                                onUploadSuccess={() => window.location.reload()} 
-                            />
-                        )}
+
                     </div>
 
                     {/* Right Column: Info and Actions */}
@@ -273,7 +251,7 @@ export const ProductoDetallePage: React.FC = () => {
                             </h1>
 
                             <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-                                Puesto: <strong style={{ color: 'var(--text-primary)' }}>{merchant.nombre}</strong>
+                                Puesto: <strong style={{ color: 'var(--text-primary)' }}>{producto.nombreComerciante || 'Puesto Desconocido'}</strong>
                             </div>
 
                             {/* Ratings section */}
@@ -289,42 +267,63 @@ export const ProductoDetallePage: React.FC = () => {
                             </div>
 
                             {/* Single outstanding price */}
-                            <div style={{
-                                fontSize: '2rem',
-                                fontWeight: 800,
-                                color: 'var(--primary)',
-                                marginBottom: '24px'
-                            }}>
-                                {producto.precio.toFixed(2)} <span style={{ fontSize: '1.125rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Bs.</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
+                                <div style={{
+                                    fontSize: '2rem',
+                                    fontWeight: 800,
+                                    color: producto.estaDisponible ? 'var(--primary)' : 'var(--text-secondary)'
+                                }}>
+                                    {producto.precio.toFixed(2)} <span style={{ fontSize: '1.125rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Bs.</span>
+                                </div>
+                                {!producto.estaDisponible && (
+                                    <div style={{
+                                        color: '#dc3545',
+                                        fontWeight: 700,
+                                        fontSize: '0.9rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        background: 'rgba(220, 53, 69, 0.05)',
+                                        border: '1px solid rgba(220, 53, 69, 0.15)',
+                                        padding: '8px 12px',
+                                        borderRadius: '6px'
+                                    }}>
+                                        ⚠️ Agotado temporalmente. No se admiten pedidos de este producto.
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         {/* Action Buttons */}
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-                            <button 
-                                onClick={handleContactar}
-                                style={{
-                                    flexGrow: 1,
-                                    background: 'var(--secondary)',
-                                    color: '#ffffff',
-                                    borderRadius: '6px',
-                                    padding: '12px 20px',
-                                    fontWeight: 600,
-                                    fontSize: '0.9rem',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '8px',
-                                    boxShadow: 'var(--shadow-sm)'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--primary-dark)'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = 'var(--secondary)'}
-                            >
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-                                </svg>
-                                Contactar por WhatsApp
-                            </button>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', width: '100%' }}>
+                            {producto.estaDisponible && (
+                                <button 
+                                    onClick={handleContactar}
+                                    style={{
+                                        flexGrow: 1,
+                                        background: 'var(--secondary)',
+                                        color: '#ffffff',
+                                        borderRadius: '6px',
+                                        padding: '12px 20px',
+                                        fontWeight: 600,
+                                        fontSize: '0.9rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '8px',
+                                        boxShadow: 'var(--shadow-sm)',
+                                        border: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--primary-dark)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'var(--secondary)'}
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                                    </svg>
+                                    Contactar por WhatsApp
+                                </button>
+                            )}
 
                             <button 
                                 onClick={handleMeInteresa}

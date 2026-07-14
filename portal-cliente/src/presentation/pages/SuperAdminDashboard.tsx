@@ -2,28 +2,36 @@ import React, { useEffect, useState } from 'react';
 import { SuperAdminService } from '../../application/SuperAdminService';
 import { PanelGraficos } from '../components/PanelGraficos';
 
-export const AdminDashboard: React.FC = () => {
+export const SuperAdminDashboard: React.FC = () => {
     // KPIs & Server Health
     const [kpis, setKpis] = useState<any>(null);
     const [healthStatus, setHealthStatus] = useState<string>("Cargando...");
 
+    // Load data
+    const cargarDashboard = async () => {
+        try {
+            const metricasData = await SuperAdminService.obtenerMetricas();
+            setKpis(metricasData.kpis);
+        } catch (err) {
+            console.error("Error loading metrics:", err);
+        }
+
+        try {
+            const healthData = await SuperAdminService.obtenerSaludActuator();
+            setHealthStatus(healthData.status === 'UP' ? 'ACTIVO (UP)' : 'INACTIVO');
+        } catch (err) {
+            setHealthStatus("ERROR (OFFLINE)");
+        }
+    };
+
     useEffect(() => {
-        const cargarDashboard = async () => {
-            try {
-                const metricasData = await SuperAdminService.obtenerMetricas();
-                setKpis(metricasData.kpis);
-            } catch (err) {
-                console.error("Error loading metrics in Admin:", err);
-            }
-            try {
-                const healthData = await SuperAdminService.obtenerSaludActuator();
-                setHealthStatus(healthData.status === 'UP' ? 'ACTIVO (UP)' : 'INACTIVO');
-            } catch (err) {
-                setHealthStatus("ERROR (OFFLINE)");
-            }
-        };
         cargarDashboard();
     }, []);
+
+    const getKpi = (key: string) => {
+        if (!kpis) return "...";
+        return kpis[key];
+    };
 
     return (
         <div>
@@ -71,21 +79,25 @@ export const AdminDashboard: React.FC = () => {
                 gap: '16px',
                 marginBottom: '32px'
             }}>
+                {/* Card 1 */}
                 <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
                     <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Comerciantes Activos</span>
-                    <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', marginTop: '8px', marginBottom: 0 }}>{!kpis ? '...' : kpis.comerciantesActivos}</h2>
+                    <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', marginTop: '8px', marginBottom: 0 }}>{getKpi("comerciantesActivos")}</h2>
                 </div>
+                {/* Card 2 */}
                 <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
                     <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Clientes Registrados</span>
-                    <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', marginTop: '8px', marginBottom: 0 }}>{!kpis ? '...' : kpis.clientesRegistrados}</h2>
+                    <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', marginTop: '8px', marginBottom: 0 }}>{getKpi("clientesRegistrados")}</h2>
                 </div>
+                {/* Card 3 */}
                 <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
                     <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Productos en Catálogo</span>
-                    <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', marginTop: '8px', marginBottom: 0 }}>{!kpis ? '...' : kpis.productosEnCatalogo}</h2>
+                    <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', marginTop: '8px', marginBottom: 0 }}>{getKpi("productosEnCatalogo")}</h2>
                 </div>
+                {/* Card 4 */}
                 <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
                     <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Engagement (WhatsApp)</span>
-                    <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', marginTop: '8px', marginBottom: 0 }}>{!kpis ? '...' : kpis.interaccionesWhatsApp} clics</h2>
+                    <h2 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', marginTop: '8px', marginBottom: 0 }}>{getKpi("interaccionesWhatsApp")} clics</h2>
                 </div>
             </div>
 

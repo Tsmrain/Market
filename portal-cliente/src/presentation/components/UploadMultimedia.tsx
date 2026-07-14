@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { CatalogoService } from '../../application/CatalogoService';
+import { ComercianteService } from '../../application/ComercianteService';
+import { useAuthController } from '../../application/useAuthController';
 
 interface UploadMultimediaProps {
     idProducto: number;
@@ -7,6 +8,7 @@ interface UploadMultimediaProps {
 }
 
 export const UploadMultimedia: React.FC<UploadMultimediaProps> = ({ idProducto, onUploadSuccess }) => {
+    const { usuario } = useAuthController();
     const [subiendo, setSubiendo] = useState(false);
     const [mensaje, setMensaje] = useState("");
 
@@ -26,10 +28,11 @@ export const UploadMultimedia: React.FC<UploadMultimediaProps> = ({ idProducto, 
             }
         }
 
+        if (!usuario) return;
         setSubiendo(true);
         setMensaje("Subiendo y optimizando archivos...");
         try {
-            await CatalogoService.subirMultimedia(idProducto, archivos);
+            await ComercianteService.subirMultimedia(usuario.id, idProducto, archivos);
             setMensaje("Archivos cargados con éxito.");
             onUploadSuccess();
         } catch (error) {

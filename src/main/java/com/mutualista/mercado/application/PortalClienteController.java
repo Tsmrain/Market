@@ -67,9 +67,11 @@ public class PortalClienteController {
     @GetMapping("/productos/{idProducto}")
     @Transactional(readOnly = true)
     public ProductoDetalleDTO obtenerDetalleProducto(@PathVariable Long idProducto) {
-        return new ProductoDetalleDTO(productoRepo.findById(idProducto)
+        Producto producto = productoRepo.findById(idProducto)
             .filter(p -> !p.isEliminado())
-            .orElseThrow(() -> new RuntimeException("Producto no encontrado")));
+            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        Comerciante comerciante = comercianteRepo.findByProductoId(idProducto).orElse(null);
+        return new ProductoDetalleDTO(producto, comerciante);
     }
 
     @GetMapping("/comerciantes/{idComerciante}")

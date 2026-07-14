@@ -152,12 +152,7 @@ export const CatalogoPage: React.FC = () => {
 
                 {/* Grid */}
                 {!cargando && datos && datos.content.length > 0 ? (
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                        gap: '24px',
-                        width: '100%'
-                    }}>
+                    <div className="products-grid">
                         {datos.content.map(producto => (
                             <ProductCard key={producto.id} producto={producto} />
                         ))}

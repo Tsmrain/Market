@@ -5,6 +5,7 @@ export interface ProductoResumen {
     precio: number;
     nombreCategoria: string;
     imagenPrincipal: string | null;
+    estaDisponible: boolean;
 }
 
 // Reflejo exacto de ProductoDetalleDTO del Backend
@@ -17,6 +18,11 @@ export interface ProductoDetalle {
     promedioEstrellas: number;
     comentarios: string[];
     galeriaUrls: string[];
+    idComerciante?: number;
+    nombreComerciante?: string;
+    telefonoComerciante?: string;
+    galeria?: Array<{ id: number; url: string; tipo: string }>;
+    estaDisponible: boolean;
 }
 
 // Reflejo de la paginación de Spring Data
