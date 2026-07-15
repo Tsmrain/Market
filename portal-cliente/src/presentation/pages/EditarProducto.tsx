@@ -17,6 +17,7 @@ export const EditarProducto: React.FC = () => {
     const [unidadMedida, setUnidadMedida] = useState("UNIDAD");
     const [esOtro, setEsOtro] = useState(false);
     const [unidadMedidaOtro, setUnidadMedidaOtro] = useState("");
+    const [unidadesMaestras, setUnidadesMaestras] = useState<any[]>([]);
     const [descripcion, setDescripcion] = useState("");
     const [categorias, setCategorias] = useState<CategoriaInfo[]>([]);
 
@@ -43,16 +44,21 @@ export const EditarProducto: React.FC = () => {
         if (!id) return;
         setBuscando(true);
         try {
-            const cats = await CatalogoService.obtenerTodasLasCategorias();
+            const [cats, unis, prod] = await Promise.all([
+                CatalogoService.obtenerTodasLasCategorias(),
+                CatalogoService.obtenerUnidades(),
+                CatalogoService.obtenerDetalle(parseInt(id))
+            ]);
             setCategorias(cats);
+            setUnidadesMaestras(unis);
 
-            const prod = await CatalogoService.obtenerDetalle(parseInt(id));
             setNombre(prod.nombre);
             setPrecio(prod.precio.toString());
             const unit = prod.unidadMedida || "UNIDAD";
             setDescripcion(prod.descripcion || "");
-            const standardUnits = ["UNIDAD", "KG", "GRAMO", "LITRO", "DOCENA", "CAJA"];
-            if (standardUnits.includes(unit)) {
+            
+            const standardCodes = unis.map((u: any) => u.codigo);
+            if (standardCodes.includes(unit)) {
                 setUnidadMedida(unit);
                 setEsOtro(false);
             } else {
@@ -106,7 +112,7 @@ export const EditarProducto: React.FC = () => {
                 esOtro ? unidadMedidaOtro : unidadMedida
             );
             alert("¡Producto y categoría actualizados correctamente (Auditado)!");
-            navigate('/panel/catalogo');
+            navigate('/panel/mercaderia');
         } catch (err: any) {
             console.error(err);
             setError(err.message || "Error al actualizar los datos del producto.");
@@ -141,11 +147,10 @@ export const EditarProducto: React.FC = () => {
 
         setCargandoMultimedia(true);
         try {
-            await ComercianteService.subirMultimedia(usuario.id, parseInt(id), archivosNuevos);
+            const nuevaGaleria = await ComercianteService.subirMultimedia(usuario.id, parseInt(id), archivosNuevos);
             setMensaje("Archivos cargados con éxito.");
             setArchivosNuevos([]);
-            // Recargar imágenes
-            cargarDatos();
+            setGaleriaActual(nuevaGaleria);
         } catch (err: any) {
             console.error(err);
             setError(err.message || "Error al subir imágenes.");
@@ -163,10 +168,9 @@ export const EditarProducto: React.FC = () => {
         setMensaje("");
         setCargandoMultimedia(true);
         try {
-            await ComercianteService.eliminarMultimedia(usuario!.id, parseInt(id!), idMultimedia);
+            const nuevaGaleria = await ComercianteService.eliminarMultimedia(usuario!.id, parseInt(id!), idMultimedia);
             setMensaje("Imagen eliminada de la galería.");
-            // Recargar imágenes
-            cargarDatos();
+            setGaleriaActual(nuevaGaleria);
         } catch (err: any) {
             console.error(err);
             setError(err.message || "Error al eliminar la imagen.");
@@ -178,53 +182,18 @@ export const EditarProducto: React.FC = () => {
     if (!usuario || !esComerciante) return null;
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            background: 'var(--bg-color)',
-            display: 'flex',
-            flexDirection: 'column'
-        }}>
-            {/* Header */}
-            <header style={{
-                background: 'var(--primary)',
-                color: '#ffffff',
-                padding: '16px 24px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                boxShadow: 'var(--shadow-sm)'
+        <div style={{ maxWidth: '650px', width: '100%', margin: '0 auto', textAlign: 'left', padding: '0 16px 40px 16px', boxSizing: 'border-box' }}>
+            <Link to="/panel/mercaderia" style={{ display: 'inline-block', marginBottom: '16px', color: 'var(--primary)', textDecoration: 'none', fontWeight: 700, fontSize: '0.9rem' }}>
+                ← Volver al Catálogo
+            </Link>
+            <div style={{
+                background: 'var(--card-bg)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                padding: '32px',
+                boxShadow: 'var(--shadow-md)',
+                textAlign: 'left'
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--secondary)' }}>
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                        <line x1="9" y1="9" x2="15" y2="9" />
-                        <line x1="9" y1="13" x2="15" y2="13" />
-                        <line x1="9" y1="17" x2="15" y2="17" />
-                    </svg>
-                    <span style={{ fontWeight: 800, fontSize: '1.1rem' }}>Panel de Comerciante</span>
-                </div>
-                <Link to="/panel/catalogo" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, background: 'rgba(255,255,255,0.15)', padding: '6px 12px', borderRadius: '4px' }}>
-                    ← Volver al Catálogo
-                </Link>
-            </header>
-
-            {/* Form layout */}
-            <main style={{
-                flexGrow: 1,
-                padding: '40px 24px',
-                maxWidth: '650px',
-                width: '100%',
-                margin: '0 auto',
-                boxSizing: 'border-box'
-            }}>
-                <div style={{
-                    background: 'var(--card-bg)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
-                    padding: '32px',
-                    boxShadow: 'var(--shadow-md)',
-                    textAlign: 'left'
-                }}>
                     <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>
                         Editar Producto
                     </h2>
@@ -336,12 +305,9 @@ export const EditarProducto: React.FC = () => {
                                             required
                                             style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.95rem', boxSizing: 'border-box', background: '#ffffff' }}
                                         >
-                                            <option value="UNIDAD">UNIDAD (Pieza)</option>
-                                            <option value="KG">KG (Kilogramo)</option>
-                                            <option value="GRAMO">GRAMO (Gramos)</option>
-                                            <option value="LITRO">LITRO (Litro)</option>
-                                            <option value="DOCENA">DOCENA (Docena)</option>
-                                            <option value="CAJA">CAJA (Caja / Paquete)</option>
+                                            {unidadesMaestras.map(u => (
+                                                <option key={u.id} value={u.codigo}>{u.nombre} ({u.codigo})</option>
+                                            ))}
                                             <option value="OTRO">OTRO (Especificar)</option>
                                         </select>
                                     </div>
@@ -519,7 +485,6 @@ export const EditarProducto: React.FC = () => {
                         </div>
                     )}
                 </div>
-            </main>
-        </div>
-    );
-};
+            </div>
+        );
+    };

@@ -13,7 +13,7 @@ export const ProductoDetallePage: React.FC = () => {
 
     const [comentario, setComentario] = useState("");
     const [calificacion, setCalificacion] = useState(5);
-    const [imagenActiva, setImagenActiva] = useState<string | null>(null);
+    const [mediaActiva, setMediaActiva] = useState<{ id?: number; url: string; tipo: string } | null>(null);
 
     // Mapea comerciante basado en nombre de producto
     const handleContactar = async (e: React.MouseEvent) => {
@@ -88,8 +88,11 @@ export const ProductoDetallePage: React.FC = () => {
         );
     }
 
-    const urls = producto.galeriaUrls || [];
-    const imagenPrincipal = imagenActiva || (urls.length > 0 ? urls[0] : null);
+    const galeria = producto?.galeria && producto.galeria.length > 0
+        ? producto.galeria
+        : (producto?.galeriaUrls || []).map((url, idx) => ({ id: idx, url, tipo: url.endsWith('.mp4') ? 'video' : 'imagen' }));
+
+    const mediaPrincipal = mediaActiva || (galeria.length > 0 ? galeria[0] : null);
 
     return (
         <div style={{
@@ -135,7 +138,7 @@ export const ProductoDetallePage: React.FC = () => {
                 }}>
                     {/* Left Column: Gallery & Upload tool */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                        {urls.length === 0 ? (
+                        {galeria.length === 0 ? (
                             /* Imagen no disponible */
                             <div style={{
                                 position: 'relative',
@@ -177,16 +180,29 @@ export const ProductoDetallePage: React.FC = () => {
                                     overflow: 'hidden',
                                     border: '1px solid var(--border-color)'
                                 }}>
-                                    <img 
-                                        src={`http://localhost:8080${imagenPrincipal}`} 
-                                        alt={producto.nombre} 
-                                        style={{
-                                            position: 'absolute',
-                                            top: 0, left: 0, width: '100%', height: '100%',
-                                            objectFit: 'contain',
-                                            background: '#f9fafb'
-                                        }}
-                                    />
+                                    {mediaPrincipal && mediaPrincipal.tipo === 'video' ? (
+                                        <video 
+                                            src={`http://localhost:8080${mediaPrincipal.url}`} 
+                                            controls 
+                                            style={{
+                                                position: 'absolute',
+                                                top: 0, left: 0, width: '100%', height: '100%',
+                                                objectFit: 'contain',
+                                                background: '#f9fafb'
+                                            }} 
+                                        />
+                                    ) : mediaPrincipal ? (
+                                        <img 
+                                            src={`http://localhost:8080${mediaPrincipal.url}`} 
+                                            alt={producto.nombre} 
+                                            style={{
+                                                position: 'absolute',
+                                                top: 0, left: 0, width: '100%', height: '100%',
+                                                objectFit: 'contain',
+                                                background: '#f9fafb'
+                                            }}
+                                        />
+                                    ) : null}
                                 </div>
                                 
                                 {/* Miniaturas */}
@@ -196,26 +212,35 @@ export const ProductoDetallePage: React.FC = () => {
                                     overflowX: 'auto',
                                     paddingBottom: '6px'
                                 }}>
-                                    {urls.map((url, i) => (
+                                    {galeria.map((item, i) => (
                                         <button
                                             key={i}
-                                            onClick={() => setImagenActiva(url)}
+                                            onClick={() => setMediaActiva(item)}
                                             style={{
                                                 width: '60px',
                                                 height: '45px',
                                                 borderRadius: '4px',
                                                 overflow: 'hidden',
-                                                border: imagenPrincipal === url ? '2.5px solid var(--secondary)' : '1px solid var(--border-color)',
+                                                border: mediaPrincipal && mediaPrincipal.url === item.url ? '2.5px solid var(--secondary)' : '1px solid var(--border-color)',
                                                 padding: 0,
                                                 flexShrink: 0,
-                                                background: '#f9fafb'
+                                                background: '#f9fafb',
+                                                position: 'relative'
                                             }}
                                         >
-                                            <img 
-                                                src={`http://localhost:8080${url}`} 
-                                                alt={`Miniatura ${i}`} 
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            />
+                                            {item.tipo === 'video' ? (
+                                                <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#333' }}>
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#fff', opacity: 0.85 }}>
+                                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                                    </svg>
+                                                </div>
+                                            ) : (
+                                                <img 
+                                                    src={`http://localhost:8080${item.url}`} 
+                                                    alt={`Miniatura ${i}`} 
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                />
+                                            )}
                                         </button>
                                     ))}
                                 </div>

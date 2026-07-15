@@ -6,7 +6,7 @@ import { FormularioNuevoProducto } from '../components/FormularioNuevoProducto';
 import type { ProductoComerciante } from '../../domain/models';
 
 export const GestionCatalogo: React.FC = () => {
-    const { usuario, esComerciante, logout } = useAuthController();
+    const { usuario, esComerciante } = useAuthController();
     const navigate = useNavigate();
     const [productos, setProductos] = useState<ProductoComerciante[]>([]);
     const [cargando, setCargando] = useState(true);
@@ -79,71 +79,14 @@ export const GestionCatalogo: React.FC = () => {
     if (!usuario || !esComerciante) return null;
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            background: 'var(--bg-color)',
-            display: 'flex',
-            flexDirection: 'column'
-        }}>
-            {/* Header */}
-            <header style={{
-                background: 'var(--primary)',
-                color: '#ffffff',
-                padding: '16px 24px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                boxShadow: 'var(--shadow-sm)'
+        <div style={{ padding: '0 16px 40px 16px', boxSizing: 'border-box' }}>
+            <div style={{
+                background: 'var(--card-bg)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                padding: '32px',
+                boxShadow: 'var(--shadow-md)'
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--secondary)' }}>
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                        <polyline points="9 22 9 12 15 12 15 22" />
-                    </svg>
-                    <span style={{ fontWeight: 800, fontSize: '1.1rem' }}>Panel de Comerciante</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '0.85rem' }}>Tienda: <strong>{usuario.nombre}</strong></span>
-                    <Link to="/panel" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, background: 'rgba(255,255,255,0.15)', padding: '6px 12px', borderRadius: '4px' }}>
-                        ← Volver al Panel
-                    </Link>
-                    <button 
-                        onClick={() => { logout(); navigate('/'); }}
-                        style={{
-                            background: 'rgba(239, 68, 68, 0.2)',
-                            color: '#ef4444',
-                            border: '1px solid rgba(239, 68, 68, 0.3)',
-                            borderRadius: '4px',
-                            padding: '6px 12px',
-                            fontSize: '0.85rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.3)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'}
-                    >
-                        Cerrar Sesión
-                    </button>
-                </div>
-            </header>
-
-            {/* Contenido */}
-            <main style={{
-                flexGrow: 1,
-                padding: '40px 24px',
-                maxWidth: '900px',
-                width: '100%',
-                margin: '0 auto',
-                boxSizing: 'border-box'
-            }}>
-                <div style={{
-                    background: 'var(--card-bg)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
-                    padding: '32px',
-                    boxShadow: 'var(--shadow-md)'
-                }}>
                     {/* Encabezado */}
                     <div style={{
                         display: 'flex',
@@ -339,7 +282,6 @@ export const GestionCatalogo: React.FC = () => {
                         </div>
                     )}
                 </div>
-            </main>
 
             {/* Modal de Nuevo Producto */}
             {mostrarForm && (

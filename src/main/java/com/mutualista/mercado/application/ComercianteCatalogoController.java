@@ -90,11 +90,13 @@ public class ComercianteCatalogoController {
                 String nombreOriginal = archivo.getOriginalFilename();
                 if (nombreOriginal == null) continue;
                 String ext = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
-                byte[] bytesOpt = optimizador.optimizarImagen(archivo.getBytes(), ext);
-                String url = storageService.guardarArchivo(bytesOpt, nombreOriginal);
-                producto.agregarMultimedia(url, "imagen");
+                String tipo = ext.equalsIgnoreCase(".mp4") ? "video" : "imagen";
+                
+                byte[] bytesProcesados = tipo.equals("imagen") ? optimizador.optimizarImagen(archivo.getBytes(), ext) : archivo.getBytes();
+                String url = storageService.guardarArchivo(bytesProcesados, nombreOriginal);
+                producto.agregarMultimedia(url, tipo);
             } catch (Exception e) {
-                throw new RuntimeException("Error guardando imagen del producto.", e);
+                throw new RuntimeException("Error guardando archivo del producto.", e);
             }
         }
 
@@ -166,7 +168,7 @@ public class ComercianteCatalogoController {
     // 2. AÑADIR MULTIMEDIA (Alta Cohesión: Solo archivos)
     @PostMapping("/{idProducto}/multimedia")
     @Transactional
-    public Map<String, String> agregarMultimedia(
+    public List<Map<String, Object>> agregarMultimedia(
             @PathVariable Long idComerciante,
             @PathVariable Long idProducto,
             @RequestParam("archivos") MultipartFile[] archivos) {
@@ -195,13 +197,20 @@ public class ComercianteCatalogoController {
             }
         }
         productoRepo.save(producto);
-        return Map.of("mensaje", "Archivos añadidos exitosamente a la galería.");
+        
+        return producto.getGaleria().stream().map(m -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", m.getId());
+            map.put("url", m.getUrl());
+            map.put("tipo", m.getTipoArchivo());
+            return map;
+        }).collect(Collectors.toList());
     }
 
     // 3. ELIMINAR MULTIMEDIA ESPECÍFICA
     @DeleteMapping("/{idProducto}/multimedia/{idMultimedia}")
     @Transactional
-    public Map<String, String> eliminarMultimedia(
+    public List<Map<String, Object>> eliminarMultimedia(
             @PathVariable Long idComerciante,
             @PathVariable Long idProducto,
             @PathVariable Long idMultimedia) {
@@ -211,6 +220,12 @@ public class ComercianteCatalogoController {
         producto.eliminarMultimedia(idMultimedia);
         productoRepo.save(producto);
         
-        return Map.of("mensaje", "Archivo eliminado de la galería.");
+        return producto.getGaleria().stream().map(m -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", m.getId());
+            map.put("url", m.getUrl());
+            map.put("tipo", m.getTipoArchivo());
+            return map;
+        }).collect(Collectors.toList());
     }
 }

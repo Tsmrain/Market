@@ -1,18 +1,38 @@
 package com.mutualista.mercado.application;
+
 import com.mutualista.mercado.domain.Comerciante;
 
 public class ComerciantePerfilDTO {
-    private Long id;
     private String nombre;
-    private int cantidadProductos;
-    // Omitimos intencionadamente el teléfono aquí y los clics para proteger las métricas internas
+    private String nombreNegocio;
+    private String telefono;
+    private String descripcion;
+    private String horarios;
+
+    public ComerciantePerfilDTO() {}
 
     public ComerciantePerfilDTO(Comerciante comerciante) {
-        this.id = comerciante.getId();
-        this.nombre = comerciante.getNombre();
-        this.cantidadProductos = comerciante.getCatalogo().size();
+        if (comerciante != null) {
+            this.nombre = comerciante.getNombre();
+            this.nombreNegocio = comerciante.getNombreNegocio();
+            this.telefono = comerciante.getTelefono();
+            this.descripcion = comerciante.getDescripcion();
+            this.horarios = comerciante.getHorarios();
+        }
     }
-    public Long getId() { return id; }
+
     public String getNombre() { return nombre; }
-    public int getCantidadProductos() { return cantidadProductos; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getNombreNegocio() { return nombreNegocio; }
+    public void setNombreNegocio(String nombreNegocio) { this.nombreNegocio = nombreNegocio; }
+
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+
+    public String getHorarios() { return horarios; }
+    public void setHorarios(String horarios) { this.horarios = horarios; }
 }

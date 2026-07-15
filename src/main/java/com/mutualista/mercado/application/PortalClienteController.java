@@ -20,12 +20,20 @@ public class PortalClienteController {
     private final ComercianteRepository comercianteRepo;
     private final CategoriaRepository categoriaRepo;
     private final WhatsAppAdapter whatsAppAdapter;
+    private final UnidadMedidaMaestraRepository unidadRepo;
 
-    public PortalClienteController(ProductoRepository pRepo, ComercianteRepository cRepo, CategoriaRepository catRepo, WhatsAppAdapter wAdapter) {
+    public PortalClienteController(ProductoRepository pRepo, ComercianteRepository cRepo, CategoriaRepository catRepo, WhatsAppAdapter wAdapter, UnidadMedidaMaestraRepository uRepo) {
         this.productoRepo = pRepo;
         this.comercianteRepo = cRepo;
         this.categoriaRepo = catRepo;
         this.whatsAppAdapter = wAdapter;
+        this.unidadRepo = uRepo;
+    }
+
+    @GetMapping("/unidades")
+    @Transactional(readOnly = true)
+    public List<UnidadMedidaMaestra> listarUnidadesPublico() {
+        return unidadRepo.findAll();
     }
 
     // UC-A8: Consultar Listado de Categorías (Regla de Visibilidad)

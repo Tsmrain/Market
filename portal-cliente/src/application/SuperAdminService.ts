@@ -14,17 +14,17 @@ export const SuperAdminService = {
         return response.json();
     },
 
-    listarAdministradores: async (): Promise<Array<{ id: number; ci: string; nombre: string }>> => {
+    listarAdministradores: async (): Promise<Array<{ id: number; ci: string; nombre: string; telefono: string }>> => {
         const response = await fetch(API_SUPERADMIN);
         if (!response.ok) throw new Error('Error al listar administradores');
         return response.json();
     },
 
-    crearAdministrador: async (ci: string, pin: string, nombre: string): Promise<void> => {
+    crearAdministrador: async (ci: string, pin: string, nombre: string, telefono: string): Promise<void> => {
         const response = await fetch(API_SUPERADMIN, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ci, pin, nombre })
+            body: JSON.stringify({ ci, pin, nombre, telefono })
         });
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
@@ -32,11 +32,11 @@ export const SuperAdminService = {
         }
     },
 
-    editarAdministrador: async (id: number, nombre: string, pin?: string): Promise<void> => {
+    editarAdministrador: async (id: number, nombre: string, pin?: string, telefono?: string): Promise<void> => {
         const response = await fetch(`${API_SUPERADMIN}/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, pin: pin || undefined })
+            body: JSON.stringify({ nombre, pin: pin || undefined, telefono })
         });
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
@@ -61,5 +61,42 @@ export const SuperAdminService = {
         const response = await fetch(`${API_METRICAS}/graficos/interacciones`);
         if (!response.ok) throw new Error('Error al obtener datos de interacciones');
         return response.json();
+    },
+
+    listarUnidades: async (): Promise<Array<{ id: number; codigo: string; nombre: string; admiteDecimales: boolean }>> => {
+        const response = await fetch('http://localhost:8080/api/superadmin/unidades');
+        if (!response.ok) throw new Error('Error al listar unidades de medida');
+        return response.json();
+    },
+
+    crearUnidad: async (codigo: string, nombre: string, admiteDecimales: boolean): Promise<void> => {
+        const response = await fetch('http://localhost:8080/api/superadmin/unidades', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ codigo, nombre, admiteDecimales })
+        });
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.error || 'Error al crear unidad de medida');
+        }
+    },
+
+    editarUnidad: async (id: number, nombre: string, admiteDecimales: boolean): Promise<void> => {
+        const response = await fetch(`http://localhost:8080/api/superadmin/unidades/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, admiteDecimales })
+        });
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.error || 'Error al actualizar unidad de medida');
+        }
+    },
+
+    eliminarUnidad: async (id: number): Promise<void> => {
+        const response = await fetch(`http://localhost:8080/api/superadmin/unidades/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Error al eliminar unidad de medida');
     }
 };

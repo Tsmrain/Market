@@ -14,8 +14,17 @@ public class MercadoApplication {
     }
 
     @Bean
-    public CommandLineRunner initData(ComercianteRepository cRepo, CategoriaRepository catRepo, ClienteRepository cliRepo) {
+    public CommandLineRunner initData(ComercianteRepository cRepo, CategoriaRepository catRepo, ClienteRepository cliRepo, UnidadMedidaMaestraRepository uniRepo) {
         return args -> {
+            if (uniRepo.count() == 0) {
+                uniRepo.save(new UnidadMedidaMaestra("UNIDAD", "Unidad / Pieza", false));
+                uniRepo.save(new UnidadMedidaMaestra("KG", "Kilogramo", true));
+                uniRepo.save(new UnidadMedidaMaestra("GRAMO", "Gramos", true));
+                uniRepo.save(new UnidadMedidaMaestra("LITRO", "Litro", true));
+                uniRepo.save(new UnidadMedidaMaestra("DOCENA", "Docena", false));
+                uniRepo.save(new UnidadMedidaMaestra("CAJA", "Caja / Paquete", false));
+            }
+
             Categoria carnes = catRepo.save(new Categoria(null, "Carnes"));
             Categoria verduras = catRepo.save(new Categoria(null, "Verduras"));
 

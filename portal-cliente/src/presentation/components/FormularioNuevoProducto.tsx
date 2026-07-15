@@ -14,6 +14,7 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
     const [precio, setPrecio] = useState("");
     const [idCategoria, setIdCategoria] = useState("");
     const [categorias, setCategorias] = useState<CategoriaInfo[]>([]);
+    const [unidadesMaestras, setUnidadesMaestras] = useState<any[]>([]);
     const [unidadMedida, setUnidadMedida] = useState("UNIDAD");
     const [esOtro, setEsOtro] = useState(false);
     const [unidadMedidaOtro, setUnidadMedidaOtro] = useState("");
@@ -22,18 +23,25 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState("");
 
-    // Cargar categorías al montar
+    // Cargar categorías y unidades al montar
     useEffect(() => {
         const cargar = async () => {
             try {
-                const data = await CatalogoService.obtenerTodasLasCategorias();
-                setCategorias(data);
-                if (data.length > 0) {
-                    setIdCategoria(data[0].id.toString());
+                const [dataCats, dataUnis] = await Promise.all([
+                    CatalogoService.obtenerTodasLasCategorias(),
+                    CatalogoService.obtenerUnidades()
+                ]);
+                setCategorias(dataCats);
+                setUnidadesMaestras(dataUnis);
+                if (dataCats.length > 0) {
+                    setIdCategoria(dataCats[0].id.toString());
+                }
+                if (dataUnis.length > 0) {
+                    setUnidadMedida(dataUnis[0].codigo);
                 }
             } catch (err: any) {
                 console.error(err);
-                setError("Error al cargar las categorías. Intenta más tarde.");
+                setError("Error al cargar datos maestros.");
             }
         };
         cargar();
@@ -248,12 +256,9 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                                     cursor: 'pointer'
                                 }}
                             >
-                                <option value="UNIDAD">UNIDAD (Pieza)</option>
-                                <option value="KG">KG (Kilogramo)</option>
-                                <option value="GRAMO">GRAMO (Gramos)</option>
-                                <option value="LITRO">LITRO (Litro)</option>
-                                <option value="DOCENA">DOCENA (Docena)</option>
-                                <option value="CAJA">CAJA (Caja / Paquete)</option>
+                                {unidadesMaestras.map(u => (
+                                    <option key={u.id} value={u.codigo}>{u.nombre} ({u.codigo})</option>
+                                ))}
                                 <option value="OTRO">OTRO (Especificar)</option>
                             </select>
                         </div>

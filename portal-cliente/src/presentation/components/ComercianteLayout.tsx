@@ -2,18 +2,18 @@ import React, { useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
 
-export const SuperAdminLayout: React.FC = () => {
-    const { logout, usuario, esSuperAdmin } = useAuthController();
+export const ComercianteLayout: React.FC = () => {
+    const { logout, usuario, esComerciante } = useAuthController();
     const navigate = useNavigate();
 
-    // Route Guard (Protected Variations)
+    // Guard (Protected Variations)
     useEffect(() => {
-        if (!usuario || !esSuperAdmin) {
+        if (!usuario || !esComerciante) {
             navigate('/login');
         }
-    }, [usuario, esSuperAdmin, navigate]);
+    }, [usuario, esComerciante, navigate]);
 
-    if (!usuario || !esSuperAdmin) return null;
+    if (!usuario || !esComerciante) return null;
 
     return (
         <div style={{
@@ -22,9 +22,9 @@ export const SuperAdminLayout: React.FC = () => {
             display: 'flex',
             flexDirection: 'column'
         }}>
-            {/* Header SuperAdmin */}
+            {/* Header del Panel */}
             <header style={{
-                background: '#111827',
+                background: 'var(--primary)',
                 color: '#ffffff',
                 padding: '16px 24px',
                 display: 'flex',
@@ -34,13 +34,16 @@ export const SuperAdminLayout: React.FC = () => {
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--secondary)' }}>
-                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                        <path d="M2 17l10 5 10-5" />
-                        <path d="M2 12l10 5 10-5" />
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
                     </svg>
-                    <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Super Administrador del Sistema</span>
+                    <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Panel de Comerciante</span>
                 </div>
+                
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.9)' }}>
+                        Tienda: <strong>{usuario?.nombre || 'Comerciante'}</strong>
+                    </span>
                     <button 
                         onClick={() => { logout(); navigate('/'); }}
                         style={{
@@ -64,7 +67,6 @@ export const SuperAdminLayout: React.FC = () => {
 
             {/* Layout Fluid Container */}
             <main className="fluid-container" style={{ flexGrow: 1 }}>
-                
                 {/* Secondary Horizontal Tabs Navigation */}
                 <nav style={{
                     display: 'flex',
@@ -73,7 +75,8 @@ export const SuperAdminLayout: React.FC = () => {
                     gap: '8px'
                 }}>
                     <NavLink
-                        to="/superadmin/dashboard"
+                        to="/panel"
+                        end
                         style={({ isActive }) => ({
                             padding: '12px 16px',
                             fontSize: '0.9rem',
@@ -84,10 +87,10 @@ export const SuperAdminLayout: React.FC = () => {
                             background: 'none'
                         })}
                     >
-                        Métricas y Rendimiento
+                        Inicio
                     </NavLink>
                     <NavLink
-                        to="/superadmin/administradores"
+                        to="/panel/mercaderia"
                         style={({ isActive }) => ({
                             padding: '12px 16px',
                             fontSize: '0.9rem',
@@ -98,10 +101,10 @@ export const SuperAdminLayout: React.FC = () => {
                             background: 'none'
                         })}
                     >
-                        Gestión de Administradores
+                        Mi Mercadería
                     </NavLink>
                     <NavLink
-                        to="/superadmin/unidades"
+                        to="/panel/perfil"
                         style={({ isActive }) => ({
                             padding: '12px 16px',
                             fontSize: '0.9rem',
@@ -112,7 +115,7 @@ export const SuperAdminLayout: React.FC = () => {
                             background: 'none'
                         })}
                     >
-                        Datos Maestros (Unidades)
+                        Mi Perfil / Negocio
                     </NavLink>
                 </nav>
 

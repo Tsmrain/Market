@@ -15,18 +15,21 @@ public class AdministradorMercado {
     private String pin;
     
     private String nombre;
+    private String telefono;
     private boolean eliminado = false;
 
     protected AdministradorMercado() {}
 
-    public AdministradorMercado(String ci, String pin, String nombre) {
+    public AdministradorMercado(String ci, String pin, String nombre, String telefono) {
         this.ci = ci;
         this.pin = pin;
         this.nombre = nombre;
+        this.telefono = telefono;
     }
 
-    public void actualizarDatos(String nombre, String nuevoPin) {
+    public void actualizarDatos(String nombre, String nuevoPin, String telefono) {
         this.nombre = nombre;
+        this.telefono = telefono;
         if (nuevoPin != null && nuevoPin.length() == 4) { this.pin = nuevoPin; }
     }
 
@@ -36,5 +39,6 @@ public class AdministradorMercado {
     public Long getId() { return id; }
     public String getCi() { return ci; }
     public String getNombre() { return nombre; }
+    public String getTelefono() { return telefono; }
     public boolean isEliminado() { return eliminado; }
 }

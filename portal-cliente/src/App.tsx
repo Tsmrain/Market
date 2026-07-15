@@ -16,11 +16,14 @@ import { useAuthController } from './application/useAuthController';
 // Import Layouts
 import { SuperAdminLayout } from './presentation/components/SuperAdminLayout';
 import { AdminLayout } from './presentation/components/AdminLayout';
+import { ComercianteLayout } from './presentation/components/ComercianteLayout';
 
 // Import Sub-pages
 import { GestionAdministradores } from './presentation/pages/GestionAdministradores';
 import { GestionComerciantes } from './presentation/pages/GestionComerciantes';
 import { GestionCategorias } from './presentation/pages/GestionCategorias';
+import { GestionUnidades } from './presentation/pages/GestionUnidades';
+import { MiPerfil } from './presentation/pages/MiPerfil';
 
 interface ProtectedRouteProps {
   element: React.ReactElement;
@@ -82,21 +85,16 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<SuperAdminDashboard />} />
             <Route path="administradores" element={<GestionAdministradores />} />
+            <Route path="unidades" element={<GestionUnidades />} />
           </Route>
 
           {/* Layout Comerciante (Protegido) */}
-          <Route 
-            path="/panel" 
-            element={<ProtectedRoute roleRequired="comerciante" element={<PanelComerciante />} />} 
-          />
-          <Route 
-            path="/panel/catalogo" 
-            element={<ProtectedRoute roleRequired="comerciante" element={<GestionCatalogo />} />} 
-          />
-          <Route 
-            path="/panel/productos/:id/editar" 
-            element={<ProtectedRoute roleRequired="comerciante" element={<EditarProducto />} />} 
-          />
+          <Route path="/panel" element={<ProtectedRoute roleRequired="comerciante" element={<ComercianteLayout />} />}>
+            <Route index element={<PanelComerciante />} />
+            <Route path="mercaderia" element={<GestionCatalogo />} />
+            <Route path="productos/:id/editar" element={<EditarProducto />} />
+            <Route path="perfil" element={<MiPerfil />} />
+          </Route>
 
           {/* Redirección por defecto */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -48,4 +48,12 @@ export interface ProductoComerciante {
     estaDisponible: boolean;
 }
 
+export interface ComerciantePerfil {
+    nombre: string;
+    nombreNegocio: string | null;
+    telefono: string;
+    descripcion: string | null;
+    horarios: string | null;
+}
+
 

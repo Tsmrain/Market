@@ -1,3 +1,5 @@
+import type { ComerciantePerfil } from '../domain/models';
+
 const API_PANEL = 'http://localhost:8080/api/panel/comerciantes';
 
 export const ComercianteService = {
@@ -45,7 +47,7 @@ export const ComercianteService = {
         }
     },
 
-    subirMultimedia: async (idComerciante: number, idProducto: number, archivos: File[]): Promise<void> => {
+    subirMultimedia: async (idComerciante: number, idProducto: number, archivos: File[]): Promise<Array<{ id: number; url: string; tipo: string }>> => {
         const formData = new FormData();
         archivos.forEach(archivo => formData.append('archivos', archivo));
 
@@ -56,15 +58,17 @@ export const ComercianteService = {
         if (!response.ok) {
             throw new Error('Error al subir archivos multimedia');
         }
+        return response.json();
     },
 
-    eliminarMultimedia: async (idComerciante: number, idProducto: number, idMultimedia: number): Promise<void> => {
+    eliminarMultimedia: async (idComerciante: number, idProducto: number, idMultimedia: number): Promise<Array<{ id: number; url: string; tipo: string }>> => {
         const response = await fetch(`${API_PANEL}/${idComerciante}/productos/${idProducto}/multimedia/${idMultimedia}`, {
             method: 'DELETE'
         });
         if (!response.ok) {
             throw new Error('Error al eliminar archivo multimedia');
         }
+        return response.json();
     },
 
     eliminarProducto: async (idComerciante: number, idProducto: number): Promise<void> => {
@@ -74,5 +78,24 @@ export const ComercianteService = {
         if (!response.ok) {
             throw new Error('Error al eliminar el producto');
         }
+    },
+
+    obtenerPerfil: async (idComerciante: number): Promise<ComerciantePerfil> => {
+        const response = await fetch(`${API_PANEL}/${idComerciante}/perfil`);
+        if (!response.ok) throw new Error('Error al obtener perfil');
+        return response.json();
+    },
+
+    actualizarPerfil: async (idComerciante: number, perfil: ComerciantePerfil): Promise<ComerciantePerfil> => {
+        const response = await fetch(`${API_PANEL}/${idComerciante}/perfil`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(perfil)
+        });
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.error || 'Error al actualizar perfil');
+        }
+        return response.json();
     }
 };

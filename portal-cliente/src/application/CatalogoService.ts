@@ -29,6 +29,12 @@ export const CatalogoService = {
         return response.json();
     },
 
+    obtenerUnidades: async (): Promise<Array<{ id: number; codigo: string; nombre: string; admiteDecimales: boolean }>> => {
+        const response = await fetch(`${API_PORTAL}/unidades`);
+        if (!response.ok) throw new Error('Error al obtener unidades de medida');
+        return response.json();
+    },
+
     contactarComerciante: async (idComerciante: number, idProducto: number): Promise<string> => {
         const response = await fetch(`${API_PORTAL}/comerciantes/${idComerciante}/contactar?idProducto=${idProducto}`, {
             method: 'POST'

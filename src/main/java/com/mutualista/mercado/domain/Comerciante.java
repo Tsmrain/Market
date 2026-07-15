@@ -78,6 +78,18 @@ public class Comerciante {
     }
 
     public void registrarClicContacto() { this.clicsContacto++; }
+    private String nombreNegocio;
+    private String descripcion;
+    private String horarios;
+
+    public void actualizarPerfil(String nombre, String nombreNegocio, String telefono, String descripcion, String horarios) {
+        this.nombre = nombre;
+        this.nombreNegocio = nombreNegocio;
+        this.telefono = telefono;
+        this.descripcion = descripcion;
+        this.horarios = horarios;
+    }
+
     public boolean validarPin(String pinIngresado) { return this.pin.equals(pinIngresado); }
 
     public List<Producto> getCatalogo() { return Collections.unmodifiableList(catalogo); }
@@ -86,6 +98,9 @@ public class Comerciante {
     public String getCi() { return ci; }
     public String getNombre() { return nombre; }
     public String getTelefono() { return telefono; }
+    public String getNombreNegocio() { return nombreNegocio; }
+    public String getDescripcion() { return descripcion; }
+    public String getHorarios() { return horarios; }
     public int getClicsContacto() { return clicsContacto; }
     public boolean isEliminado() { return eliminado; }
 }
