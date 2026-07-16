@@ -91,33 +91,7 @@ export const CatalogoPage: React.FC = () => {
                 margin: '0 auto',
                 boxSizing: 'border-box'
             }}>
-                {/* Hero / Banner */}
-                <div style={{
-                    background: 'var(--primary-bg)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
-                    padding: '24px',
-                    marginBottom: '32px',
-                    textAlign: 'left'
-                }}>
-                    <h1 style={{
-                        fontSize: '1.75rem',
-                        fontWeight: 800,
-                        color: 'var(--primary-dark)',
-                        marginBottom: '8px',
-                        letterSpacing: '-0.02em',
-                        lineHeight: '1.2'
-                    }}>
-                        Ahorra y compra local
-                    </h1>
-                    <p style={{
-                        color: 'var(--text-secondary)',
-                        fontSize: '0.95rem',
-                        lineHeight: '1.5'
-                    }}>
-                        Adquiere productos frescos de múltiples puestos y recógelos en el mercado en un único recorrido optimizado.
-                    </p>
-                </div>
+
 
                 {/* Loading state */}
                 {cargando && (
