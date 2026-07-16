@@ -18,8 +18,8 @@ export const LoginComerciante: React.FC = () => {
             setError("Por favor ingresa tu Carnet de Identidad");
             return;
         }
-        if (pin.length !== 4 && ci !== 'admin') {
-            setError("El PIN debe tener exactamente 4 dígitos");
+        if (!pin.trim()) {
+            setError("Por favor ingresa tu PIN/Contraseña");
             return;
         }
 
@@ -31,10 +31,13 @@ export const LoginComerciante: React.FC = () => {
             const stored = localStorage.getItem('usuario_sesion');
             if (stored) {
                 const sesion = JSON.parse(stored);
+                if (sesion.rol === 'SUPERADMIN') {
+                    localStorage.removeItem('usuario_sesion');
+                    setError("Acceso denegado. Los administradores del sistema deben ingresar por su ruta correspondiente (/superadmin/login).");
+                    return;
+                }
                 if (sesion.rol === 'ADMIN') {
                     navigate('/admin');
-                } else if (sesion.rol === 'SUPERADMIN') {
-                    navigate('/superadmin');
                 } else if (sesion.rol === 'COMERCIANTE') {
                     navigate('/panel');
                 } else {
@@ -137,19 +140,14 @@ export const LoginComerciante: React.FC = () => {
 
                     <div>
                         <label htmlFor="pin-input" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                            PIN de Seguridad (4 dígitos)
+                            Contraseña / PIN de Seguridad
                         </label>
                         <input
                             id="pin-input"
                             type="password"
-                            maxLength={ci === 'admin' ? 20 : 4}
-                            placeholder="••••"
+                            placeholder="••••••••"
                             value={pin}
-                            onChange={(e) => {
-                                // Dejar pasar letras si escribe "admin" para el ci, pero números si no
-                                const val = ci === 'admin' ? e.target.value : e.target.value.replace(/\D/g, '');
-                                setPin(val);
-                            }}
+                            onChange={(e) => setPin(e.target.value)}
                             style={{
                                 width: '100%',
                                 padding: '10px 12px',

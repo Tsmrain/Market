@@ -24,6 +24,7 @@ import { GestionComerciantes } from './presentation/pages/GestionComerciantes';
 import { GestionCategorias } from './presentation/pages/GestionCategorias';
 import { GestionUnidades } from './presentation/pages/GestionUnidades';
 import { MiPerfil } from './presentation/pages/MiPerfil';
+import { LoginSuperAdmin } from './presentation/pages/LoginSuperAdmin';
 
 interface ProtectedRouteProps {
   element: React.ReactElement;
@@ -33,11 +34,8 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, roleRequired }) => {
   const { usuario, esComerciante, esAdmin, esSuperAdmin } = useAuthController();
 
-  // Validamos si la sesión es válida (evitando el mock dummy de cliente id 500)
-  const isUserAuthenticated = usuario !== null && usuario.id !== 500;
-
-  if (!isUserAuthenticated) {
-    return <Navigate to="/login" replace />;
+  if (usuario === null || usuario.id === 500) {
+    return <Navigate to={roleRequired === 'superadmin' ? "/superadmin/login" : "/login"} replace />;
   }
 
   if (roleRequired === 'comerciante' && !esComerciante) {
@@ -49,7 +47,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, roleRequired }
   }
 
   if (roleRequired === 'superadmin' && !esSuperAdmin) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/superadmin/login" replace />;
   }
 
   return element;
@@ -66,6 +64,9 @@ function App() {
 
           {/* Login de Comerciantes y Administradores */}
           <Route path="/login" element={<LoginComerciante />} />
+
+          {/* Login del SuperAdministrador (Aislado) */}
+          <Route path="/superadmin/login" element={<LoginSuperAdmin />} />
 
           {/* Registro e Ingreso de Clientes */}
           <Route path="/login/cliente" element={<LoginCliente />} />

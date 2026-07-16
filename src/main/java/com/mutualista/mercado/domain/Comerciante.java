@@ -15,7 +15,7 @@ public class Comerciante {
     @Column(unique = true, nullable = false)
     private String ci; 
     
-    @Column(nullable = false, length = 4)
+    @Column(nullable = false, length = 100)
     private String pin; 
     
     private String nombre;
@@ -80,7 +80,7 @@ public class Comerciante {
     public void actualizarDatos(String nombre, String telefono, String nuevoPin) {
         this.nombre = nombre;
         this.telefono = telefono;
-        if (nuevoPin != null && nuevoPin.length() == 4) {
+        if (nuevoPin != null && !nuevoPin.trim().isEmpty()) {
             this.pin = nuevoPin;
         }
     }

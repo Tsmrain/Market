@@ -19,8 +19,8 @@ export const LoginCliente: React.FC = () => {
             setError("Por favor ingresa tu Carnet de Identidad");
             return;
         }
-        if (pin.length !== 4) {
-            setError("El PIN debe tener exactamente 4 dígitos");
+        if (!pin.trim()) {
+            setError("Por favor ingresa tu PIN/Contraseña");
             return;
         }
 
@@ -125,18 +125,14 @@ export const LoginCliente: React.FC = () => {
 
                     <div>
                         <label htmlFor="client-pin" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                            PIN de 4 dígitos *
+                            Contraseña / PIN de Seguridad
                         </label>
                         <input
                             id="client-pin"
                             type="password"
-                            maxLength={4}
-                            placeholder="••••"
+                            placeholder="••••••••"
                             value={pin}
-                            onChange={(e) => {
-                                const val = e.target.value.replace(/\D/g, ''); // Solo números
-                                setPin(val);
-                            }}
+                            onChange={(e) => setPin(e.target.value)}
                             required
                             style={{
                                 width: '100%',

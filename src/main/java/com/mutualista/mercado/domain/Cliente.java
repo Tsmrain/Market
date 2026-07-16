@@ -12,7 +12,7 @@ public class Cliente {
     @Column(unique = true, nullable = false, updatable = false)
     private String ci;
     
-    @Column(nullable = false, length = 4)
+    @Column(nullable = false, length = 100)
     private String pin;
     
     private String nombre;
@@ -46,7 +46,7 @@ public class Cliente {
     public void actualizarPerfil(String nombre, String celular, String nuevoPin) {
         this.nombre = nombre;
         this.celular = celular;
-        if (nuevoPin != null && nuevoPin.length() == 4) {
+        if (nuevoPin != null && !nuevoPin.trim().isEmpty()) {
             this.pin = nuevoPin;
         }
     }

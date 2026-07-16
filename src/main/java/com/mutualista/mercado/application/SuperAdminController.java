@@ -55,8 +55,8 @@ public class SuperAdminController {
             throw new IllegalArgumentException("Todos los campos son obligatorios.");
         }
 
-        if (pin.length() != 4) {
-            throw new IllegalArgumentException("El PIN debe tener exactamente 4 dígitos.");
+        if (pin.trim().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña/PIN no puede estar vacía.");
         }
 
         if (adminRepo.findByCi(ci).isPresent()) {
