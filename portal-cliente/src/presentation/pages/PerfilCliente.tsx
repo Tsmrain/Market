@@ -60,7 +60,7 @@ export const PerfilCliente: React.FC = () => {
         }
 
         if (pin.trim() && pin.length < 4) {
-            setError("La contraseña/PIN nueva debe tener al menos 4 caracteres.");
+            setError("La contraseña nueva debe tener al menos 4 caracteres.");
             return;
         }
 
@@ -269,7 +269,7 @@ export const PerfilCliente: React.FC = () => {
 
                             <div>
                                 <label htmlFor="cli-pin" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                                    Cambiar Contraseña / PIN (Dejar vacío para no modificar)
+                                    Cambiar Contraseña (Dejar vacío para no modificar)
                                 </label>
                                 <input
                                     id="cli-pin"

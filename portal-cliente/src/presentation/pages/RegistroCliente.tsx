@@ -25,7 +25,7 @@ export const RegistroCliente: React.FC = () => {
         }
 
         if (pin.length < 4) {
-            setError("La contraseña/PIN debe tener al menos 4 caracteres.");
+            setError("La contraseña debe tener al menos 4 caracteres.");
             return;
         }
 
@@ -149,7 +149,7 @@ export const RegistroCliente: React.FC = () => {
 
                     <div>
                         <label htmlFor="reg-pin" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
-                            Contraseña / PIN de Seguridad *
+                            Contraseña *
                         </label>
                         <input
                             id="reg-pin"

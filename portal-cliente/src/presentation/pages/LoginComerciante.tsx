@@ -19,7 +19,7 @@ export const LoginComerciante: React.FC = () => {
             return;
         }
         if (!pin.trim()) {
-            setError("Por favor ingresa tu PIN/Contraseña");
+            setError("Por favor ingresa tu contraseña");
             return;
         }
 
@@ -140,7 +140,7 @@ export const LoginComerciante: React.FC = () => {
 
                     <div>
                         <label htmlFor="pin-input" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                            Contraseña / PIN de Seguridad
+                            Contraseña
                         </label>
                         <input
                             id="pin-input"

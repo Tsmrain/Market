@@ -49,8 +49,8 @@ export const GestionAdministradores: React.FC = () => {
             return;
         }
 
-        if (pin.length !== 4) {
-            setError("El PIN debe tener exactamente 4 dígitos.");
+        if (pin.length < 4) {
+            setError("La contraseña debe tener al menos 4 caracteres.");
             return;
         }
 
@@ -82,8 +82,8 @@ export const GestionAdministradores: React.FC = () => {
             return;
         }
 
-        if (editAdminPin && editAdminPin.length !== 4) {
-            setError("El PIN nuevo debe tener exactamente 4 dígitos.");
+        if (editAdminPin && editAdminPin.length < 4) {
+            setError("La contraseña nueva debe tener al menos 4 caracteres.");
             return;
         }
 
@@ -157,8 +157,8 @@ export const GestionAdministradores: React.FC = () => {
                                 <input type="text" value={editAdminTelefono} onChange={e => setEditAdminTelefono(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                              </div>
                              <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Cambiar PIN (Opcional, 4 dígitos)</label>
-                                <input type="password" maxLength={4} placeholder="••••" value={editAdminPin} onChange={e => setEditAdminPin(e.target.value.replace(/\D/g, ''))} style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', letterSpacing: '0.1em' }} />
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Cambiar Contraseña (Opcional)</label>
+                                <input type="password" placeholder="Nueva contraseña" value={editAdminPin} onChange={e => setEditAdminPin(e.target.value)} style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                              </div>
                              <div style={{ display: 'flex', gap: '8px' }}>
                                  <button type="submit" disabled={cargando} style={{ background: 'var(--secondary)', color: '#ffffff', padding: '10px 16px', borderRadius: '4px', fontWeight: 700, fontSize: '0.85rem' }}>Guardar</button>
@@ -193,10 +193,10 @@ export const GestionAdministradores: React.FC = () => {
                                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Teléfono *</label>
                                  <input type="text" placeholder="Ej. 71234567" value={telefono} onChange={e => setTelefono(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                              </div>
-                             <div>
-                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>PIN Inicial (4 dígitos) *</label>
-                                 <input type="password" maxLength={4} placeholder="••••" value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, ''))} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', letterSpacing: '0.1em' }} />
-                             </div>
+                              <div>
+                                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Contraseña Inicial *</label>
+                                  <input type="password" placeholder="Contraseña segura" value={pin} onChange={e => setPin(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                              </div>
                                  <button type="submit" disabled={cargando} style={{ background: 'var(--secondary)', color: '#ffffff', padding: '10px 16px', borderRadius: '4px', fontWeight: 700, fontSize: '0.85rem' }}>Registrar</button>
                         </form>
                     )}

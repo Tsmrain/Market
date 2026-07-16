@@ -119,7 +119,6 @@ export const LoginSuperAdmin: React.FC = () => {
                         <input
                             id="ci-superadmin"
                             type="text"
-                            placeholder="Ej. 1000000"
                             value={ci}
                             onChange={(e) => setCi(e.target.value)}
                             required
@@ -147,7 +146,6 @@ export const LoginSuperAdmin: React.FC = () => {
                         <input
                             id="pass-superadmin"
                             type="password"
-                            placeholder="••••••••••••"
                             value={pin}
                             onChange={(e) => setPin(e.target.value)}
                             required

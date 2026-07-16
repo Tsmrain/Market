@@ -125,7 +125,7 @@ export const LoginCliente: React.FC = () => {
 
                     <div>
                         <label htmlFor="client-pin" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                            Contraseña / PIN de Seguridad
+                            Contraseña
                         </label>
                         <input
                             id="client-pin"
