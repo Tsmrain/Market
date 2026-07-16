@@ -42,16 +42,6 @@ public class AuthController {
 
     @PostMapping("/admins/login")
     public ResponseEntity<?> loginAdmin(@RequestBody LoginRequest request) {
-        // SuperAdmin hardcoded credentials
-        if ("superadmin".equals(request.getCi()) && "0000".equals(request.getPin())) {
-            Map<String, Object> res = new HashMap<>();
-            res.put("mensaje", "Exito");
-            res.put("id", 0L);
-            res.put("nombre", "Super Administrador");
-            res.put("rol", "SUPERADMIN");
-            return ResponseEntity.ok(res);
-        }
-
         // Database Admin check
         return adminRepo.findByCiAndEliminadoFalse(request.getCi())
             .filter(a -> a.validarPin(request.getPin()))
@@ -60,7 +50,7 @@ public class AuthController {
                 res.put("mensaje", "Exito");
                 res.put("id", a.getId());
                 res.put("nombre", a.getNombre());
-                res.put("rol", "ADMIN");
+                res.put("rol", a.getRol()); // Devuelve "SUPERADMIN" o "ADMIN" según la Base de Datos
                 return ResponseEntity.ok(res);
             })
             .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Credenciales incorrectas")));

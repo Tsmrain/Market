@@ -11,12 +11,13 @@ public class AdministradorMercado {
     @Column(unique = true, nullable = false, updatable = false)
     private String ci;
     
-    @Column(nullable = false, length = 4)
+    @Column(nullable = false, length = 100)
     private String pin;
     
     private String nombre;
     private String telefono;
     private String expedido;
+    private String rol = "ADMIN";
     private boolean eliminado = false;
 
     protected AdministradorMercado() {}
@@ -36,7 +37,7 @@ public class AdministradorMercado {
     public void actualizarDatos(String nombre, String nuevoPin, String telefono) {
         this.nombre = nombre;
         this.telefono = telefono;
-        if (nuevoPin != null && nuevoPin.length() == 4) { this.pin = nuevoPin; }
+        if (nuevoPin != null && !nuevoPin.trim().isEmpty()) { this.pin = nuevoPin; }
     }
 
     public void eliminarLogicamente() { this.eliminado = true; }
@@ -48,4 +49,6 @@ public class AdministradorMercado {
     public String getTelefono() { return telefono; }
     public String getExpedido() { return expedido; }
     public boolean isEliminado() { return eliminado; }
+    public String getRol() { return rol; }
+    public void setRol(String rol) { this.rol = rol; }
 }
