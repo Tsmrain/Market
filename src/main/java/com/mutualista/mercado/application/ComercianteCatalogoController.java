@@ -119,6 +119,13 @@ public class ComercianteCatalogoController {
     public Map<String, String> eliminarProducto(@PathVariable Long idComerciante, @PathVariable Long idProducto) {
         Producto producto = productoRepo.findById(idProducto)
             .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        
+        // Sincronización de Destrucción de Archivos Físicos (Prevenir Storage Leaks)
+        producto.getGaleria().forEach(m -> {
+            storageService.borrarArchivo(m.getUrl());
+        });
+        producto.limpiarGaleria(); // Limpia los registros de la galería en cascada (orphan removal)
+        
         producto.eliminarLogicamente();
         productoRepo.save(producto);
         return Map.of("mensaje", "Producto eliminado exitosamente.");
@@ -217,6 +224,15 @@ public class ComercianteCatalogoController {
         
         Producto producto = productoRepo.findById(idProducto)
             .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        
+        // Borrar el archivo físico antes de eliminar el registro en la base de datos
+        producto.getGaleria().stream()
+            .filter(m -> m.getId().equals(idMultimedia))
+            .findFirst()
+            .ifPresent(m -> {
+                storageService.borrarArchivo(m.getUrl());
+            });
+
         producto.eliminarMultimedia(idMultimedia);
         productoRepo.save(producto);
         
