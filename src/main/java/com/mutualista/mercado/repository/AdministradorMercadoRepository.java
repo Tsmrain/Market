@@ -9,4 +9,5 @@ public interface AdministradorMercadoRepository extends CrudRepository<Administr
     Optional<AdministradorMercado> findByCiAndEliminadoFalse(String ci);
     Optional<AdministradorMercado> findByCi(String ci);
     List<AdministradorMercado> findByEliminadoFalse();
+    boolean existsByRol(String rol);
 }

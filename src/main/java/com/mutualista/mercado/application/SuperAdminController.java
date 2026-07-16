@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+
 @RestController
 @RequestMapping("/api/superadmin")
 @CrossOrigin(origins = "*")
@@ -31,7 +34,9 @@ public class SuperAdminController {
     @GetMapping("/administradores")
     @Transactional(readOnly = true)
     public List<Map<String, Object>> listarAdministradores() {
-        return adminRepo.findByEliminadoFalse().stream().map(a -> {
+        return adminRepo.findByEliminadoFalse().stream()
+            .filter(a -> !"SUPERADMIN".equals(a.getRol()))
+            .map(a -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", a.getId());
             map.put("ci", a.getCi());
@@ -72,6 +77,11 @@ public class SuperAdminController {
     @Transactional
     public Map<String, String> editarAdministrador(@PathVariable Long id, @RequestBody Map<String, String> payload) {
         AdministradorMercado a = adminRepo.findById(id).orElseThrow();
+        
+        if ("SUPERADMIN".equals(a.getRol())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No se puede editar la cuenta del Superadministrador del Sistema");
+        }
+
         String pin = payload.get("pin");
         String telefono = payload.get("telefono");
         a.actualizarDatos(payload.get("nombre"), pin != null && !pin.isEmpty() ? pin : null, telefono);
@@ -83,6 +93,11 @@ public class SuperAdminController {
     @Transactional
     public Map<String, String> darDeBajaAdministrador(@PathVariable Long id) {
         AdministradorMercado a = adminRepo.findById(id).orElseThrow();
+
+        if ("SUPERADMIN".equals(a.getRol())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No se puede eliminar la cuenta del Superadministrador del Sistema");
+        }
+
         a.eliminarLogicamente();
         adminRepo.save(a);
         return Map.of("mensaje", "Administrador de mercado dado de baja.");

@@ -41,6 +41,7 @@ public class AdministradorMercado {
     }
 
     public void eliminarLogicamente() { this.eliminado = true; }
+    public void reactivar() { this.eliminado = false; }
     public boolean validarPin(String pinIngresado) { return this.pin.equals(pinIngresado); }
 
     public Long getId() { return id; }
