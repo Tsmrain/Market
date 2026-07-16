@@ -1,8 +1,6 @@
 package com.mutualista.mercado.application;
 
-import com.mutualista.mercado.domain.Comerciante;
 import com.mutualista.mercado.domain.Cliente;
-import com.mutualista.mercado.domain.AdministradorMercado;
 import com.mutualista.mercado.repository.ComercianteRepository;
 import com.mutualista.mercado.repository.ClienteRepository;
 import com.mutualista.mercado.repository.AdministradorMercadoRepository;
