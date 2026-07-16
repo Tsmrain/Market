@@ -1,4 +1,4 @@
-package com.mutualista.mercado.application;
+package com.mutualista.mercado.infrastructure.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,6 +1,7 @@
 package com.mutualista.mercado.repository;
-
 import com.mutualista.mercado.domain.UnidadMedidaMaestra;
+
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

@@ -1,9 +1,10 @@
-package com.mutualista.mercado.application;
-
+package com.mutualista.mercado.presentation.dto;
+import com.mutualista.mercado.domain.Comerciante;
+import com.mutualista.mercado.domain.Multimedia;
 import com.mutualista.mercado.domain.Producto;
 import com.mutualista.mercado.domain.Resena;
-import com.mutualista.mercado.domain.Multimedia;
-import com.mutualista.mercado.domain.Comerciante;
+
+
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;

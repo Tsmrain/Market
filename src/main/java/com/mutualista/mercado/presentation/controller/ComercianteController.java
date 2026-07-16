@@ -1,7 +1,10 @@
-package com.mutualista.mercado.application;
-
+package com.mutualista.mercado.presentation.controller;
+import com.mutualista.mercado.application.ImageOptimizationService;
 import com.mutualista.mercado.domain.Producto;
+import com.mutualista.mercado.infrastructure.storage.StorageService;
 import com.mutualista.mercado.repository.ProductoRepository;
+
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;

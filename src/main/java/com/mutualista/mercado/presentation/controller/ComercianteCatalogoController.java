@@ -1,13 +1,18 @@
-package com.mutualista.mercado.application;
-
+package com.mutualista.mercado.presentation.controller;
+import com.mutualista.mercado.application.ImageOptimizationService;
+import com.mutualista.mercado.application.UnidadMedidaNormalizador;
 import com.mutualista.mercado.domain.Categoria;
 import com.mutualista.mercado.domain.Comerciante;
-import com.mutualista.mercado.domain.Producto;
 import com.mutualista.mercado.domain.HistorialCategoria;
+import com.mutualista.mercado.domain.Multimedia;
+import com.mutualista.mercado.domain.Producto;
+import com.mutualista.mercado.infrastructure.storage.StorageService;
 import com.mutualista.mercado.repository.CategoriaRepository;
 import com.mutualista.mercado.repository.ComercianteRepository;
-import com.mutualista.mercado.repository.ProductoRepository;
 import com.mutualista.mercado.repository.HistorialCategoriaRepository;
+import com.mutualista.mercado.repository.ProductoRepository;
+
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;

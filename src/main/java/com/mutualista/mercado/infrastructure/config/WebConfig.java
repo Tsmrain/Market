@@ -1,4 +1,4 @@
-package com.mutualista.mercado.application;
+package com.mutualista.mercado.infrastructure.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

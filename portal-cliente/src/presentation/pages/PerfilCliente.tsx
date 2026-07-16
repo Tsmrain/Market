@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
 import { CatalogoService } from '../../application/CatalogoService';
+import { PasswordInput } from '../components/PasswordInput';
 
 export const PerfilCliente: React.FC = () => {
     const { usuario, esCliente } = useAuthController();
@@ -271,23 +272,19 @@ export const PerfilCliente: React.FC = () => {
                                 <label htmlFor="cli-pin" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
                                     Cambiar Contraseña (Dejar vacío para no modificar)
                                 </label>
-                                <input
+                                <PasswordInput
                                     id="cli-pin"
-                                    type="password"
                                     placeholder="••••••••"
                                     value={pin}
                                     onChange={(e) => setPin(e.target.value)}
                                     style={{
-                                        width: '100%',
-                                        padding: '10px 12px',
+                                        padding: '10px 40px 10px 12px',
                                         border: '1px solid var(--border-color)',
                                         borderRadius: '6px',
                                         fontSize: '0.95rem',
                                         outline: 'none',
-                                        boxSizing: 'border-box',
                                         background: '#ffffff',
                                         color: 'var(--text-primary)',
-                                        letterSpacing: '0.2em'
                                     }}
                                 />
                             </div>

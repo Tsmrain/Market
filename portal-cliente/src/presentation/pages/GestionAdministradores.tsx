@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SuperAdminService } from '../../application/SuperAdminService';
+import { PasswordInput } from '../components/PasswordInput';
 
 export const GestionAdministradores: React.FC = () => {
     // CRUD state for administrators
@@ -158,7 +159,7 @@ export const GestionAdministradores: React.FC = () => {
                              </div>
                              <div>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Cambiar Contraseña (Opcional)</label>
-                                <input type="password" placeholder="Nueva contraseña" value={editAdminPin} onChange={e => setEditAdminPin(e.target.value)} style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                                <PasswordInput placeholder="Nueva contraseña" value={editAdminPin} onChange={e => setEditAdminPin(e.target.value)} style={{ padding: '8px 40px 8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                              </div>
                              <div style={{ display: 'flex', gap: '8px' }}>
                                  <button type="submit" disabled={cargando} style={{ background: 'var(--secondary)', color: '#ffffff', padding: '10px 16px', borderRadius: '4px', fontWeight: 700, fontSize: '0.85rem' }}>Guardar</button>
@@ -195,7 +196,7 @@ export const GestionAdministradores: React.FC = () => {
                              </div>
                               <div>
                                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Contraseña Inicial *</label>
-                                  <input type="password" placeholder="Contraseña segura" value={pin} onChange={e => setPin(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                                  <PasswordInput placeholder="Contraseña segura" value={pin} onChange={e => setPin(e.target.value)} required style={{ padding: '8px 40px 8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                               </div>
                                  <button type="submit" disabled={cargando} style={{ background: 'var(--secondary)', color: '#ffffff', padding: '10px 16px', borderRadius: '4px', fontWeight: 700, fontSize: '0.85rem' }}>Registrar</button>
                         </form>

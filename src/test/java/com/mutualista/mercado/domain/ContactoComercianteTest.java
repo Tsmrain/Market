@@ -1,6 +1,8 @@
 package com.mutualista.mercado.domain;
+import com.mutualista.mercado.infrastructure.messaging.WhatsAppAdapter;
+import com.mutualista.mercado.infrastructure.messaging.WhatsAppAdapterImpl;
 
-import com.mutualista.mercado.application.*;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

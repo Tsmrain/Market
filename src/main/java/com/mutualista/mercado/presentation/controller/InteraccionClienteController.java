@@ -1,7 +1,11 @@
-package com.mutualista.mercado.application;
+package com.mutualista.mercado.presentation.controller;
+import com.mutualista.mercado.domain.Cliente;
+import com.mutualista.mercado.domain.Producto;
+import com.mutualista.mercado.presentation.dto.NuevaResenaRequest;
+import com.mutualista.mercado.repository.ClienteRepository;
+import com.mutualista.mercado.repository.ProductoRepository;
 
-import com.mutualista.mercado.domain.*;
-import com.mutualista.mercado.repository.*;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 

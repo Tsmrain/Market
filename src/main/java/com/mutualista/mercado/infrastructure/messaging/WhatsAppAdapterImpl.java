@@ -1,4 +1,4 @@
-package com.mutualista.mercado.application;
+package com.mutualista.mercado.infrastructure.messaging;
 
 import org.springframework.stereotype.Service;
 import java.net.URLEncoder;

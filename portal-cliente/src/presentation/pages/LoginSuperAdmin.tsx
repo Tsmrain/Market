@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
+import { PasswordInput } from '../components/PasswordInput';
 
 export const LoginSuperAdmin: React.FC = () => {
     const { loginComerciante } = useAuthController();
@@ -143,20 +144,17 @@ export const LoginSuperAdmin: React.FC = () => {
                         <label htmlFor="pass-superadmin" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#cbd5e1', marginBottom: '8px' }}>
                             Contraseña del Sistema
                         </label>
-                        <input
+                        <PasswordInput
                             id="pass-superadmin"
-                            type="password"
                             value={pin}
                             onChange={(e) => setPin(e.target.value)}
                             required
                             style={{
-                                width: '100%',
-                                padding: '12px 14px',
                                 border: '1px solid rgba(255, 255, 255, 0.15)',
                                 borderRadius: '8px',
+                                padding: '12px 40px 12px 14px',
                                 fontSize: '0.95rem',
                                 outline: 'none',
-                                boxSizing: 'border-box',
                                 background: 'rgba(15, 23, 42, 0.6)',
                                 color: '#f8fafc',
                                 transition: 'border-color 0.2s',

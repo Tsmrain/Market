@@ -1,6 +1,7 @@
 package com.mutualista.mercado.repository;
-
 import com.mutualista.mercado.domain.Comerciante;
+
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

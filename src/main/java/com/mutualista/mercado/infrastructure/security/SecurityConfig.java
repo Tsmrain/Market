@@ -1,4 +1,4 @@
-package com.mutualista.mercado.application;
+package com.mutualista.mercado.infrastructure.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

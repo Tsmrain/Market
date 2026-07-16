@@ -1,6 +1,7 @@
-package com.mutualista.mercado.application;
-
+package com.mutualista.mercado.presentation.dto;
 import com.mutualista.mercado.domain.Comerciante;
+
+
 
 public class ComerciantePerfilDTO {
     private String nombre;

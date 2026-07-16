@@ -1,6 +1,8 @@
 package com.mutualista.mercado.repository;
-
+import com.mutualista.mercado.domain.Comerciante;
 import com.mutualista.mercado.domain.Producto;
+
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

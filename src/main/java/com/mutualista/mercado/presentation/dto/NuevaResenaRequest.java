@@ -1,4 +1,4 @@
-package com.mutualista.mercado.application;
+package com.mutualista.mercado.presentation.dto;
 
 public class NuevaResenaRequest {
     private Long idCliente;

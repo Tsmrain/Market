@@ -1,7 +1,18 @@
-package com.mutualista.mercado.application;
+package com.mutualista.mercado.presentation.controller;
+import com.mutualista.mercado.domain.Comerciante;
+import com.mutualista.mercado.domain.Producto;
+import com.mutualista.mercado.domain.UnidadMedidaMaestra;
+import com.mutualista.mercado.infrastructure.messaging.WhatsAppAdapter;
+import com.mutualista.mercado.presentation.dto.CategoriaDTO;
+import com.mutualista.mercado.presentation.dto.ComerciantePerfilDTO;
+import com.mutualista.mercado.presentation.dto.ProductoDetalleDTO;
+import com.mutualista.mercado.presentation.dto.ProductoResumenDTO;
+import com.mutualista.mercado.repository.CategoriaRepository;
+import com.mutualista.mercado.repository.ComercianteRepository;
+import com.mutualista.mercado.repository.ProductoRepository;
+import com.mutualista.mercado.repository.UnidadMedidaMaestraRepository;
 
-import com.mutualista.mercado.domain.*;
-import com.mutualista.mercado.repository.*;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;

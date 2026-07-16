@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
+import { PasswordInput } from '../components/PasswordInput';
 
 export const RegistroCliente: React.FC = () => {
     const { registrarCliente } = useAuthController();
@@ -151,24 +152,20 @@ export const RegistroCliente: React.FC = () => {
                         <label htmlFor="reg-pin" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
                             Contraseña *
                         </label>
-                        <input
+                        <PasswordInput
                             id="reg-pin"
-                            type="password"
                             placeholder="Ej. MiClaveSegura2026"
                             value={pin}
                             onChange={(e) => setPin(e.target.value)}
                             required
                             style={{
-                                width: '100%',
-                                padding: '10px 12px',
+                                padding: '10px 40px 10px 12px',
                                 border: '1px solid var(--border-color)',
                                 borderRadius: '6px',
                                 fontSize: '0.95rem',
                                 outline: 'none',
-                                boxSizing: 'border-box',
                                 background: '#ffffff',
                                 color: 'var(--text-primary)',
-                                letterSpacing: '0.2em'
                             }}
                         />
                     </div>

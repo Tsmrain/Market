@@ -1,5 +1,6 @@
-package com.mutualista.mercado.application;
+package com.mutualista.mercado.presentation.dto;
 import com.mutualista.mercado.domain.Producto;
+
 
 public class ProductoResumenDTO {
     private Long id;

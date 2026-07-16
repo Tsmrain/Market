@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
+import { PasswordInput } from '../components/PasswordInput';
 
 export const LoginComerciante: React.FC = () => {
     const { loginComerciante } = useAuthController();
@@ -142,23 +143,19 @@ export const LoginComerciante: React.FC = () => {
                         <label htmlFor="pin-input" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
                             Contraseña
                         </label>
-                        <input
+                        <PasswordInput
                             id="pin-input"
-                            type="password"
                             placeholder="••••••••"
                             value={pin}
                             onChange={(e) => setPin(e.target.value)}
                             style={{
-                                width: '100%',
-                                padding: '10px 12px',
+                                padding: '10px 40px 10px 12px',
                                 border: '1px solid var(--border-color)',
                                 borderRadius: '6px',
                                 fontSize: '0.95rem',
                                 outline: 'none',
-                                boxSizing: 'border-box',
                                 background: '#ffffff',
                                 color: 'var(--text-primary)',
-                                letterSpacing: '0.2em'
                             }}
                         />
                     </div>
