@@ -37,5 +37,5 @@ export const useDetalleController = (idProductoStr: string | undefined) => {
         alert("¡Reseña agregada con éxito!");
     };
 
-    return { producto, cargando, estaAutenticado, handleMeInteresa, handleResena };
+    return { producto, cargando, usuario, estaAutenticado, handleMeInteresa, handleResena };
 };

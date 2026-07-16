@@ -37,10 +37,8 @@ public class ComerciantePerfilController {
 
         c.actualizarPerfil(
             dto.getNombre().trim(),
-            dto.getNombreNegocio() != null ? dto.getNombreNegocio().trim() : null,
             dto.getTelefono().trim(),
-            dto.getDescripcion() != null ? dto.getDescripcion().trim() : null,
-            dto.getHorarios() != null ? dto.getHorarios().trim() : null
+            dto.getNumeroPuesto() != null ? dto.getNumeroPuesto().trim() : null
         );
         comercianteRepo.save(c);
         return new ComerciantePerfilDTO(c);

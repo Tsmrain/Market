@@ -7,6 +7,7 @@ export const GestionAdministradores: React.FC = () => {
 
     // Form State
     const [ci, setCi] = useState("");
+    const [expedido, setExpedido] = useState("SC");
     const [pin, setPin] = useState("");
     const [nombre, setNombre] = useState("");
     const [telefono, setTelefono] = useState("");
@@ -16,6 +17,7 @@ export const GestionAdministradores: React.FC = () => {
     const [editAdminNombre, setEditAdminNombre] = useState("");
     const [editAdminPin, setEditAdminPin] = useState("");
     const [editAdminCi, setEditAdminCi] = useState("");
+    const [editAdminExpedido, setEditAdminExpedido] = useState("");
     const [editAdminTelefono, setEditAdminTelefono] = useState("");
 
     // UI state
@@ -42,7 +44,7 @@ export const GestionAdministradores: React.FC = () => {
         setMensaje("");
         setError("");
 
-        if (!ci.trim() || !pin.trim() || !nombre.trim() || !telefono.trim()) {
+        if (!ci.trim() || !expedido.trim() || !pin.trim() || !nombre.trim() || !telefono.trim()) {
             setError("Todos los campos son obligatorios.");
             return;
         }
@@ -54,9 +56,10 @@ export const GestionAdministradores: React.FC = () => {
 
         setCargando(true);
         try {
-            await SuperAdminService.crearAdministrador(ci, pin, nombre, telefono);
+            await SuperAdminService.crearAdministrador(ci, expedido, pin, nombre, telefono);
             setMensaje("Administrador de mercado registrado exitosamente.");
             setCi("");
+            setExpedido("SC");
             setPin("");
             setNombre("");
             setTelefono("");
@@ -143,7 +146,7 @@ export const GestionAdministradores: React.FC = () => {
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>Editar Administrador</h3>
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>CI (Inmutable)</label>
-                                <input type="text" value={editAdminCi} disabled style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: '#f3f4f6', color: '#9ca3af', cursor: 'not-allowed' }} />
+                                <input type="text" value={editAdminCi + " " + editAdminExpedido} disabled style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: '#f3f4f6', color: '#9ca3af', cursor: 'not-allowed' }} />
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Nombre completo *</label>
@@ -171,7 +174,20 @@ export const GestionAdministradores: React.FC = () => {
                              </div>
                              <div>
                                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Carnet de Identidad (CI) *</label>
-                                 <input type="text" placeholder="Ej. 9876543" value={ci} onChange={e => setCi(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                                 <div style={{ display: 'flex', gap: '8px' }}>
+                                     <input type="text" placeholder="Ej. 9876543" value={ci} onChange={e => setCi(e.target.value)} required style={{ flexGrow: 1, padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                                     <select value={expedido} onChange={e => setExpedido(e.target.value)} required style={{ padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--card-bg)' }}>
+                                         <option value="SC">SC</option>
+                                         <option value="LP">LP</option>
+                                         <option value="CB">CB</option>
+                                         <option value="OR">OR</option>
+                                         <option value="PT">PT</option>
+                                         <option value="TJ">TJ</option>
+                                         <option value="CH">CH</option>
+                                         <option value="BE">BE</option>
+                                         <option value="PD">PD</option>
+                                     </select>
+                                 </div>
                              </div>
                              <div>
                                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Teléfono *</label>
@@ -205,13 +221,14 @@ export const GestionAdministradores: React.FC = () => {
                                     {admins.map((adm: any) => (
                                         <tr key={adm.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                             <td style={{ padding: '8px', fontWeight: 600 }}>{adm.nombre}</td>
-                                            <td style={{ padding: '8px' }}>{adm.ci}</td>
+                                            <td style={{ padding: '8px' }}>{adm.ci} {adm.expedido || ''}</td>
                                             <td style={{ padding: '8px' }}>{adm.telefono || '---'}</td>
                                             <td style={{ padding: '8px', textAlign: 'center', display: 'flex', gap: '8px', justifyContent: 'center' }}>
                                                 <button onClick={() => {
                                                     setEditAdminId(adm.id);
                                                     setEditAdminNombre(adm.nombre);
                                                     setEditAdminCi(adm.ci);
+                                                    setEditAdminExpedido(adm.expedido || "");
                                                     setEditAdminTelefono(adm.telefono || "");
                                                     setEditAdminPin("");
                                                 }} style={{ color: 'var(--primary)', fontWeight: 700 }}>Editar</button>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
 
 export const LoginComerciante: React.FC = () => {
@@ -203,6 +203,12 @@ export const LoginComerciante: React.FC = () => {
                     <strong style={{ color: 'var(--primary-dark)' }}>Credenciales de Pruebas:</strong><br />
                     • Administrador: CI <code>admin</code>, PIN <code>9999</code><br />
                     • Comerciante Demo: CI <code>1234567</code>, PIN <code>1234</code>
+                </div>
+
+                <div style={{ marginTop: '20px' }}>
+                    <Link to="/" style={{ color: 'var(--primary)', fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none' }}>
+                        ← Ir al Mercado (Volver al Catálogo)
+                    </Link>
                 </div>
             </div>
         </div>

@@ -35,9 +35,14 @@ export const CatalogoService = {
         return response.json();
     },
 
-    contactarComerciante: async (idComerciante: number, idProducto: number): Promise<string> => {
+    contactarComerciante: async (idComerciante: number, idProducto: number, idCliente?: number): Promise<string> => {
+        const headers: any = {};
+        if (idCliente) {
+            headers['X-User-Id'] = String(idCliente);
+        }
         const response = await fetch(`${API_PORTAL}/comerciantes/${idComerciante}/contactar?idProducto=${idProducto}`, {
-            method: 'POST'
+            method: 'POST',
+            headers
         });
         if (!response.ok) throw new Error('Error al generar enlace');
         const data = await response.json();
@@ -47,7 +52,8 @@ export const CatalogoService = {
     // UC-A6: Me Interesa
     marcarInteres: async (idProducto: number, idCliente: number): Promise<void> => {
         const response = await fetch(`http://localhost:8080/api/productos/${idProducto}/interesados/${idCliente}`, {
-            method: 'POST'
+            method: 'POST',
+            headers: { 'X-User-Id': String(idCliente) }
         });
         if (!response.ok) throw new Error('Error al registrar interés');
     },
@@ -56,7 +62,10 @@ export const CatalogoService = {
     agregarResena: async (idProducto: number, idCliente: number, calificacion: number, comentario: string): Promise<void> => {
         const response = await fetch(`http://localhost:8080/api/productos/${idProducto}/resenas`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-User-Id': String(idCliente)
+            },
             body: JSON.stringify({ idCliente, calificacion, comentario })
         });
         if (!response.ok) throw new Error('Error al agregar reseña');

@@ -16,15 +16,21 @@ public class AdministradorMercado {
     
     private String nombre;
     private String telefono;
+    private String expedido;
     private boolean eliminado = false;
 
     protected AdministradorMercado() {}
 
-    public AdministradorMercado(String ci, String pin, String nombre, String telefono) {
+    public AdministradorMercado(String ci, String expedido, String pin, String nombre, String telefono) {
         this.ci = ci;
+        this.expedido = expedido;
         this.pin = pin;
         this.nombre = nombre;
         this.telefono = telefono;
+    }
+
+    public AdministradorMercado(String ci, String pin, String nombre, String telefono) {
+        this(ci, "SC", pin, nombre, telefono);
     }
 
     public void actualizarDatos(String nombre, String nuevoPin, String telefono) {
@@ -40,5 +46,6 @@ public class AdministradorMercado {
     public String getCi() { return ci; }
     public String getNombre() { return nombre; }
     public String getTelefono() { return telefono; }
+    public String getExpedido() { return expedido; }
     public boolean isEliminado() { return eliminado; }
 }

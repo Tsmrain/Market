@@ -8,11 +8,11 @@ export const AdminService = {
         return response.json();
     },
 
-    editarComerciante: async (idComerciante: number, nombre: string, telefono: string, pin?: string): Promise<void> => {
+    editarComerciante: async (idComerciante: number, ci: string, expedido: string, nombre: string, telefono: string, pin?: string): Promise<void> => {
         const response = await fetch(`${API_ADMIN_COMERCIANTES}/${idComerciante}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, telefono, pin: pin || undefined })
+            body: JSON.stringify({ ci, expedido, nombre, telefono, pin: pin || undefined })
         });
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));

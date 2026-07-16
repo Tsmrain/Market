@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
 
 export const ComercianteLayout: React.FC = () => {
@@ -44,6 +44,25 @@ export const ComercianteLayout: React.FC = () => {
                     <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.9)' }}>
                         Tienda: <strong>{usuario?.nombre || 'Comerciante'}</strong>
                     </span>
+                    <Link 
+                        to="/" 
+                        className="btn btn-secondary"
+                        style={{
+                            background: 'rgba(255, 255, 255, 0.15)',
+                            color: '#ffffff',
+                            textDecoration: 'none',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'}
+                    >
+                        Ir al Mercado
+                    </Link>
                     <button 
                         onClick={() => { logout(); navigate('/'); }}
                         style={{

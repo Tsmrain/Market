@@ -50,10 +50,8 @@ export interface ProductoComerciante {
 
 export interface ComerciantePerfil {
     nombre: string;
-    nombreNegocio: string | null;
     telefono: string;
-    descripcion: string | null;
-    horarios: string | null;
+    numeroPuesto: string | null;
 }
 
 

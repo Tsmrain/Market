@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDetalleController } from '../../application/useDetalleController';
 import { CatalogoService } from '../../application/CatalogoService';
 
@@ -7,9 +7,11 @@ import { CatalogoService } from '../../application/CatalogoService';
 export const ProductoDetallePage: React.FC = () => {
     // 1. Extraemos el ID de la URL
     const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
+    const location = useLocation();
     
     // 2. Delegamos al controlador
-    const { producto, cargando, estaAutenticado, handleMeInteresa, handleResena } = useDetalleController(id);
+    const { producto, cargando, usuario, estaAutenticado, handleMeInteresa, handleResena } = useDetalleController(id);
 
     const [comentario, setComentario] = useState("");
     const [calificacion, setCalificacion] = useState(5);
@@ -18,11 +20,13 @@ export const ProductoDetallePage: React.FC = () => {
     // Mapea comerciante basado en nombre de producto
     const handleContactar = async (e: React.MouseEvent) => {
         e.preventDefault();
-        if (!producto || !producto.idComerciante) return;
+        if (!estaAutenticado) {
+            navigate('/login/cliente', { state: { from: location.pathname } });
+            return;
+        }
+        if (!producto || !producto.idComerciante || !usuario) return;
         try {
-            await CatalogoService.contactarComerciante(producto.idComerciante, producto.id).catch(() => {});
-            const message = "Hola " + (producto.nombreComerciante || "") + ". Estoy interesado en su producto: *" + producto.nombre + "* a " + producto.precio + " Bs. / " + (producto.unidadMedida || "UNIDAD") + " que vi en la app del Mercado Mutualista.";
-            const url = "https://wa.me/" + (producto.telefonoComerciante || "") + "?text=" + encodeURIComponent(message);
+            const url = await CatalogoService.contactarComerciante(producto.idComerciante, producto.id, usuario.id);
             window.open(url, '_blank', 'noopener,noreferrer');
         } catch (error) {
             console.error("Error al contactar comerciante", error);
@@ -369,7 +373,13 @@ export const ProductoDetallePage: React.FC = () => {
                             )}
 
                             <button 
-                                onClick={handleMeInteresa}
+                                onClick={async () => {
+                                    if (!estaAutenticado) {
+                                        navigate('/login/cliente', { state: { from: location.pathname } });
+                                    } else {
+                                        await handleMeInteresa();
+                                    }
+                                }}
                                 style={{
                                     background: 'var(--primary-bg)',
                                     color: 'var(--primary-dark)',
@@ -474,6 +484,10 @@ export const ProductoDetallePage: React.FC = () => {
 
                             <button 
                                 onClick={async () => {
+                                    if (!estaAutenticado) {
+                                        navigate('/login/cliente', { state: { from: location.pathname } });
+                                        return;
+                                    }
                                     if (!comentario.trim()) return alert("Por favor escribe un comentario");
                                     await handleResena(calificacion, comentario);
                                     setComentario(""); // Limpiar campo tras éxito

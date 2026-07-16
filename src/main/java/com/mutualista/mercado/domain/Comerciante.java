@@ -11,8 +11,8 @@ public class Comerciante {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    // REGLA 3: Inmutabilidad del CI
-    @Column(unique = true, nullable = false, updatable = false)
+    // REGLA 3: Inmutabilidad del CI (Desbloqueado para corrección de tipeo por Admin)
+    @Column(unique = true, nullable = false)
     private String ci; 
     
     @Column(nullable = false, length = 4)
@@ -21,6 +21,8 @@ public class Comerciante {
     private String nombre;
     private String telefono;
     private int clicsContacto = 0;
+    private String expedido;
+    private String numeroPuesto;
     
     // Estado para Borrado Lógico
     private boolean eliminado = false;
@@ -31,11 +33,16 @@ public class Comerciante {
 
     protected Comerciante() {} 
 
-    public Comerciante(String ci, String pin, String nombre, String telefono) {
+    public Comerciante(String ci, String expedido, String pin, String nombre, String telefono) {
         this.ci = ci;
+        this.expedido = expedido;
         this.pin = pin;
         this.nombre = nombre;
         this.telefono = telefono;
+    }
+
+    public Comerciante(String ci, String pin, String nombre, String telefono) {
+        this(ci, "SC", pin, nombre, telefono);
     }
 
     // Constructor de Compatibilidad para Pruebas Unitarias
@@ -45,6 +52,7 @@ public class Comerciante {
         this.telefono = telefono;
         this.ci = "test_" + id;
         this.pin = "1234";
+        this.expedido = "SC";
     }
 
     public Producto registrarProducto(String nombre, double precio, Categoria categoria) {
@@ -77,17 +85,18 @@ public class Comerciante {
         }
     }
 
-    public void registrarClicContacto() { this.clicsContacto++; }
-    private String nombreNegocio;
-    private String descripcion;
-    private String horarios;
+    public void actualizarDatos(String ci, String expedido, String nombre, String telefono, String nuevoPin) {
+        this.ci = ci;
+        this.expedido = expedido;
+        actualizarDatos(nombre, telefono, nuevoPin);
+    }
 
-    public void actualizarPerfil(String nombre, String nombreNegocio, String telefono, String descripcion, String horarios) {
+    public void registrarClicContacto() { this.clicsContacto++; }
+
+    public void actualizarPerfil(String nombre, String telefono, String numeroPuesto) {
         this.nombre = nombre;
-        this.nombreNegocio = nombreNegocio;
         this.telefono = telefono;
-        this.descripcion = descripcion;
-        this.horarios = horarios;
+        this.numeroPuesto = numeroPuesto;
     }
 
     public boolean validarPin(String pinIngresado) { return this.pin.equals(pinIngresado); }
@@ -98,9 +107,8 @@ public class Comerciante {
     public String getCi() { return ci; }
     public String getNombre() { return nombre; }
     public String getTelefono() { return telefono; }
-    public String getNombreNegocio() { return nombreNegocio; }
-    public String getDescripcion() { return descripcion; }
-    public String getHorarios() { return horarios; }
+    public String getExpedido() { return expedido; }
+    public String getNumeroPuesto() { return numeroPuesto; }
     public int getClicsContacto() { return clicsContacto; }
     public boolean isEliminado() { return eliminado; }
 }

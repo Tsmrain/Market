@@ -35,6 +35,7 @@ public class SuperAdminController {
             Map<String, Object> map = new HashMap<>();
             map.put("id", a.getId());
             map.put("ci", a.getCi());
+            map.put("expedido", a.getExpedido());
             map.put("nombre", a.getNombre());
             map.put("telefono", a.getTelefono());
             return map;
@@ -45,11 +46,12 @@ public class SuperAdminController {
     @Transactional
     public Map<String, String> registrarAdministrador(@RequestBody Map<String, String> payload) {
         String ci = payload.get("ci");
+        String expedido = payload.get("expedido");
         String pin = payload.get("pin");
         String nombre = payload.get("nombre");
         String telefono = payload.get("telefono");
 
-        if (ci == null || pin == null || nombre == null || telefono == null) {
+        if (ci == null || expedido == null || pin == null || nombre == null || telefono == null) {
             throw new IllegalArgumentException("Todos los campos son obligatorios.");
         }
 
@@ -61,7 +63,7 @@ public class SuperAdminController {
             throw new RuntimeException("Ya existe un administrador con ese CI.");
         }
 
-        AdministradorMercado nuevo = new AdministradorMercado(ci, pin, nombre, telefono);
+        AdministradorMercado nuevo = new AdministradorMercado(ci, expedido, pin, nombre, telefono);
         adminRepo.save(nuevo);
         return Map.of("mensaje", "Administrador registrado exitosamente.");
     }

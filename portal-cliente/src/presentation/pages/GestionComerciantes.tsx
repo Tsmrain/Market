@@ -7,6 +7,7 @@ export const GestionComerciantes: React.FC = () => {
 
     // Merchant Form State
     const [ci, setCi] = useState("");
+    const [expedido, setExpedido] = useState("SC");
     const [pin, setPin] = useState("");
     const [nombre, setNombre] = useState("");
     const [telefono, setTelefono] = useState("");
@@ -17,6 +18,7 @@ export const GestionComerciantes: React.FC = () => {
     const [editMerchantTelefono, setEditMerchantTelefono] = useState("");
     const [editMerchantPin, setEditMerchantPin] = useState("");
     const [editMerchantCi, setEditMerchantCi] = useState("");
+    const [editMerchantExpedido, setEditMerchantExpedido] = useState("");
 
     // UI state
     const [cargando, setCargando] = useState(false);
@@ -42,7 +44,7 @@ export const GestionComerciantes: React.FC = () => {
         setMensaje("");
         setError("");
 
-        if (!ci.trim() || !pin.trim() || !nombre.trim() || !telefono.trim()) {
+        if (!ci.trim() || !expedido.trim() || !pin.trim() || !nombre.trim() || !telefono.trim()) {
             setError("Todos los campos son obligatorios.");
             return;
         }
@@ -62,7 +64,7 @@ export const GestionComerciantes: React.FC = () => {
             const response = await fetch('http://localhost:8080/api/admin/comerciantes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ci, pin, nombre, telefono })
+                body: JSON.stringify({ ci, expedido, pin, nombre, telefono })
             });
 
             const data = await response.json();
@@ -72,6 +74,7 @@ export const GestionComerciantes: React.FC = () => {
 
             setMensaje(data.mensaje || "Comerciante registrado exitosamente.");
             setCi("");
+            setExpedido("SC");
             setPin("");
             setNombre("");
             setTelefono("");
@@ -89,8 +92,8 @@ export const GestionComerciantes: React.FC = () => {
         setMensaje("");
         setError("");
 
-        if (!editMerchantNombre.trim() || !editMerchantTelefono.trim() || !editMerchantId) {
-            setError("Nombre y celular son requeridos.");
+        if (!editMerchantNombre.trim() || !editMerchantTelefono.trim() || !editMerchantId || !editMerchantCi.trim() || !editMerchantExpedido.trim()) {
+            setError("Carnet, Expedición, Nombre y celular son requeridos.");
             return;
         }
 
@@ -108,6 +111,8 @@ export const GestionComerciantes: React.FC = () => {
         try {
             await AdminService.editarComerciante(
                 editMerchantId,
+                editMerchantCi,
+                editMerchantExpedido,
                 editMerchantNombre,
                 editMerchantTelefono,
                 editMerchantPin ? editMerchantPin : undefined
@@ -162,8 +167,21 @@ export const GestionComerciantes: React.FC = () => {
                         <form onSubmit={handleEditMerchantSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>Editar Comerciante</h3>
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>CI (Inmutable)</label>
-                                <input type="text" value={editMerchantCi} disabled style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: '#f3f4f6', color: '#9ca3af', cursor: 'not-allowed' }} />
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Carnet de Identidad (CI) *</label>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <input type="text" value={editMerchantCi} onChange={e => setEditMerchantCi(e.target.value)} required style={{ flexGrow: 1, padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                                    <select value={editMerchantExpedido} onChange={e => setEditMerchantExpedido(e.target.value)} required style={{ padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--card-bg)' }}>
+                                        <option value="SC">SC</option>
+                                        <option value="LP">LP</option>
+                                        <option value="CB">CB</option>
+                                        <option value="OR">OR</option>
+                                        <option value="PT">PT</option>
+                                        <option value="TJ">TJ</option>
+                                        <option value="CH">CH</option>
+                                        <option value="BE">BE</option>
+                                        <option value="PD">PD</option>
+                                    </select>
+                                </div>
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Nombre completo *</label>
@@ -194,7 +212,20 @@ export const GestionComerciantes: React.FC = () => {
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Carnet de Identidad (CI) *</label>
-                                <input type="text" placeholder="Ej. 1234567" value={ci} onChange={e => setCi(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <input type="text" placeholder="Ej. 1234567" value={ci} onChange={e => setCi(e.target.value)} required style={{ flexGrow: 1, padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                                    <select value={expedido} onChange={e => setExpedido(e.target.value)} required style={{ padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--card-bg)' }}>
+                                        <option value="SC">SC</option>
+                                        <option value="LP">LP</option>
+                                        <option value="CB">CB</option>
+                                        <option value="OR">OR</option>
+                                        <option value="PT">PT</option>
+                                        <option value="TJ">TJ</option>
+                                        <option value="CH">CH</option>
+                                        <option value="BE">BE</option>
+                                        <option value="PD">PD</option>
+                                    </select>
+                                </div>
                             </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>PIN Inicial (4 dígitos) *</label>
@@ -231,7 +262,7 @@ export const GestionComerciantes: React.FC = () => {
                                 {comerciantes.map((com: any) => (
                                     <tr key={com.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                         <td style={{ padding: '8px', fontWeight: 600 }}>{com.nombre}</td>
-                                        <td style={{ padding: '8px' }}>{com.ci}</td>
+                                        <td style={{ padding: '8px' }}>{com.ci} {com.expedido || ''}</td>
                                         <td style={{ padding: '8px' }}>+591 {com.telefono}</td>
                                         <td style={{ padding: '8px', textAlign: 'center', display: 'flex', gap: '8px', justifyContent: 'center' }}>
                                             <button onClick={() => {
@@ -239,6 +270,7 @@ export const GestionComerciantes: React.FC = () => {
                                                 setEditMerchantNombre(com.nombre);
                                                 setEditMerchantTelefono(com.telefono);
                                                 setEditMerchantCi(com.ci);
+                                                setEditMerchantExpedido(com.expedido || "");
                                                 setEditMerchantPin("");
                                             }} style={{ color: 'var(--primary)', fontWeight: 700 }}>Editar</button>
                                             <button onClick={() => handleDarDeBajaComerciante(com.id, com.nombre)} style={{ color: '#ef4444', fontWeight: 700 }}>Dar de Baja</button>

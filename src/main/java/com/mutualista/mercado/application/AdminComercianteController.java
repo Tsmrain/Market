@@ -23,6 +23,7 @@ public class AdminComercianteController {
             Map<String, Object> map = new java.util.HashMap<>();
             map.put("id", c.getId());
             map.put("ci", c.getCi());
+            map.put("expedido", c.getExpedido());
             map.put("nombre", c.getNombre());
             map.put("telefono", c.getTelefono());
             return map;
@@ -33,34 +34,51 @@ public class AdminComercianteController {
     @Transactional
     public Map<String, String> registrarComerciante(@RequestBody Map<String, String> payload) {
         String ci = payload.get("ci");
+        String expedido = payload.get("expedido");
         String pin = payload.get("pin");
         String nombre = payload.get("nombre");
         String telefono = payload.get("telefono");
+
+        if (ci == null || expedido == null || pin == null || nombre == null || telefono == null) {
+            throw new IllegalArgumentException("Todos los campos son obligatorios.");
+        }
 
         if (telefono == null || !telefono.matches("^[67]\\d{7}$")) {
             throw new IllegalArgumentException("El número de celular debe tener exactamente 8 dígitos y comenzar con 6 o 7.");
         }
 
-        if(comercianteRepo.findByCi(ci).isPresent()) {
-            throw new RuntimeException("Ya existe un comerciante con ese CI");
+        if (comercianteRepo.findByCi(ci).isPresent()) {
+            throw new RuntimeException("Ya existe un comerciante con ese CI.");
         }
-        Comerciante nuevo = new Comerciante(ci, pin, nombre, telefono);
+        Comerciante nuevo = new Comerciante(ci, expedido, pin, nombre, telefono);
         comercianteRepo.save(nuevo);
         return Map.of("mensaje", "Comerciante registrado exitosamente.");
     }
 
     @PutMapping("/{idComerciante}")
     @Transactional
-    public Map<String, String> editarComerciante(@PathVariable Long idComerciante, @RequestBody Map<String, String> payload) {
+    public org.springframework.http.ResponseEntity<?> editarComerciante(@PathVariable Long idComerciante, @RequestBody Map<String, String> payload) {
         Comerciante c = comercianteRepo.findById(idComerciante).orElseThrow();
         String telefono = payload.get("telefono");
         if (telefono == null || !telefono.matches("^[67]\\d{7}$")) {
-            throw new IllegalArgumentException("El número de celular debe tener exactamente 8 dígitos y comenzar con 6 o 7.");
+            return org.springframework.http.ResponseEntity.badRequest().body(Map.of("error", "El número de celular debe tener exactamente 8 dígitos y comenzar con 6 o 7."));
         }
-        // Nota: NO se actualiza el CI.
-        c.actualizarDatos(payload.get("nombre"), telefono, payload.get("pin"));
+        
+        String ci = payload.get("ci");
+        String expedido = payload.get("expedido");
+        if (ci == null || ci.trim().isEmpty() || expedido == null || expedido.trim().isEmpty()) {
+            return org.springframework.http.ResponseEntity.badRequest().body(Map.of("error", "El CI y la Expedición son obligatorios."));
+        }
+
+        // Control de duplicados: Buscar comerciante por CI
+        java.util.Optional<Comerciante> existente = comercianteRepo.findByCi(ci);
+        if (existente.isPresent() && !existente.get().getId().equals(idComerciante)) {
+            return org.springframework.http.ResponseEntity.badRequest().body(Map.of("error", "El carnet ingresado ya está registrado."));
+        }
+
+        c.actualizarDatos(ci, expedido, payload.get("nombre"), telefono, payload.get("pin"));
         comercianteRepo.save(c);
-        return Map.of("mensaje", "Comerciante actualizado exitosamente.");
+        return org.springframework.http.ResponseEntity.ok(Map.of("mensaje", "Comerciante actualizado exitosamente."));
     }
 
     @DeleteMapping("/{idComerciante}")

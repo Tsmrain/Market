@@ -17,14 +17,20 @@ public class Cliente {
     
     private String nombre;
     private String celular;
+    private String expedido;
 
     protected Cliente() {}
 
-    public Cliente(String ci, String pin, String nombre, String celular) {
+    public Cliente(String ci, String expedido, String pin, String nombre, String celular) {
         this.ci = ci;
+        this.expedido = expedido;
         this.pin = pin;
         this.nombre = nombre;
         this.celular = celular;
+    }
+
+    public Cliente(String ci, String pin, String nombre, String celular) {
+        this(ci, "SC", pin, nombre, celular);
     }
 
     // Constructor de Compatibilidad para Pruebas Unitarias y Semillero Histórico
@@ -51,4 +57,5 @@ public class Cliente {
     public String getCi() { return ci; }
     public String getNombre() { return nombre; }
     public String getCelular() { return celular; }
+    public String getExpedido() { return expedido; }
 }

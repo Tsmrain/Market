@@ -79,7 +79,7 @@ public class AuthController {
         if(clienteRepo.findByCi(payload.get("ci")).isPresent()) {
             return ResponseEntity.badRequest().body(Map.of("error", "El CI ya está registrado."));
         }
-        Cliente nuevo = new Cliente(payload.get("ci"), payload.get("pin"), payload.get("nombre"), payload.get("celular"));
+        Cliente nuevo = new Cliente(payload.get("ci"), payload.get("expedido"), payload.get("pin"), payload.get("nombre"), payload.get("celular"));
         clienteRepo.save(nuevo);
         
         Map<String, Object> res = new HashMap<>();

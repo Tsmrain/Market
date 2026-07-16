@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export interface UsuarioSesion {
     id: number;
@@ -19,6 +19,23 @@ export const useAuthController = () => {
         // Fallback de cliente para permitir reseñas e intereses en el portal
         return { id: 500, nombre: "Invitado", rol: "CLIENTE" };
     });
+
+    useEffect(() => {
+        const handleSessionChange = () => {
+            const stored = localStorage.getItem('usuario_sesion');
+            if (stored) {
+                try {
+                    setUsuario(JSON.parse(stored));
+                } catch (e) {}
+            }
+        };
+        window.addEventListener('usuario_sesion_changed', handleSessionChange);
+        window.addEventListener('storage', handleSessionChange);
+        return () => {
+            window.removeEventListener('usuario_sesion_changed', handleSessionChange);
+            window.removeEventListener('storage', handleSessionChange);
+        };
+    }, []);
 
     const loginComerciante = async (ci: string, pin: string): Promise<void> => {
         // 1. Intentar primero con el endpoint de Administradores y SuperAdmin
@@ -92,13 +109,13 @@ export const useAuthController = () => {
         setUsuario(sesion);
     };
 
-    const registrarCliente = async (ci: string, pin: string, nombre: string, celular: string): Promise<void> => {
+    const registrarCliente = async (ci: string, expedido: string, pin: string, nombre: string, celular: string): Promise<void> => {
         const response = await fetch('http://localhost:8080/api/auth/clientes/registro', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ ci, pin, nombre, celular })
+            body: JSON.stringify({ ci, expedido, pin, nombre, celular })
         });
 
         if (!response.ok) {

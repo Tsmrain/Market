@@ -14,17 +14,17 @@ export const SuperAdminService = {
         return response.json();
     },
 
-    listarAdministradores: async (): Promise<Array<{ id: number; ci: string; nombre: string; telefono: string }>> => {
+    listarAdministradores: async (): Promise<Array<{ id: number; ci: string; expedido: string; nombre: string; telefono: string }>> => {
         const response = await fetch(API_SUPERADMIN);
         if (!response.ok) throw new Error('Error al listar administradores');
         return response.json();
     },
 
-    crearAdministrador: async (ci: string, pin: string, nombre: string, telefono: string): Promise<void> => {
+    crearAdministrador: async (ci: string, expedido: string, pin: string, nombre: string, telefono: string): Promise<void> => {
         const response = await fetch(API_SUPERADMIN, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ci, pin, nombre, telefono })
+            body: JSON.stringify({ ci, expedido, pin, nombre, telefono })
         });
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));

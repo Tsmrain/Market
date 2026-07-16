@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
 
 export const RegistroCliente: React.FC = () => {
     const { registrarCliente } = useAuthController();
     const navigate = useNavigate();
+    const location = useLocation();
     
     const [ci, setCi] = useState("");
+    const [expedido, setExpedido] = useState("SC");
     const [pin, setPin] = useState("");
     const [nombre, setNombre] = useState("");
     const [celular, setCelular] = useState("");
@@ -17,7 +19,7 @@ export const RegistroCliente: React.FC = () => {
         e.preventDefault();
         setError("");
 
-        if (!ci.trim() || !pin.trim() || !nombre.trim() || !celular.trim()) {
+        if (!ci.trim() || !expedido.trim() || !pin.trim() || !nombre.trim() || !celular.trim()) {
             setError("Todos los campos son obligatorios.");
             return;
         }
@@ -35,9 +37,10 @@ export const RegistroCliente: React.FC = () => {
 
         setCargando(true);
         try {
-            await registrarCliente(ci, pin, nombre, celular);
+            await registrarCliente(ci, expedido, pin, nombre, celular);
             alert("¡Te has registrado exitosamente!");
-            navigate('/');
+            const from = location.state?.from || '/';
+            navigate(from, { replace: true });
         } catch (err: any) {
             setError(err.message || "Error al registrarse.");
         } finally {
@@ -93,25 +96,55 @@ export const RegistroCliente: React.FC = () => {
                         <label htmlFor="reg-ci" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
                             Carnet de Identidad (CI) *
                         </label>
-                        <input
-                            id="reg-ci"
-                            type="text"
-                            placeholder="Ej. 7777777"
-                            value={ci}
-                            onChange={(e) => setCi(e.target.value)}
-                            required
-                            style={{
-                                width: '100%',
-                                padding: '10px 12px',
-                                border: '1px solid var(--border-color)',
-                                borderRadius: '6px',
-                                fontSize: '0.95rem',
-                                outline: 'none',
-                                boxSizing: 'border-box',
-                                background: '#ffffff',
-                                color: 'var(--text-primary)'
-                            }}
-                        />
+                        <div style={{ display: 'flex', gap: '8px', width: '100%', boxSizing: 'border-box' }}>
+                            <input
+                                id="reg-ci"
+                                type="text"
+                                placeholder="Ej. 7777777"
+                                value={ci}
+                                onChange={(e) => setCi(e.target.value)}
+                                required
+                                style={{
+                                    flexGrow: 1,
+                                    width: '0',
+                                    minWidth: '0',
+                                    padding: '10px 12px',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '6px',
+                                    fontSize: '0.95rem',
+                                    outline: 'none',
+                                    boxSizing: 'border-box',
+                                    background: '#ffffff',
+                                    color: 'var(--text-primary)'
+                                }}
+                            />
+                            <select 
+                                value={expedido} 
+                                onChange={(e) => setExpedido(e.target.value)}
+                                required
+                                style={{
+                                    width: '80px',
+                                    padding: '10px 8px',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '6px',
+                                    fontSize: '0.95rem',
+                                    outline: 'none',
+                                    background: '#ffffff',
+                                    color: 'var(--text-primary)',
+                                    boxSizing: 'border-box'
+                                }}
+                            >
+                                <option value="SC">SC</option>
+                                <option value="LP">LP</option>
+                                <option value="CB">CB</option>
+                                <option value="OR">OR</option>
+                                <option value="PT">PT</option>
+                                <option value="TJ">TJ</option>
+                                <option value="CH">CH</option>
+                                <option value="BE">BE</option>
+                                <option value="PD">PD</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div>
@@ -245,7 +278,7 @@ export const RegistroCliente: React.FC = () => {
 
                 <div style={{ marginTop: '24px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                     ¿Ya tienes una cuenta?{' '}
-                    <Link to="/login/cliente" style={{ color: 'var(--secondary)', fontWeight: 700, textDecoration: 'none' }}>
+                    <Link to="/login/cliente" state={{ from: location.state?.from || '/' }} style={{ color: 'var(--secondary)', fontWeight: 700, textDecoration: 'none' }}>
                         Inicia sesión aquí
                     </Link>
                 </div>

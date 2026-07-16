@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuthController } from '../../application/useAuthController';
 
 export const LoginCliente: React.FC = () => {
     const { loginCliente } = useAuthController();
     const navigate = useNavigate();
+    const location = useLocation();
     const [ci, setCi] = useState("");
     const [pin, setPin] = useState("");
     const [error, setError] = useState("");
@@ -27,7 +28,8 @@ export const LoginCliente: React.FC = () => {
         try {
             await loginCliente(ci, pin);
             alert("¡Ingreso exitoso!");
-            navigate('/');
+            const from = location.state?.from || '/';
+            navigate(from, { replace: true });
         } catch (err: any) {
             setError(err.message || "Error al iniciar sesión");
         } finally {
@@ -177,7 +179,7 @@ export const LoginCliente: React.FC = () => {
 
                 <div style={{ marginTop: '24px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                     ¿No tienes una cuenta?{' '}
-                    <Link to="/registro/cliente" style={{ color: 'var(--secondary)', fontWeight: 700, textDecoration: 'none' }}>
+                    <Link to="/registro/cliente" state={{ from: location.state?.from || '/' }} style={{ color: 'var(--secondary)', fontWeight: 700, textDecoration: 'none' }}>
                         Regístrate aquí
                     </Link>
                 </div>
