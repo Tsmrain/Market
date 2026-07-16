@@ -1,5 +1,4 @@
 package com.mutualista.mercado.repository;
-import com.mutualista.mercado.domain.Comerciante;
 import com.mutualista.mercado.domain.Producto;
 
 
