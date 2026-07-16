@@ -4,7 +4,6 @@ import com.mutualista.mercado.application.UnidadMedidaNormalizador;
 import com.mutualista.mercado.domain.Categoria;
 import com.mutualista.mercado.domain.Comerciante;
 import com.mutualista.mercado.domain.HistorialCategoria;
-import com.mutualista.mercado.domain.Multimedia;
 import com.mutualista.mercado.domain.Producto;
 import com.mutualista.mercado.infrastructure.storage.StorageService;
 import com.mutualista.mercado.repository.CategoriaRepository;
