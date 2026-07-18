@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { SuperAdminService } from '../../application/SuperAdminService';
 import { PasswordInput } from '../components/PasswordInput';
 
 export const GestionAdministradores: React.FC = () => {
-    // CRUD state for administrators
     const [admins, setAdmins] = useState<any[]>([]);
+    const [asociaciones, setAsociaciones] = useState<any[]>([]);
 
     // Form State
     const [ci, setCi] = useState("");
@@ -12,115 +11,149 @@ export const GestionAdministradores: React.FC = () => {
     const [pin, setPin] = useState("");
     const [nombre, setNombre] = useState("");
     const [telefono, setTelefono] = useState("");
+    const [asociacionId, setAsociacionId] = useState("");
 
     // Editing State
-    const [editAdminId, setEditAdminId] = useState<number | null>(null);
-    const [editAdminNombre, setEditAdminNombre] = useState("");
-    const [editAdminPin, setEditAdminPin] = useState("");
-    const [editAdminCi, setEditAdminCi] = useState("");
-    const [editAdminExpedido, setEditAdminExpedido] = useState("");
-    const [editAdminTelefono, setEditAdminTelefono] = useState("");
+    const [editId, setEditId] = useState<number | null>(null);
+    const [editNombre, setEditNombre] = useState("");
+    const [editPin, setEditPin] = useState("");
+    const [editTelefono, setEditTelefono] = useState("");
+    const [editAsociacionId, setEditAsociacionId] = useState("");
 
     // UI state
     const [cargando, setCargando] = useState(false);
     const [mensaje, setMensaje] = useState("");
     const [error, setError] = useState("");
 
-    const cargarAdministradores = async () => {
+    const cargarDatos = async () => {
         try {
-            const adminsData = await SuperAdminService.listarAdministradores();
-            setAdmins(adminsData);
+            // Cargar administradores
+            const resAdmins = await fetch('http://localhost:8080/api/superadmin/administradores');
+            if (resAdmins.ok) {
+                const data = await resAdmins.json();
+                setAdmins(data);
+            }
+            
+            // Cargar asociaciones
+            const resAsocs = await fetch('http://localhost:8080/api/superadmin/asociaciones');
+            if (resAsocs.ok) {
+                const data = await resAsocs.json();
+                setAsociaciones(data);
+            }
         } catch (err) {
-            setError("No se pudo cargar la lista de administradores.");
+            setError("Error al cargar los datos del servidor.");
         }
     };
 
     useEffect(() => {
-        cargarAdministradores();
+        cargarDatos();
     }, []);
 
-    // Register admin submit
-    const handleRegisterAdmin = async (e: React.FormEvent) => {
+    const handleCreateSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setMensaje("");
         setError("");
 
-        if (!ci.trim() || !expedido.trim() || !pin.trim() || !nombre.trim() || !telefono.trim()) {
+        if (!ci.trim() || !pin.trim() || !nombre.trim() || !telefono.trim() || !asociacionId) {
             setError("Todos los campos son obligatorios.");
             return;
         }
 
-        if (pin.length < 4) {
-            setError("La contraseña debe tener al menos 4 caracteres.");
-            return;
-        }
-
         setCargando(true);
         try {
-            await SuperAdminService.crearAdministrador(ci, expedido, pin, nombre, telefono);
-            setMensaje("Administrador de mercado registrado exitosamente.");
-            setCi("");
-            setExpedido("SC");
-            setPin("");
-            setNombre("");
-            setTelefono("");
-            cargarAdministradores();
-        } catch (err: any) {
-            setError(err.message || "Error al registrar al administrador.");
+            const res = await fetch('http://localhost:8080/api/superadmin/administradores', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ci,
+                    expedido,
+                    pin, // Maps to password
+                    nombre,
+                    telefono,
+                    asociacionId
+                })
+            });
+
+            if (res.ok) {
+                setMensaje("Administrador de asociación registrado con éxito.");
+                setCi("");
+                setPin("");
+                setNombre("");
+                setTelefono("");
+                setAsociacionId("");
+                cargarDatos();
+            } else {
+                const data = await res.json();
+                setError(data.error || "Ocurrió un error al registrar.");
+            }
+        } catch (err) {
+            setError("Error de conexión con el servidor.");
         } finally {
             setCargando(false);
         }
     };
 
-    // Edit admin submit
-    const handleEditAdminSubmit = async (e: React.FormEvent) => {
+    const handleEditSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setMensaje("");
         setError("");
 
-        if (!editAdminNombre.trim() || !editAdminId || !editAdminTelefono.trim()) {
-            setError("El nombre y teléfono son obligatorios.");
-            return;
-        }
-
-        if (editAdminPin && editAdminPin.length < 4) {
-            setError("La contraseña nueva debe tener al menos 4 caracteres.");
+        if (!editNombre.trim() || !editTelefono.trim() || !editAsociacionId) {
+            setError("El nombre, teléfono y asociación son obligatorios.");
             return;
         }
 
         setCargando(true);
         try {
-            await SuperAdminService.editarAdministrador(
-                editAdminId,
-                editAdminNombre,
-                editAdminPin ? editAdminPin : undefined,
-                editAdminTelefono
-            );
-            setMensaje("Administrador actualizado exitosamente.");
-            setEditAdminId(null);
-            setEditAdminPin("");
-            setEditAdminTelefono("");
-            cargarAdministradores();
-        } catch (err: any) {
-            setError(err.message || "Error al actualizar al administrador.");
+            const res = await fetch(`http://localhost:8080/api/superadmin/administradores/${editId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombre: editNombre,
+                    pin: editPin ? editPin : undefined,
+                    telefono: editTelefono,
+                    asociacionId: editAsociacionId
+                })
+            });
+
+            if (res.ok) {
+                setMensaje("Administrador actualizado correctamente.");
+                setEditId(null);
+                setEditNombre("");
+                setEditPin("");
+                setEditTelefono("");
+                setEditAsociacionId("");
+                cargarDatos();
+            } else {
+                const data = await res.json();
+                setError(data.error || "Ocurrió un error al actualizar.");
+            }
+        } catch (err) {
+            setError("Error al conectar con el servidor.");
         } finally {
             setCargando(false);
         }
     };
 
-    // Logical delete admin
-    const handleEliminarAdmin = async (id: number, nombreAdm: string) => {
+    const handleEliminar = async (id: number, nombreAdm: string) => {
         const confirmacion = window.confirm(`¿Está seguro que desea dar de baja al administrador "${nombreAdm}"?`);
         if (!confirmacion) return;
 
         setMensaje("");
         setError("");
         try {
-            await SuperAdminService.eliminarAdministrador(id);
-            setMensaje(`Administrador "${nombreAdm}" dado de baja.`);
-            cargarAdministradores();
-        } catch (err: any) {
-            setError(err.message || "Error al eliminar al administrador.");
+            const res = await fetch(`http://localhost:8080/api/superadmin/administradores/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                setMensaje(`Administrador "${nombreAdm}" dado de baja.`);
+                cargarDatos();
+            } else {
+                setError("No se pudo eliminar al administrador.");
+            }
+        } catch (err) {
+            setError("Error al conectar con el servidor.");
         }
     };
 
@@ -138,67 +171,80 @@ export const GestionAdministradores: React.FC = () => {
                 </div>
             )}
 
-            {/* CRUD Grid Layout */}
             <div className="split-grid">
-                {/* Left Form */}
+                {/* Left Side: Create/Edit Form */}
                 <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '24px', boxShadow: 'var(--shadow-md)' }}>
-                    {editAdminId ? (
-                        <form onSubmit={handleEditAdminSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {editId ? (
+                        <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>Editar Administrador</h3>
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>CI (Inmutable)</label>
-                                <input type="text" value={editAdminCi + " " + editAdminExpedido} disabled style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: '#f3f4f6', color: '#9ca3af', cursor: 'not-allowed' }} />
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Nombre completo *</label>
+                                <input type="text" value={editNombre} onChange={e => setEditNombre(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                             </div>
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Nombre completo *</label>
-                                <input type="text" value={editAdminNombre} onChange={e => setEditAdminNombre(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
-                             </div>
-                             <div>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Teléfono *</label>
-                                <input type="text" value={editAdminTelefono} onChange={e => setEditAdminTelefono(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
-                             </div>
-                             <div>
+                                <input type="text" value={editTelefono} onChange={e => setEditTelefono(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Asociación *</label>
+                                <select value={editAsociacionId} onChange={e => setEditAsociacionId(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--card-bg)' }}>
+                                    <option value="">Seleccione una asociación...</option>
+                                    {asociaciones.map(a => (
+                                        <option key={a.id} value={a.id}>{a.nombre}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Cambiar Contraseña (Opcional)</label>
-                                <PasswordInput placeholder="Nueva contraseña" value={editAdminPin} onChange={e => setEditAdminPin(e.target.value)} style={{ padding: '8px 40px 8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
-                             </div>
-                             <div style={{ display: 'flex', gap: '8px' }}>
-                                 <button type="submit" disabled={cargando} style={{ background: 'var(--secondary)', color: '#ffffff', padding: '10px 16px', borderRadius: '4px', fontWeight: 700, fontSize: '0.85rem' }}>Guardar</button>
-                                 <button type="button" onClick={() => setEditAdminId(null)} style={{ background: '#f3f4f6', color: 'var(--text-secondary)', padding: '10px 16px', borderRadius: '4px', fontWeight: 600, fontSize: '0.85rem' }}>Cancelar</button>
-                             </div>
-                         </form>
-                     ) : (
-                         <form onSubmit={handleRegisterAdmin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                             <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>Registrar Administrador de Mercado</h3>
-                             <div>
-                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Nombre Completo *</label>
-                                 <input type="text" placeholder="Ej. Roberto Gomez" value={nombre} onChange={e => setNombre(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
-                             </div>
-                             <div>
-                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Carnet de Identidad (CI) *</label>
-                                 <div style={{ display: 'flex', gap: '8px' }}>
-                                     <input type="text" placeholder="Ej. 9876543" value={ci} onChange={e => setCi(e.target.value)} required style={{ flexGrow: 1, padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
-                                     <select value={expedido} onChange={e => setExpedido(e.target.value)} required style={{ padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--card-bg)' }}>
-                                         <option value="SC">SC</option>
-                                         <option value="LP">LP</option>
-                                         <option value="CB">CB</option>
-                                         <option value="OR">OR</option>
-                                         <option value="PT">PT</option>
-                                         <option value="TJ">TJ</option>
-                                         <option value="CH">CH</option>
-                                         <option value="BE">BE</option>
-                                         <option value="PD">PD</option>
-                                     </select>
-                                 </div>
-                             </div>
-                             <div>
-                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Teléfono *</label>
-                                 <input type="text" placeholder="Ej. 71234567" value={telefono} onChange={e => setTelefono(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
-                             </div>
-                              <div>
-                                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Contraseña Inicial *</label>
-                                  <PasswordInput placeholder="Contraseña segura" value={pin} onChange={e => setPin(e.target.value)} required style={{ padding: '8px 40px 8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
-                              </div>
-                                 <button type="submit" disabled={cargando} style={{ background: 'var(--secondary)', color: '#ffffff', padding: '10px 16px', borderRadius: '4px', fontWeight: 700, fontSize: '0.85rem' }}>Registrar</button>
+                                <PasswordInput placeholder="Nueva contraseña" value={editPin} onChange={e => setEditPin(e.target.value)} style={{ padding: '8px 40px 8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <button type="submit" disabled={cargando} style={{ background: 'var(--secondary)', color: '#ffffff', padding: '10px 16px', borderRadius: '4px', fontWeight: 700, fontSize: '0.85rem' }}>Guardar</button>
+                                <button type="button" onClick={() => setEditId(null)} style={{ background: '#f3f4f6', color: 'var(--text-secondary)', padding: '10px 16px', borderRadius: '4px', fontWeight: 600, fontSize: '0.85rem' }}>Cancelar</button>
+                            </div>
+                        </form>
+                    ) : (
+                        <form onSubmit={handleCreateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0 }}>Registrar Administrador de Asociación</h3>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Nombre completo *</label>
+                                <input type="text" placeholder="Ej. Roberto Gómez" value={nombre} onChange={e => setNombre(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Carnet de Identidad (CI) *</label>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <input type="text" placeholder="Ej. 1234567" value={ci} onChange={e => setCi(e.target.value)} required style={{ flexGrow: 1, padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                                    <select value={expedido} onChange={e => setExpedido(e.target.value)} required style={{ padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--card-bg)' }}>
+                                        <option value="SC">SC</option>
+                                        <option value="LP">LP</option>
+                                        <option value="CB">CB</option>
+                                        <option value="OR">OR</option>
+                                        <option value="PT">PT</option>
+                                        <option value="TJ">TJ</option>
+                                        <option value="CH">CH</option>
+                                        <option value="BE">BE</option>
+                                        <option value="PD">PD</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Teléfono *</label>
+                                <input type="text" placeholder="Ej. 77712345" value={telefono} onChange={e => setTelefono(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Asociación *</label>
+                                <select value={asociacionId} onChange={e => setAsociacionId(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--card-bg)' }}>
+                                    <option value="">Seleccione una asociación...</option>
+                                    {asociaciones.map(a => (
+                                        <option key={a.id} value={a.id}>{a.nombre}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Contraseña de Acceso *</label>
+                                <PasswordInput placeholder="Contraseña de ingreso" value={pin} onChange={e => setPin(e.target.value)} required style={{ padding: '8px 40px 8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                            </div>
+                            <button type="submit" disabled={cargando} style={{ background: 'var(--secondary)', color: '#ffffff', padding: '10px 16px', borderRadius: '4px', fontWeight: 700, fontSize: '0.85rem' }}>Registrar</button>
                         </form>
                     )}
                 </div>
@@ -206,44 +252,49 @@ export const GestionAdministradores: React.FC = () => {
                 {/* Right Side: Data Table */}
                 <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '24px', boxShadow: 'var(--shadow-md)' }}>
                     <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 16px 0' }}>
-                        Administradores de Mercado Registrados
+                        Dirigentes y Asociaciones que Presiden
                     </h3>
                     <div className="table-responsive">
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
                             <thead>
-                                    <tr style={{ borderBottom: '2px solid var(--border-color)', color: 'var(--text-secondary)' }}>
-                                        <th style={{ padding: '8px' }}>Nombre</th>
-                                        <th style={{ padding: '8px' }}>CI</th>
-                                        <th style={{ padding: '8px' }}>Teléfono</th>
-                                        <th style={{ padding: '8px', textAlign: 'center' }}>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {admins.map((adm: any) => (
-                                        <tr key={adm.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                                            <td style={{ padding: '8px', fontWeight: 600 }}>{adm.nombre}</td>
-                                            <td style={{ padding: '8px' }}>{adm.ci} {adm.expedido || ''}</td>
-                                            <td style={{ padding: '8px' }}>{adm.telefono || '---'}</td>
-                                            <td style={{ padding: '8px', textAlign: 'center', display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                <tr style={{ borderBottom: '2px solid var(--border-color)', color: 'var(--text-secondary)' }}>
+                                    <th style={{ padding: '8px' }}>Nombre</th>
+                                    <th style={{ padding: '8px' }}>CI</th>
+                                    <th style={{ padding: '8px' }}>Teléfono</th>
+                                    <th style={{ padding: '8px' }}>Asociación Asignada</th>
+                                    <th style={{ padding: '8px', textAlign: 'center' }}>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {admins.map((adm: any) => (
+                                    <tr key={adm.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                                        <td style={{ padding: '8px', fontWeight: 600 }}>{adm.nombre}</td>
+                                        <td style={{ padding: '8px' }}>{adm.ci} {adm.expedido || ''}</td>
+                                        <td style={{ padding: '8px' }}>{adm.telefono || '---'}</td>
+                                        <td style={{ padding: '8px', fontWeight: 600, color: 'var(--primary)' }}>
+                                            {adm.asociacionNombre || 'Ninguna'}
+                                        </td>
+                                        <td style={{ padding: '8px', textAlign: 'center' }}>
+                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                                                 <button onClick={() => {
-                                                    setEditAdminId(adm.id);
-                                                    setEditAdminNombre(adm.nombre);
-                                                    setEditAdminCi(adm.ci);
-                                                    setEditAdminExpedido(adm.expedido || "");
-                                                    setEditAdminTelefono(adm.telefono || "");
-                                                    setEditAdminPin("");
+                                                    setEditId(adm.id);
+                                                    setEditNombre(adm.nombre);
+                                                    setEditTelefono(adm.telefono || "");
+                                                    setEditAsociacionId(adm.asociacionId ? adm.asociacionId.toString() : "");
+                                                    setEditPin("");
                                                 }} style={{ color: 'var(--primary)', fontWeight: 700 }}>Editar</button>
-                                                <button onClick={() => handleEliminarAdmin(adm.id, adm.nombre)} style={{ color: '#ef4444', fontWeight: 700 }}>Dar de Baja</button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {admins.length === 0 && (
-                                        <tr>
-                                            <td colSpan={4} style={{ padding: '16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                                                No hay administradores de mercado registrados.
-                                            </td>
-                                        </tr>
-                                    )}
+                                                <button onClick={() => handleEliminar(adm.id, adm.nombre)} style={{ color: '#ef4444', fontWeight: 700 }}>Dar de Baja</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {admins.length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} style={{ padding: '16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                                            No hay administradores de asociación registrados.
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>

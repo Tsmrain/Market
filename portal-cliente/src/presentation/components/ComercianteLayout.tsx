@@ -61,7 +61,7 @@ export const ComercianteLayout: React.FC = () => {
                         onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'}
                         onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'}
                     >
-                        Ir al Mercado
+                        Ver Catálogo Público
                     </Link>
                     <button 
                         onClick={() => { logout(); navigate('/'); }}
@@ -135,6 +135,20 @@ export const ComercianteLayout: React.FC = () => {
                         })}
                     >
                         Mi Perfil / Negocio
+                    </NavLink>
+                    <NavLink
+                        to="/panel/pagos"
+                        style={({ isActive }) => ({
+                            padding: '12px 16px',
+                            fontSize: '0.9rem',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                            color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
+                            borderBottom: isActive ? '3px solid var(--primary)' : '3px solid transparent',
+                            background: 'none'
+                        })}
+                    >
+                        Historial de Pagos
                     </NavLink>
                 </nav>
 

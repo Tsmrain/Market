@@ -1,6 +1,6 @@
 package com.mutualista.mercado.presentation.controller;
 import com.mutualista.mercado.domain.Cliente;
-import com.mutualista.mercado.repository.ClienteRepository;
+import com.mutualista.mercado.domain.repository.ClienteRepository;
 
 
 import org.springframework.web.bind.annotation.*;

@@ -1,107 +1,27 @@
 package com.mutualista.mercado.presentation.controller;
-import com.mutualista.mercado.domain.AdministradorMercado;
+
 import com.mutualista.mercado.domain.UnidadMedidaMaestra;
-import com.mutualista.mercado.repository.AdministradorMercadoRepository;
-import com.mutualista.mercado.repository.UnidadMedidaMaestraRepository;
+import com.mutualista.mercado.domain.ParametroSistema;
+import com.mutualista.mercado.domain.repository.UnidadMedidaMaestraRepository;
+import com.mutualista.mercado.domain.repository.ParametroSistemaRepository;
 
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/superadmin")
 @CrossOrigin(origins = "*")
 public class SuperAdminController {
 
-    private final AdministradorMercadoRepository adminRepo;
     private final UnidadMedidaMaestraRepository unidadRepo;
+    private final ParametroSistemaRepository paramRepo;
 
-    public SuperAdminController(AdministradorMercadoRepository adminRepo, UnidadMedidaMaestraRepository unidadRepo) {
-        this.adminRepo = adminRepo;
+    public SuperAdminController(UnidadMedidaMaestraRepository unidadRepo, ParametroSistemaRepository paramRepo) {
         this.unidadRepo = unidadRepo;
-    }
-
-    // ==========================================
-    // CRUD ADMINISTRADORES
-    // ==========================================
-
-    @GetMapping("/administradores")
-    @Transactional(readOnly = true)
-    public List<Map<String, Object>> listarAdministradores() {
-        return adminRepo.findByEliminadoFalse().stream()
-            .filter(a -> !"SUPERADMIN".equals(a.getRol()))
-            .map(a -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", a.getId());
-            map.put("ci", a.getCi());
-            map.put("expedido", a.getExpedido());
-            map.put("nombre", a.getNombre());
-            map.put("telefono", a.getTelefono());
-            return map;
-        }).collect(Collectors.toList());
-    }
-
-    @PostMapping("/administradores")
-    @Transactional
-    public Map<String, String> registrarAdministrador(@RequestBody Map<String, String> payload) {
-        String ci = payload.get("ci");
-        String expedido = payload.get("expedido");
-        String pin = payload.get("pin");
-        String nombre = payload.get("nombre");
-        String telefono = payload.get("telefono");
-
-        if (ci == null || expedido == null || pin == null || nombre == null || telefono == null) {
-            throw new IllegalArgumentException("Todos los campos son obligatorios.");
-        }
-
-        if (pin.trim().isEmpty()) {
-            throw new IllegalArgumentException("La contraseña/PIN no puede estar vacía.");
-        }
-
-        if (adminRepo.findByCi(ci).isPresent()) {
-            throw new RuntimeException("Ya existe un administrador con ese CI.");
-        }
-
-        AdministradorMercado nuevo = new AdministradorMercado(ci, expedido, pin, nombre, telefono);
-        adminRepo.save(nuevo);
-        return Map.of("mensaje", "Administrador registrado exitosamente.");
-    }
-
-    @PutMapping("/administradores/{id}")
-    @Transactional
-    public Map<String, String> editarAdministrador(@PathVariable Long id, @RequestBody Map<String, String> payload) {
-        AdministradorMercado a = adminRepo.findById(id).orElseThrow();
-        
-        if ("SUPERADMIN".equals(a.getRol())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No se puede editar la cuenta del Superadministrador del Sistema");
-        }
-
-        String pin = payload.get("pin");
-        String telefono = payload.get("telefono");
-        a.actualizarDatos(payload.get("nombre"), pin != null && !pin.isEmpty() ? pin : null, telefono);
-        adminRepo.save(a);
-        return Map.of("mensaje", "Administrador actualizado exitosamente.");
-    }
-
-    @DeleteMapping("/administradores/{id}")
-    @Transactional
-    public Map<String, String> darDeBajaAdministrador(@PathVariable Long id) {
-        AdministradorMercado a = adminRepo.findById(id).orElseThrow();
-
-        if ("SUPERADMIN".equals(a.getRol())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No se puede eliminar la cuenta del Superadministrador del Sistema");
-        }
-
-        a.eliminarLogicamente();
-        adminRepo.save(a);
-        return Map.of("mensaje", "Administrador de mercado dado de baja.");
+        this.paramRepo = paramRepo;
     }
 
     // ==========================================
@@ -158,5 +78,35 @@ public class SuperAdminController {
             .orElseThrow(() -> new RuntimeException("Unidad de medida no encontrada"));
         unidadRepo.delete(uni);
         return Map.of("mensaje", "Unidad de medida eliminada correctamente.");
+    }
+
+    // ==========================================
+    // PARÁMETROS DEL SISTEMA
+    // ==========================================
+
+    @GetMapping("/parametros/{clave}")
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> obtenerParametro(@PathVariable String clave) {
+        return paramRepo.findById(clave)
+            .map(p -> ResponseEntity.ok(p))
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/parametros/{clave}")
+    @Transactional
+    public ResponseEntity<?> actualizarParametro(
+            @PathVariable String clave,
+            @RequestBody Map<String, String> payload) {
+        
+        String valor = payload.get("valor");
+        if (valor == null || valor.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "El valor del parámetro es obligatorio."));
+        }
+        
+        ParametroSistema param = paramRepo.findById(clave)
+            .orElseGet(() -> new ParametroSistema(clave, valor));
+        param.setValor(valor.trim());
+        paramRepo.save(param);
+        return ResponseEntity.ok(param);
     }
 }

@@ -1,4 +1,4 @@
-package com.mutualista.mercado.repository;
+package com.mutualista.mercado.domain.repository;
 import com.mutualista.mercado.domain.Cliente;
 
 

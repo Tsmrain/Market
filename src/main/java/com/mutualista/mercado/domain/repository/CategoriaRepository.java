@@ -1,4 +1,4 @@
-package com.mutualista.mercado.repository;
+package com.mutualista.mercado.domain.repository;
 import com.mutualista.mercado.domain.Categoria;
 
 
@@ -13,6 +13,6 @@ public interface CategoriaRepository extends CrudRepository<Categoria, Long> {
     List<Categoria> findByEliminadoFalse();
 
     // Pure Fabrication: Vista Pública
-    @Query("SELECT DISTINCT c FROM Categoria c WHERE c.eliminado = false AND EXISTS (SELECT p FROM Producto p WHERE (p.categoria = c OR p.categoria.categoriaPadre = c) AND p.eliminado = false)")
+    @Query("SELECT DISTINCT c FROM Categoria c WHERE c.eliminado = false AND EXISTS (SELECT p FROM Comerciante com JOIN com.catalogo p WHERE (p.categoria = c OR p.categoria.categoriaPadre = c) AND com.cuentaHabilitada = true AND com.eliminado = false AND p.eliminado = false)")
     List<Categoria> findCategoriasConProductosActivos();
 }

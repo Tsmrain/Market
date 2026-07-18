@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Comerciante {
@@ -26,10 +27,19 @@ public class Comerciante {
     
     // Estado para Borrado Lógico
     private boolean eliminado = false;
+    private boolean cuentaHabilitada = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "asociacion_id")
+    private Asociacion asociacion;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "comerciante_id")
     private List<Producto> catalogo = new ArrayList<>(); 
+
+    @OneToMany(mappedBy = "comerciante", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<CuotaMensual> cuotas = new ArrayList<>();
 
     protected Comerciante() {} 
 
@@ -109,6 +119,49 @@ public class Comerciante {
     public String getTelefono() { return telefono; }
     public String getExpedido() { return expedido; }
     public String getNumeroPuesto() { return numeroPuesto; }
+    public void setNumeroPuesto(String numeroPuesto) { this.numeroPuesto = numeroPuesto; }
     public int getClicsContacto() { return clicsContacto; }
     public boolean isEliminado() { return eliminado; }
+    
+    public Asociacion getAsociacion() { return asociacion; }
+    public void setAsociacion(Asociacion asociacion) { this.asociacion = asociacion; }
+    
+    public boolean isCuentaHabilitada() { return cuentaHabilitada; }
+    public void setCuentaHabilitada(boolean cuentaHabilitada) { this.cuentaHabilitada = cuentaHabilitada; }
+
+    public List<CuotaMensual> getCuotas() { return cuotas; }
+    public void setCuotas(List<CuotaMensual> cuotas) { this.cuotas = cuotas; }
+
+    public String obtenerProximaFechaPago() {
+        if (this.cuotas == null || this.cuotas.isEmpty()) {
+            return "Sin facturas registradas";
+        }
+
+        java.util.Optional<CuotaMensual> ultimaOpt = this.cuotas.stream()
+            .max(java.util.Comparator.comparing(CuotaMensual::getAnio)
+                .thenComparing(CuotaMensual::getMes));
+
+        if (ultimaOpt.isPresent()) {
+            CuotaMensual ultima = ultimaOpt.get();
+            if (ultima.getEstado() == EstadoCuota.PAGADO) {
+                java.time.LocalDate next = ultima.getFechaGeneracion().plusMonths(1);
+                String mesNombre = next.getMonth().getDisplayName(
+                    java.time.format.TextStyle.FULL, 
+                    new java.util.Locale("es", "BO")
+                );
+                mesNombre = mesNombre.substring(0, 1).toUpperCase() + mesNombre.substring(1).toLowerCase();
+                return next.getDayOfMonth() + " de " + mesNombre + " de " + next.getYear();
+            } else {
+                java.time.LocalDate venc = ultima.getFechaGeneracion();
+                String mesNombre = venc.getMonth().getDisplayName(
+                    java.time.format.TextStyle.FULL, 
+                    new java.util.Locale("es", "BO")
+                );
+                mesNombre = mesNombre.substring(0, 1).toUpperCase() + mesNombre.substring(1).toLowerCase();
+                String vencStr = venc.getDayOfMonth() + " de " + mesNombre + " de " + venc.getYear();
+                return "Vencida (Expiró el " + vencStr + ")";
+            }
+        }
+        return "Sin facturas registradas";
+    }
 }

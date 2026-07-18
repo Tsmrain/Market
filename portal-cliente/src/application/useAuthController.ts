@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 export interface UsuarioSesion {
     id: number;
     nombre: string;
-    rol: 'COMERCIANTE' | 'CLIENTE' | 'ADMIN' | 'SUPERADMIN';
+    rol: 'COMERCIANTE' | 'CLIENTE' | 'ADMIN' | 'SUPERADMIN' | 'ADMIN_ASOCIACION';
+    nombreAsociacion?: string;
+    token?: string;
 }
 
 export const useAuthController = () => {
@@ -16,7 +18,6 @@ export const useAuthController = () => {
                 return null;
             }
         }
-        // Fallback de cliente para permitir reseñas e intereses en el portal
         return { id: 500, nombre: "Invitado", rol: "CLIENTE" };
     });
 
@@ -38,31 +39,7 @@ export const useAuthController = () => {
     }, []);
 
     const loginComerciante = async (ci: string, pin: string): Promise<void> => {
-        // 1. Intentar primero con el endpoint de Administradores y SuperAdmin
-        try {
-            const adminResponse = await fetch('http://localhost:8080/api/auth/admins/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ci, pin })
-            });
-
-            if (adminResponse.ok) {
-                const data = await adminResponse.json();
-                const sesion: UsuarioSesion = {
-                    id: data.id,
-                    nombre: data.nombre,
-                    rol: data.rol
-                };
-                localStorage.setItem('usuario_sesion', JSON.stringify(sesion));
-                setUsuario(sesion);
-                return;
-            }
-        } catch (e) {
-            // Ignorar y seguir al flujo de comerciante
-        }
-
-        // 2. Flujo regular de Comerciantes si no es un Admin
-        const response = await fetch('http://localhost:8080/api/auth/comerciantes/login', {
+        const response = await originalFetch('http://localhost:8080/api/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -75,18 +52,20 @@ export const useAuthController = () => {
             throw new Error(data.error || 'Credenciales incorrectas');
         }
 
-        const data = await response.json(); // { id, nombre, rol }
+        const data = await response.json();
         const sesion: UsuarioSesion = {
             id: data.id,
             nombre: data.nombre,
-            rol: data.rol
+            rol: data.rol,
+            nombreAsociacion: data.nombreAsociacion,
+            token: data.token
         };
         localStorage.setItem('usuario_sesion', JSON.stringify(sesion));
         setUsuario(sesion);
     };
 
     const loginCliente = async (ci: string, pin: string): Promise<void> => {
-        const response = await fetch('http://localhost:8080/api/auth/clientes/login', {
+        const response = await originalFetch('http://localhost:8080/api/auth/clientes/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -99,18 +78,19 @@ export const useAuthController = () => {
             throw new Error(data.error || 'Credenciales incorrectas');
         }
 
-        const data = await response.json(); // { id, nombre, rol }
+        const data = await response.json();
         const sesion: UsuarioSesion = {
             id: data.id,
             nombre: data.nombre,
-            rol: data.rol
+            rol: data.rol,
+            token: data.token
         };
         localStorage.setItem('usuario_sesion', JSON.stringify(sesion));
         setUsuario(sesion);
     };
 
     const registrarCliente = async (ci: string, expedido: string, pin: string, nombre: string, celular: string): Promise<void> => {
-        const response = await fetch('http://localhost:8080/api/auth/clientes/registro', {
+        const response = await originalFetch('http://localhost:8080/api/auth/clientes/registro', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -123,11 +103,12 @@ export const useAuthController = () => {
             throw new Error(data.error || 'Error al registrarse');
         }
 
-        const data = await response.json(); // { id, nombre, rol }
+        const data = await response.json();
         const sesion: UsuarioSesion = {
             id: data.id,
             nombre: data.nombre,
-            rol: data.rol
+            rol: data.rol,
+            token: data.token
         };
         localStorage.setItem('usuario_sesion', JSON.stringify(sesion));
         setUsuario(sesion);
@@ -138,11 +119,15 @@ export const useAuthController = () => {
         setUsuario({ id: 500, nombre: "Invitado", rol: "CLIENTE" });
     };
 
+    // Referencia interna al fetch nativo sin interceptar para evitar bucles durante el login
+    const originalFetch = window.fetch;
+
     return { 
         usuario, 
         estaAutenticado: usuario !== null && usuario.id !== 500,
         esComerciante: usuario !== null && usuario.rol === 'COMERCIANTE',
-        esAdmin: usuario !== null && usuario.rol === 'ADMIN',
+        esAdmin: usuario !== null && (usuario.rol === 'ADMIN' || usuario.rol === 'ADMIN_ASOCIACION'),
+        esAdminAsociacion: usuario !== null && usuario.rol === 'ADMIN_ASOCIACION',
         esSuperAdmin: usuario !== null && usuario.rol === 'SUPERADMIN',
         esCliente: usuario !== null && usuario.rol === 'CLIENTE' && usuario.id !== 500,
         loginComerciante,

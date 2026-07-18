@@ -2,35 +2,42 @@ import React, { useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDetalleController } from '../../application/useDetalleController';
 import { CatalogoService } from '../../application/CatalogoService';
-
+import { useTranslation } from 'react-i18next';
 
 export const ProductoDetallePage: React.FC = () => {
-    // 1. Extraemos el ID de la URL
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const location = useLocation();
+    const { t } = useTranslation();
     
-    // 2. Delegamos al controlador
     const { producto, cargando, usuario, estaAutenticado, handleMeInteresa, handleResena } = useDetalleController(id);
 
     const [comentario, setComentario] = useState("");
     const [calificacion, setCalificacion] = useState(5);
     const [mediaActiva, setMediaActiva] = useState<{ id?: number; url: string; tipo: string } | null>(null);
 
-    // Mapea comerciante basado en nombre de producto
+    // UC-A5 (Contactar al Comerciante) - Restringido a usuarios autenticados
     const handleContactar = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (!estaAutenticado) {
             navigate('/login/cliente', { state: { from: location.pathname } });
             return;
         }
-        if (!producto || !producto.idComerciante || !usuario) return;
+        if (!producto || !producto.telefonoComerciante) return;
+        
         try {
-            const url = await CatalogoService.contactarComerciante(producto.idComerciante, producto.id, usuario.id);
-            window.open(url, '_blank', 'noopener,noreferrer');
+            // Intenta registrar la interacción en segundo plano si está logueado
+            if (usuario && usuario.id && producto.idComerciante !== undefined) {
+                await CatalogoService.contactarComerciante(producto.idComerciante!, producto.id, usuario.id);
+            }
         } catch (error) {
-            console.error("Error al contactar comerciante", error);
+            console.error("Error al registrar contacto", error);
         }
+
+        const telefono = producto.telefonoComerciante;
+        const texto = "Hola " + (producto.nombreComerciante || "comerciante") + ". Estoy interesado en su producto: " + producto.nombre + " que vi en la plataforma del Mercado Mutualista.";
+        const url = "https://wa.me/591" + telefono + "?text=" + encodeURIComponent(texto);
+        window.open(url, '_blank', 'noopener,noreferrer');
     };
 
     const renderStars = (rating: number) => {
@@ -69,7 +76,7 @@ export const ProductoDetallePage: React.FC = () => {
                 color: 'var(--primary)',
                 fontWeight: 600
             }}>
-                Cargando información del producto...
+                {t('cargando_producto')}
             </div>
         );
     }
@@ -84,9 +91,9 @@ export const ProductoDetallePage: React.FC = () => {
                 justifyContent: 'center',
                 gap: '16px'
             }}>
-                <h2 style={{ color: 'var(--text-primary)' }}>Producto no encontrado</h2>
+                <h2 style={{ color: 'var(--text-primary)' }}>{t('producto_no_disponible')}</h2>
                 <Link to="/" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
-                    ← Volver al Catálogo
+                    {t('atras')}
                 </Link>
             </div>
         );
@@ -118,7 +125,7 @@ export const ProductoDetallePage: React.FC = () => {
                         <line x1="19" y1="12" x2="5" y2="12"></line>
                         <polyline points="12 19 5 12 12 5"></polyline>
                     </svg>
-                    Volver al Catálogo
+                    {t('atras')}
                 </Link>
             </div>
 
@@ -140,118 +147,79 @@ export const ProductoDetallePage: React.FC = () => {
                     gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
                     gap: '32px'
                 }}>
-                    {/* Left Column: Gallery & Upload tool */}
+                    {/* Left Column: Gallery */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         {galeria.length === 0 ? (
-                            /* Imagen no disponible */
                             <div style={{
-                                position: 'relative',
                                 width: '100%',
-                                paddingTop: '75%', /* 4:3 Aspect Ratio */
-                                background: 'var(--primary-bg)',
-                                borderRadius: '6px',
-                                overflow: 'hidden',
-                                border: '1px solid var(--border-color)'
+                                height: '320px',
+                                background: 'var(--bg-color)',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'var(--text-light)',
+                                fontSize: '0.9rem'
                             }}>
-                                <div style={{
-                                    position: 'absolute',
-                                    top: 0, left: 0, right: 0, bottom: 0,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: 'var(--text-light)',
-                                    gap: '8px'
-                                }}>
-                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                        <polyline points="21 15 16 10 5 21"></polyline>
-                                    </svg>
-                                    <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Imagen no disponible</span>
-                                </div>
+                                Sin imagen disponible
                             </div>
                         ) : (
-                            /* Galería con imagen principal y miniaturas */
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
-                                {/* Imagen principal */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 <div style={{
-                                    position: 'relative',
                                     width: '100%',
-                                    paddingTop: '75%', /* 4:3 Aspect Ratio */
-                                    background: '#f9fafb',
-                                    borderRadius: '6px',
+                                    height: '320px',
+                                    background: 'var(--bg-color)',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '8px',
                                     overflow: 'hidden',
-                                    border: '1px solid var(--border-color)'
-                                }}>
-                                    {mediaPrincipal && mediaPrincipal.tipo === 'video' ? (
-                                        <video 
-                                            src={`http://localhost:8080${mediaPrincipal.url}`} 
-                                            controls 
-                                            style={{
-                                                position: 'absolute',
-                                                top: 0, left: 0, width: '100%', height: '100%',
-                                                objectFit: 'contain',
-                                                background: '#f9fafb'
-                                            }} 
-                                        />
-                                    ) : mediaPrincipal ? (
-                                        <img 
-                                            src={`http://localhost:8080${mediaPrincipal.url}`} 
-                                            alt={producto.nombre} 
-                                            style={{
-                                                position: 'absolute',
-                                                top: 0, left: 0, width: '100%', height: '100%',
-                                                objectFit: 'contain',
-                                                background: '#f9fafb'
-                                            }}
-                                        />
-                                    ) : null}
-                                </div>
-                                
-                                {/* Miniaturas */}
-                                <div style={{
                                     display: 'flex',
-                                    gap: '8px',
-                                    overflowX: 'auto',
-                                    paddingBottom: '6px'
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
                                 }}>
-                                    {galeria.map((item, i) => (
+                                    {mediaPrincipal?.tipo === 'video' ? (
+                                        <video 
+                                            src={mediaPrincipal.url} 
+                                            controls 
+                                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                        />
+                                    ) : (
+                                        <img 
+                                            src={mediaPrincipal?.url} 
+                                            alt={producto.nombre} 
+                                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                        />
+                                    )}
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                    {galeria.map((m) => (
                                         <button
-                                            key={i}
-                                            onClick={() => setMediaActiva(item)}
+                                            key={m.id}
+                                            onClick={() => setMediaActiva(m)}
                                             style={{
                                                 width: '60px',
-                                                height: '45px',
+                                                height: '60px',
+                                                padding: 0,
+                                                background: '#ffffff',
+                                                border: mediaPrincipal?.id === m.id ? '2px solid var(--primary)' : '1px solid var(--border-color)',
                                                 borderRadius: '4px',
                                                 overflow: 'hidden',
-                                                border: mediaPrincipal && mediaPrincipal.url === item.url ? '2.5px solid var(--secondary)' : '1px solid var(--border-color)',
-                                                padding: 0,
-                                                flexShrink: 0,
-                                                background: '#f9fafb',
-                                                position: 'relative'
+                                                cursor: 'pointer',
+                                                boxSizing: 'border-box'
                                             }}
                                         >
-                                            {item.tipo === 'video' ? (
-                                                <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#333' }}>
-                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#fff', opacity: 0.85 }}>
-                                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                                                    </svg>
+                                            {m.tipo === 'video' ? (
+                                                <div style={{ width: '100%', height: '100%', background: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '0.65rem', fontWeight: 700 }}>
+                                                    VIDEO
                                                 </div>
                                             ) : (
-                                                <img 
-                                                    src={`http://localhost:8080${item.url}`} 
-                                                    alt={`Miniatura ${i}`} 
-                                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                />
+                                                <img src={m.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                             )}
                                         </button>
                                     ))}
                                 </div>
                             </div>
                         )}
-
-
                     </div>
 
                     {/* Right Column: Info and Actions */}
@@ -281,8 +249,9 @@ export const ProductoDetallePage: React.FC = () => {
                                 {producto.nombre}
                             </h1>
 
-                            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-                                Puesto: <strong style={{ color: 'var(--text-primary)' }}>{producto.nombreComerciante || 'Puesto Desconocido'}</strong>
+                            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <p style={{ margin: 0 }}><strong>{t('comerciante')}:</strong> {producto.nombreComerciante || t('no_especificado')}</p>
+                                <p style={{ margin: 0 }}><strong>{t('puesto')}:</strong> {producto.numeroPuesto || t('no_especificado')}</p>
                             </div>
 
                             {/* Ratings section */}
@@ -297,7 +266,7 @@ export const ProductoDetallePage: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Single outstanding price */}
+                            {/* Single price */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
                                 <div style={{
                                     fontSize: '2rem',
@@ -325,12 +294,12 @@ export const ProductoDetallePage: React.FC = () => {
                                         padding: '8px 12px',
                                         borderRadius: '6px'
                                     }}>
-                                        ⚠️ Agotado temporalmente. No se admiten pedidos de este producto.
+                                        Agotado temporalmente. No se admiten pedidos de este producto.
                                     </div>
                                 )}
                             </div>
 
-                            {/* Descripción del Producto */}
+                            {/* Descripción */}
                             <div style={{ marginBottom: '24px', textAlign: 'left' }}>
                                 <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
                                     Sobre este producto
@@ -368,12 +337,13 @@ export const ProductoDetallePage: React.FC = () => {
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                                     </svg>
-                                    Contactar por WhatsApp
+                                    {t('contactar_whatsapp')}
                                 </button>
                             )}
 
                             <button 
                                 onClick={async () => {
+                                    // UC-A6 (Me interesa) - Polimorfismo: Cualquier actor autenticado
                                     if (!estaAutenticado) {
                                         navigate('/login/cliente', { state: { from: location.pathname } });
                                     } else {
@@ -390,7 +360,8 @@ export const ProductoDetallePage: React.FC = () => {
                                     fontSize: '0.9rem',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '8px'
+                                    gap: '8px',
+                                    cursor: 'pointer'
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.background = 'var(--primary)';
@@ -404,7 +375,7 @@ export const ProductoDetallePage: React.FC = () => {
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#ef4444' }}>
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                 </svg>
-                                Me Interesa
+                                {t('me_interesa')}
                             </button>
                         </div>
                     </div>
@@ -413,101 +384,98 @@ export const ProductoDetallePage: React.FC = () => {
                 {/* Reviews and comments section */}
                 <section style={{ borderTop: '1px solid var(--border-color)', marginTop: '36px', paddingTop: '32px' }}>
                     <h3 style={{ margin: '0 0 20px 0', fontSize: '1.25rem', fontWeight: 700 }}>
-                        Opiniones de clientes
+                        {t('comentarios_resenas')}
                     </h3>
 
-                    {!estaAutenticado ? (
-                        <div style={{ color: '#ef4444', background: 'rgba(239, 68, 68, 0.05)', padding: '16px', borderRadius: '6px', border: '1px solid rgba(239, 68, 68, 0.2)', marginBottom: '32px' }}>
-                            Debes iniciar sesión para dejar una opinión.
-                        </div>
-                    ) : (
-                        <div style={{
-                            background: '#ffffff',
-                            padding: '24px',
-                            borderRadius: '8px',
-                            border: '1px solid var(--border-color)',
-                            marginBottom: '32px'
-                        }}>
-                            <h4 style={{ margin: '0 0 16px 0', fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                                Deja tu reseña
-                            </h4>
-                            
-                            <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-                                    Calificación:
-                                </label>
-                                <select 
-                                    value={calificacion} 
-                                    onChange={e => setCalificacion(Number(e.target.value))}
-                                    style={{
-                                        background: '#ffffff',
-                                        color: 'var(--text-primary)',
-                                        border: '1px solid var(--border-color)',
-                                        padding: '8px 12px',
-                                        borderRadius: '6px',
-                                        fontSize: '0.9rem',
-                                        outline: 'none',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    <option value={5}>5 Estrellas (Excelente)</option>
-                                    <option value={4}>4 Estrellas (Bueno)</option>
-                                    <option value={3}>3 Estrellas (Regular)</option>
-                                    <option value={2}>2 Estrellas (Malo)</option>
-                                    <option value={1}>1 Estrella (Muy malo)</option>
-                                </select>
-                            </div>
-
-                            <div style={{ marginBottom: '20px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-                                    Comentario:
-                                </label>
-                                <textarea 
-                                    rows={3} 
-                                    placeholder="Escribe tu comentario sobre el producto..." 
-                                    value={comentario} 
-                                    onChange={e => setComentario(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        background: '#ffffff',
-                                        color: 'var(--text-primary)',
-                                        border: '1px solid var(--border-color)',
-                                        padding: '12px',
-                                        borderRadius: '6px',
-                                        fontSize: '0.9rem',
-                                        outline: 'none',
-                                        resize: 'vertical',
-                                        boxSizing: 'border-box'
-                                    }}
-                                />
-                            </div>
-
-                            <button 
-                                onClick={async () => {
-                                    if (!estaAutenticado) {
-                                        navigate('/login/cliente', { state: { from: location.pathname } });
-                                        return;
-                                    }
-                                    if (!comentario.trim()) return alert("Por favor escribe un comentario");
-                                    await handleResena(calificacion, comentario);
-                                    setComentario(""); // Limpiar campo tras éxito
-                                }} 
+                    <div style={{
+                        background: '#ffffff',
+                        padding: '24px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border-color)',
+                        marginBottom: '32px'
+                    }}>
+                        <h4 style={{ margin: '0 0 16px 0', fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                            {t('opinion_cliente')}
+                        </h4>
+                        
+                        <div style={{ marginBottom: '16px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                                {t('calificacion')}:
+                            </label>
+                            <select 
+                                value={calificacion} 
+                                onChange={e => setCalificacion(Number(e.target.value))}
                                 style={{
-                                    background: 'var(--primary)',
-                                    color: '#ffffff',
-                                    padding: '10px 20px',
-                                    fontSize: '0.9rem',
-                                    fontWeight: 600,
+                                    background: '#ffffff',
+                                    color: 'var(--text-primary)',
+                                    border: '1px solid var(--border-color)',
+                                    padding: '8px 12px',
                                     borderRadius: '6px',
-                                    boxShadow: 'var(--shadow-sm)'
+                                    fontSize: '0.9rem',
+                                    outline: 'none',
+                                    cursor: 'pointer'
                                 }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--primary-dark)'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = 'var(--primary)'}
                             >
-                                Enviar Reseña
-                            </button>
+                                <option value={5}>5 Estrellas</option>
+                                <option value={4}>4 Estrellas</option>
+                                <option value={3}>3 Estrellas</option>
+                                <option value={2}>2 Estrellas</option>
+                                <option value={1}>1 Estrella</option>
+                            </select>
                         </div>
-                    )}
+
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                                Comentario:
+                            </label>
+                            <textarea 
+                                rows={3} 
+                                placeholder={t('escribe_comentario')} 
+                                value={comentario} 
+                                onChange={e => setComentario(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    background: '#ffffff',
+                                    color: 'var(--text-primary)',
+                                    border: '1px solid var(--border-color)',
+                                    padding: '12px',
+                                    borderRadius: '6px',
+                                    fontSize: '0.9rem',
+                                    outline: 'none',
+                                    resize: 'vertical',
+                                    boxSizing: 'border-box'
+                                }}
+                            />
+                        </div>
+
+                        <button 
+                            onClick={async () => {
+                                // UC-A7 (Comentar / Reseñar) - Polimorfismo: Cualquier actor autenticado
+                                if (!estaAutenticado) {
+                                    navigate('/login/cliente', { state: { from: location.pathname } });
+                                    return;
+                                }
+                                if (!comentario.trim()) return alert("Por favor escribe un comentario");
+                                await handleResena(calificacion, comentario);
+                                setComentario("");
+                            }} 
+                            style={{
+                                background: 'var(--primary)',
+                                color: '#ffffff',
+                                padding: '10px 20px',
+                                fontSize: '0.9rem',
+                                fontWeight: 600,
+                                borderRadius: '6px',
+                                boxShadow: 'var(--shadow-sm)',
+                                border: 'none',
+                                cursor: 'pointer'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--primary-dark)'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'var(--primary)'}
+                        >
+                            {t('enviar_resena')}
+                        </button>
+                    </div>
                     
                     <h4 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: 600 }}>
                         Comentarios recientes
@@ -515,7 +483,7 @@ export const ProductoDetallePage: React.FC = () => {
 
                     {producto.comentarios.length === 0 ? (
                         <p style={{ color: 'var(--text-light)', fontStyle: 'italic', margin: 0 }}>
-                            Aún no hay comentarios para este producto. ¡Sé el primero en opinar!
+                            {t('sin_comentarios')}
                         </p>
                     ) : (
                         <ul style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>

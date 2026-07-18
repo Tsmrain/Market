@@ -37,7 +37,7 @@ export const LoginComerciante: React.FC = () => {
                     setError("Acceso denegado. Los administradores del sistema deben ingresar por su ruta correspondiente (/superadmin/login).");
                     return;
                 }
-                if (sesion.rol === 'ADMIN') {
+                if (sesion.rol === 'ADMIN' || sesion.rol === 'ADMIN_ASOCIACION') {
                     navigate('/admin');
                 } else if (sesion.rol === 'COMERCIANTE') {
                     navigate('/panel');

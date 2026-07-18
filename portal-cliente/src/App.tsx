@@ -19,12 +19,18 @@ import { AdminLayout } from './presentation/components/AdminLayout';
 import { ComercianteLayout } from './presentation/components/ComercianteLayout';
 
 // Import Sub-pages
-import { GestionAdministradores } from './presentation/pages/GestionAdministradores';
+
 import { GestionComerciantes } from './presentation/pages/GestionComerciantes';
+import { GestionAdministradores } from './presentation/pages/GestionAdministradores';
 import { GestionCategorias } from './presentation/pages/GestionCategorias';
 import { GestionUnidades } from './presentation/pages/GestionUnidades';
 import { MiPerfil } from './presentation/pages/MiPerfil';
 import { LoginSuperAdmin } from './presentation/pages/LoginSuperAdmin';
+import { GestionAsociaciones } from './presentation/pages/GestionAsociaciones';
+import { LiquidacionesGlobales } from './presentation/pages/LiquidacionesGlobales';
+import { PanelRecaudacion } from './presentation/pages/PanelRecaudacion';
+import { HistorialPagos } from './presentation/pages/HistorialPagos';
+import { ConfiguracionSistema } from './presentation/pages/ConfiguracionSistema';
 
 interface ProtectedRouteProps {
   element: React.ReactElement;
@@ -78,15 +84,19 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="comerciantes" element={<GestionComerciantes />} />
-            <Route path="categorias" element={<GestionCategorias />} />
+            <Route path="recaudacion" element={<PanelRecaudacion />} />
           </Route>
 
           {/* Layout SuperAdmin (Protegido) */}
           <Route path="/superadmin" element={<ProtectedRoute roleRequired="superadmin" element={<SuperAdminLayout />} />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<SuperAdminDashboard />} />
-            <Route path="administradores" element={<GestionAdministradores />} />
             <Route path="unidades" element={<GestionUnidades />} />
+            <Route path="administradores" element={<GestionAdministradores />} />
+            <Route path="asociaciones" element={<GestionAsociaciones />} />
+            <Route path="categorias" element={<GestionCategorias />} />
+            <Route path="liquidaciones" element={<LiquidacionesGlobales />} />
+            <Route path="configuracion" element={<ConfiguracionSistema />} />
           </Route>
 
           {/* Layout Comerciante (Protegido) */}
@@ -95,6 +105,7 @@ function App() {
             <Route path="mercaderia" element={<GestionCatalogo />} />
             <Route path="productos/:id/editar" element={<EditarProducto />} />
             <Route path="perfil" element={<MiPerfil />} />
+            <Route path="pagos" element={<HistorialPagos />} />
           </Route>
 
           {/* Redirección por defecto */}

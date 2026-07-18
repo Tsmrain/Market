@@ -37,11 +37,15 @@ export const AdminLayout: React.FC = () => {
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                     </svg>
-                    <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Portal Administrativo</span>
+                    <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
+                        {usuario.nombreAsociacion 
+                            ? `Portal Administrativo de ${usuario.nombreAsociacion}` 
+                            : 'Portal Administrativo'}
+                    </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <Link to="/" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>
-                        Ir al Portal Público →
+                        Ver Catálogo Público
                     </Link>
                     <button 
                         onClick={() => { logout(); navigate('/'); }}
@@ -102,8 +106,9 @@ export const AdminLayout: React.FC = () => {
                     >
                         Gestión de Comerciantes
                     </NavLink>
+
                     <NavLink
-                        to="/admin/categorias"
+                        to="/admin/recaudacion"
                         style={({ isActive }) => ({
                             padding: '12px 16px',
                             fontSize: '0.9rem',
@@ -114,7 +119,7 @@ export const AdminLayout: React.FC = () => {
                             background: 'none'
                         })}
                     >
-                        Gestión de Categorías
+                        Factura del Sistema
                     </NavLink>
                 </nav>
 

@@ -1,9 +1,9 @@
 package com.mutualista.mercado.presentation.dto;
+
 import com.mutualista.mercado.domain.Comerciante;
 import com.mutualista.mercado.domain.Multimedia;
 import com.mutualista.mercado.domain.Producto;
 import com.mutualista.mercado.domain.Resena;
-
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +25,7 @@ public class ProductoDetalleDTO {
     private Long idComerciante;
     private String nombreComerciante;
     private String telefonoComerciante;
+    private String numeroPuesto;
 
     private boolean estaDisponible;
     private String unidadMedida;
@@ -58,6 +59,7 @@ public class ProductoDetalleDTO {
             this.idComerciante = comerciante.getId();
             this.nombreComerciante = comerciante.getNombre();
             this.telefonoComerciante = comerciante.getTelefono();
+            this.numeroPuesto = comerciante.getNumeroPuesto();
         }
     }
 
@@ -74,6 +76,7 @@ public class ProductoDetalleDTO {
     public Long getIdComerciante() { return idComerciante; }
     public String getNombreComerciante() { return nombreComerciante; }
     public String getTelefonoComerciante() { return telefonoComerciante; }
+    public String getNumeroPuesto() { return numeroPuesto; }
     public boolean isEstaDisponible() { return estaDisponible; }
     public String getUnidadMedida() { return unidadMedida; }
     public String getDescripcion() { return descripcion; }

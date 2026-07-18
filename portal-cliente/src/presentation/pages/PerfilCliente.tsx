@@ -75,6 +75,9 @@ export const PerfilCliente: React.FC = () => {
             );
             setMensaje("¡Perfil actualizado con éxito!");
             setPin("");
+            setTimeout(() => {
+                navigate('/');
+            }, 1000);
         } catch (err: any) {
             console.error(err);
             setError(err.message || "Error al actualizar el perfil.");

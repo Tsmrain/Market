@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuthController } from '../../application/useAuthController';
+import { useTranslation } from 'react-i18next';
 
 interface HeaderProps {
     onSearch: (term: string) => void;
@@ -7,6 +8,11 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
     const { usuario, logout } = useAuthController();
+    const { t, i18n } = useTranslation();
+
+    const changeLanguage = (lng: string) => {
+        i18n.changeLanguage(lng);
+    };
 
     return (
         <header style={{
@@ -51,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             >
                 <input 
                     type="text" 
-                    placeholder="Buscar productos..." 
+                    placeholder={t('buscar_productos')} 
                     onChange={(e) => onSearch(e.target.value)}
                     style={{
                         width: '100%',
@@ -78,123 +84,134 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                 </div>
             </div>
 
-            {/* Profile Section */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                {usuario && usuario.id !== 500 ? (
-                    <>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            background: 'rgba(255, 255, 255, 0.1)',
-                            padding: '6px 12px',
-                            borderRadius: '20px',
-                            fontSize: '0.85rem'
-                        }}>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                            </svg>
-                            <span>{usuario.nombre}</span>
-                        </div>
-                        {usuario.rol === 'CLIENTE' && (
-                            <a 
-                                href="/perfil"
+            {/* Profile Section & i18n Selector */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                {/* Selector de idioma corporativo sin emojis */}
+                <div style={{ display: 'flex', gap: '8px', fontSize: '0.8rem', fontWeight: 600, alignItems: 'center' }}>
+                    <span onClick={() => changeLanguage('es')} style={{ cursor: 'pointer', color: i18n.language === 'es' ? 'var(--secondary)' : '#ffffff', opacity: i18n.language === 'es' ? 1 : 0.6, transition: 'opacity 0.2s' }}>ES</span>
+                    <span style={{ opacity: 0.3 }}>|</span>
+                    <span onClick={() => changeLanguage('en')} style={{ cursor: 'pointer', color: i18n.language === 'en' ? 'var(--secondary)' : '#ffffff', opacity: i18n.language === 'en' ? 1 : 0.6, transition: 'opacity 0.2s' }}>EN</span>
+                    <span style={{ opacity: 0.3 }}>|</span>
+                    <span onClick={() => changeLanguage('pt-BR')} style={{ cursor: 'pointer', color: i18n.language === 'pt-BR' ? 'var(--secondary)' : '#ffffff', opacity: i18n.language === 'pt-BR' ? 1 : 0.6, transition: 'opacity 0.2s' }}>PT</span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {usuario && usuario.id !== 500 ? (
+                        <>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                background: 'rgba(255, 255, 255, 0.1)',
+                                padding: '6px 12px',
+                                borderRadius: '20px',
+                                fontSize: '0.85rem'
+                            }}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                                <span>{usuario.nombre}</span>
+                            </div>
+                            {usuario.rol === 'CLIENTE' && (
+                                <a 
+                                    href="/perfil"
+                                    style={{
+                                        color: '#ffffff',
+                                        background: 'rgba(255, 255, 255, 0.15)',
+                                        borderRadius: '4px',
+                                        padding: '4px 10px',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 600,
+                                        textDecoration: 'none',
+                                        transition: 'background 0.2s'
+                                    }}
+                                >
+                                    {t('mi_perfil')}
+                                </a>
+                            )}
+                            {usuario.rol !== 'CLIENTE' && (
+                                <a 
+                                    href={usuario.rol === 'ADMIN' ? "/admin" : "/panel"}
+                                    style={{
+                                        color: '#ffffff',
+                                        background: 'var(--secondary)',
+                                        borderRadius: '4px',
+                                        padding: '4px 10px',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 600,
+                                        textDecoration: 'none',
+                                        transition: 'background 0.2s'
+                                    }}
+                                >
+                                    {t('panel')} →
+                                </a>
+                            )}
+                            <button 
+                                onClick={logout}
                                 style={{
-                                    color: '#ffffff',
-                                    background: 'rgba(255, 255, 255, 0.15)',
+                                    background: 'rgba(239, 68, 68, 0.2)',
+                                    color: '#ef4444',
+                                    border: '1px solid rgba(239, 68, 68, 0.3)',
                                     borderRadius: '4px',
                                     padding: '4px 10px',
                                     fontSize: '0.8rem',
                                     fontWeight: 600,
-                                    textDecoration: 'none',
+                                    cursor: 'pointer',
                                     transition: 'background 0.2s'
                                 }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.3)'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'}
                             >
-                                Mi Perfil
-                            </a>
-                        )}
-                        {usuario.rol !== 'CLIENTE' && (
+                                {t('salir')}
+                            </button>
+                        </>
+                    ) : (
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                             <a 
-                                href={usuario.rol === 'ADMIN' ? "/admin" : "/panel"}
+                                href="/login/cliente"
+                                style={{
+                                    color: '#ffffff',
+                                    background: 'rgba(255, 255, 255, 0.1)',
+                                    textDecoration: 'none',
+                                    borderRadius: '4px',
+                                    padding: '6px 12px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 600
+                                }}
+                            >
+                                {t('ingresar')}
+                            </a>
+                            <a 
+                                href="/registro/cliente"
                                 style={{
                                     color: '#ffffff',
                                     background: 'var(--secondary)',
-                                    borderRadius: '4px',
-                                    padding: '4px 10px',
-                                    fontSize: '0.8rem',
-                                    fontWeight: 600,
                                     textDecoration: 'none',
-                                    transition: 'background 0.2s'
+                                    borderRadius: '4px',
+                                    padding: '6px 12px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 700
                                 }}
                             >
-                                Panel →
+                                {t('registrarse')}
                             </a>
-                        )}
-                        <button 
-                            onClick={logout}
-                            style={{
-                                background: 'rgba(239, 68, 68, 0.2)',
-                                color: '#ef4444',
-                                border: '1px solid rgba(239, 68, 68, 0.3)',
-                                borderRadius: '4px',
-                                padding: '4px 10px',
-                                fontSize: '0.8rem',
-                                fontWeight: 600,
-                                cursor: 'pointer',
-                                transition: 'background 0.2s'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.3)'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'}
-                        >
-                            Salir
-                        </button>
-                    </>
-                ) : (
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <a 
-                            href="/login/cliente"
-                            style={{
-                                color: '#ffffff',
-                                background: 'rgba(255, 255, 255, 0.1)',
-                                textDecoration: 'none',
-                                borderRadius: '4px',
-                                padding: '6px 12px',
-                                fontSize: '0.8rem',
-                                fontWeight: 600
-                            }}
-                        >
-                            Ingresar
-                        </a>
-                        <a 
-                            href="/registro/cliente"
-                            style={{
-                                color: '#ffffff',
-                                background: 'var(--secondary)',
-                                textDecoration: 'none',
-                                borderRadius: '4px',
-                                padding: '6px 12px',
-                                fontSize: '0.8rem',
-                                fontWeight: 700
-                            }}
-                        >
-                            Registrarse
-                        </a>
-                        <a 
-                            href="/login"
-                            style={{
-                                color: '#ffffff',
-                                textDecoration: 'none',
-                                padding: '6px 8px',
-                                fontSize: '0.8rem',
-                                fontWeight: 500,
-                                opacity: 0.8
-                            }}
-                        >
-                            Comerciantes
-                        </a>
-                    </div>
-                )}
+                            <a 
+                                href="/login"
+                                style={{
+                                    color: '#ffffff',
+                                    textDecoration: 'none',
+                                    padding: '6px 8px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 500,
+                                    opacity: 0.8
+                                }}
+                            >
+                                {t('comerciantes')}
+                            </a>
+                        </div>
+                    )}
+                </div>
             </div>
         </header>
     );

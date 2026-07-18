@@ -41,6 +41,18 @@ export const SuperAdminLayout: React.FC = () => {
                     <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Super Administrador del Sistema</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <a 
+                        href="/" 
+                        style={{
+                            color: '#ffffff',
+                            textDecoration: 'none',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            marginRight: '8px'
+                        }}
+                    >
+                        Ver Catálogo Público
+                    </a>
                     <button 
                         onClick={() => { logout(); navigate('/'); }}
                         style={{
@@ -71,7 +83,62 @@ export const SuperAdminLayout: React.FC = () => {
                     borderBottom: '1px solid var(--border-color)',
                     marginBottom: '24px',
                     gap: '8px'
-                }}>
+                }}>                    <NavLink
+                        to="/superadmin/asociaciones"
+                        style={({ isActive }) => ({
+                            padding: '12px 16px',
+                            fontSize: '0.9rem',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                            color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
+                            borderBottom: isActive ? '3px solid var(--primary)' : '3px solid transparent',
+                            background: 'none'
+                        })}
+                    >
+                        Asociaciones
+                    </NavLink>
+                    <NavLink
+                        to="/superadmin/administradores"
+                        style={({ isActive }) => ({
+                            padding: '12px 16px',
+                            fontSize: '0.9rem',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                            color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
+                            borderBottom: isActive ? '3px solid var(--primary)' : '3px solid transparent',
+                            background: 'none'
+                        })}
+                    >
+                        Administradores
+                    </NavLink>
+                    <NavLink
+                        to="/superadmin/categorias"
+                        style={({ isActive }) => ({
+                            padding: '12px 16px',
+                            fontSize: '0.9rem',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                            color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
+                            borderBottom: isActive ? '3px solid var(--primary)' : '3px solid transparent',
+                            background: 'none'
+                        })}
+                    >
+                        Categorías
+                    </NavLink>
+                    <NavLink
+                        to="/superadmin/unidades"
+                        style={({ isActive }) => ({
+                            padding: '12px 16px',
+                            fontSize: '0.9rem',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                            color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
+                            borderBottom: isActive ? '3px solid var(--primary)' : '3px solid transparent',
+                            background: 'none'
+                        })}
+                    >
+                        Datos Maestros (Unidades)
+                    </NavLink>
                     <NavLink
                         to="/superadmin/dashboard"
                         style={({ isActive }) => ({
@@ -87,7 +154,7 @@ export const SuperAdminLayout: React.FC = () => {
                         Métricas y Rendimiento
                     </NavLink>
                     <NavLink
-                        to="/superadmin/administradores"
+                        to="/superadmin/liquidaciones"
                         style={({ isActive }) => ({
                             padding: '12px 16px',
                             fontSize: '0.9rem',
@@ -98,10 +165,10 @@ export const SuperAdminLayout: React.FC = () => {
                             background: 'none'
                         })}
                     >
-                        Gestión de Administradores
+                        Liquidaciones
                     </NavLink>
                     <NavLink
-                        to="/superadmin/unidades"
+                        to="/superadmin/configuracion"
                         style={({ isActive }) => ({
                             padding: '12px 16px',
                             fontSize: '0.9rem',
@@ -112,7 +179,7 @@ export const SuperAdminLayout: React.FC = () => {
                             background: 'none'
                         })}
                     >
-                        Datos Maestros (Unidades)
+                        Configuración del Sistema
                     </NavLink>
                 </nav>
 

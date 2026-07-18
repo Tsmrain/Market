@@ -1,13 +1,16 @@
 package com.mutualista.mercado.presentation.controller;
+
 import com.mutualista.mercado.domain.Cliente;
 import com.mutualista.mercado.domain.Producto;
 import com.mutualista.mercado.presentation.dto.NuevaResenaRequest;
-import com.mutualista.mercado.repository.ClienteRepository;
-import com.mutualista.mercado.repository.ProductoRepository;
-
-
+import com.mutualista.mercado.domain.repository.ProductoRepository;
+import com.mutualista.mercado.application.ClienteService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -15,43 +18,77 @@ import org.springframework.transaction.annotation.Transactional;
 public class InteraccionClienteController {
 
     private final ProductoRepository productoRepo;
-    private final ClienteRepository clienteRepo;
+    private final ClienteService clienteService;
+    private final MessageSource messageSource;
 
-    public InteraccionClienteController(ProductoRepository productoRepo, ClienteRepository clienteRepo) {
+    public InteraccionClienteController(ProductoRepository productoRepo, 
+                                        ClienteService clienteService,
+                                        MessageSource messageSource) {
         this.productoRepo = productoRepo;
-        this.clienteRepo = clienteRepo;
+        this.clienteService = clienteService;
+        this.messageSource = messageSource;
     }
 
     // Caso de Uso: UC-A7 (Agregar Reseña)
     @PostMapping("/{idProducto}/resenas")
     @Transactional
     public String agregarResena(@PathVariable Long idProducto, @RequestBody NuevaResenaRequest request) {
-        // 1. Mediación Técnica (Indirection)
+        // 1. Obtener la identidad del actor autenticado desde el contexto de seguridad
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String actorIdStr = null;
+        String actorNombre = "Usuario";
+        if (auth != null && auth.getPrincipal() instanceof Map) {
+            Map<?, ?> principal = (Map<?, ?>) auth.getPrincipal();
+            actorIdStr = (String) principal.get("id");
+            actorNombre = (String) principal.get("nombre");
+        }
+
+        Long actorId = actorIdStr != null ? Long.parseLong(actorIdStr) : request.getIdCliente();
+        if (actorId == null) {
+            throw new RuntimeException("Usuario no autenticado");
+        }
+
         Producto producto = productoRepo.findById(idProducto)
-            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        Cliente cliente = clienteRepo.findById(request.getIdCliente())
-            .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+            .orElseThrow(() -> new RuntimeException(messageSource.getMessage("product.not.found", null, LocaleContextHolder.getLocale())));
 
-        // 2. Patrón Creator: Delegar al Dominio
+        // 2. Delegar creación/obtención del cliente sombra (Pure Fabrication / High Cohesion)
+        Cliente cliente = clienteService.obtenerOCrearClienteSombra(actorId, actorNombre);
+
+        // 3. Patrón Creator: Delegar al Dominio
         producto.agregarResena(cliente, request.getCalificacion(), request.getComentario());
-        productoRepo.save(producto); // Se guarda en cascada
+        productoRepo.save(producto);
 
-        return "Reseña agregada con éxito.";
+        return messageSource.getMessage("review.added", null, LocaleContextHolder.getLocale());
     }
 
     // Caso de Uso: UC-A6 (Marcar Interés)
     @PostMapping("/{idProducto}/interesados/{idCliente}")
     @Transactional
     public String marcarInteres(@PathVariable Long idProducto, @PathVariable Long idCliente) {
-        Producto producto = productoRepo.findById(idProducto)
-            .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        Cliente cliente = clienteRepo.findById(idCliente)
-            .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        String actorIdStr = null;
+        String actorNombre = "Usuario";
+        if (auth != null && auth.getPrincipal() instanceof Map) {
+            Map<?, ?> principal = (Map<?, ?>) auth.getPrincipal();
+            actorIdStr = (String) principal.get("id");
+            actorNombre = (String) principal.get("nombre");
+        }
 
-        // 3. Patrón Information Expert: Delegar al Dominio
+        Long actorId = actorIdStr != null ? Long.parseLong(actorIdStr) : idCliente;
+        if (actorId == null) {
+            throw new RuntimeException("Usuario no autenticado");
+        }
+
+        Producto producto = productoRepo.findById(idProducto)
+            .orElseThrow(() -> new RuntimeException(messageSource.getMessage("product.not.found", null, LocaleContextHolder.getLocale())));
+
+        // Delegar creación/obtención del cliente sombra
+        Cliente cliente = clienteService.obtenerOCrearClienteSombra(actorId, actorNombre);
+
+        // Patrón Information Expert: Delegar al Dominio
         producto.agregarInteresado(cliente);
         productoRepo.save(producto);
 
-        return "Interés registrado. Total de interesados actualmente: " + producto.getCantidadInteresados();
+        return messageSource.getMessage("interest.registered", new Object[]{ producto.getCantidadInteresados() }, LocaleContextHolder.getLocale());
     }
 }

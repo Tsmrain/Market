@@ -1,6 +1,6 @@
 package com.mutualista.mercado.application;
 import com.mutualista.mercado.domain.UnidadMedidaMaestra;
-import com.mutualista.mercado.repository.UnidadMedidaMaestraRepository;
+import com.mutualista.mercado.domain.repository.UnidadMedidaMaestraRepository;
 
 
 import org.springframework.stereotype.Service;

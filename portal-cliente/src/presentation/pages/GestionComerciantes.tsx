@@ -11,6 +11,7 @@ export const GestionComerciantes: React.FC = () => {
     const [pin, setPin] = useState("");
     const [nombre, setNombre] = useState("");
     const [telefono, setTelefono] = useState("");
+    const [numeroPuesto, setNumeroPuesto] = useState("");
 
     // Editing State (Modals/Inline Edit)
     const [editMerchantId, setEditMerchantId] = useState<number | null>(null);
@@ -19,6 +20,7 @@ export const GestionComerciantes: React.FC = () => {
     const [editMerchantPin, setEditMerchantPin] = useState("");
     const [editMerchantCi, setEditMerchantCi] = useState("");
     const [editMerchantExpedido, setEditMerchantExpedido] = useState("");
+    const [editMerchantNumeroPuesto, setEditMerchantNumeroPuesto] = useState("");
 
     // UI state
     const [cargando, setCargando] = useState(false);
@@ -44,7 +46,7 @@ export const GestionComerciantes: React.FC = () => {
         setMensaje("");
         setError("");
 
-        if (!ci.trim() || !expedido.trim() || !pin.trim() || !nombre.trim() || !telefono.trim()) {
+        if (!ci.trim() || !expedido.trim() || !pin.trim() || !nombre.trim() || !telefono.trim() || !numeroPuesto.trim()) {
             setError("Todos los campos son obligatorios.");
             return;
         }
@@ -61,26 +63,17 @@ export const GestionComerciantes: React.FC = () => {
 
         setCargando(true);
         try {
-            const response = await fetch('http://localhost:8080/api/admin/comerciantes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ci, expedido, pin, nombre, telefono })
-            });
-
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data.error || 'Error al registrar al comerciante.');
-            }
-
-            setMensaje(data.mensaje || "Comerciante registrado exitosamente.");
+            await AdminService.registrarComerciante(ci, expedido, pin, nombre, telefono, numeroPuesto);
+            setMensaje("Comerciante registrado exitosamente.");
             setCi("");
             setExpedido("SC");
             setPin("");
             setNombre("");
             setTelefono("");
+            setNumeroPuesto("");
             cargarComerciantes();
         } catch (err: any) {
-            setError(err.message || "Error al conectar con el servidor.");
+            setError(err.message || "Error al registrar al comerciante.");
         } finally {
             setCargando(false);
         }
@@ -92,8 +85,8 @@ export const GestionComerciantes: React.FC = () => {
         setMensaje("");
         setError("");
 
-        if (!editMerchantNombre.trim() || !editMerchantTelefono.trim() || !editMerchantId || !editMerchantCi.trim() || !editMerchantExpedido.trim()) {
-            setError("Carnet, Expedición, Nombre y celular son requeridos.");
+        if (!editMerchantNombre.trim() || !editMerchantTelefono.trim() || !editMerchantId || !editMerchantCi.trim() || !editMerchantExpedido.trim() || !editMerchantNumeroPuesto.trim()) {
+            setError("Carnet, Expedición, Nombre, celular y Puesto son requeridos.");
             return;
         }
 
@@ -115,11 +108,13 @@ export const GestionComerciantes: React.FC = () => {
                 editMerchantExpedido,
                 editMerchantNombre,
                 editMerchantTelefono,
+                editMerchantNumeroPuesto,
                 editMerchantPin ? editMerchantPin : undefined
             );
             setMensaje("Comerciante actualizado exitosamente.");
             setEditMerchantId(null);
             setEditMerchantPin("");
+            setEditMerchantNumeroPuesto("");
             cargarComerciantes();
         } catch (err: any) {
             setError(err.message || "Error al actualizar comerciante.");
@@ -143,6 +138,19 @@ export const GestionComerciantes: React.FC = () => {
             cargarComerciantes();
         } catch (err: any) {
             setError(err.message || "Error al dar de baja al comerciante.");
+        }
+    };
+
+    // Alternar cuenta habilitada / suspendida
+    const handleToggleHabilitado = async (id: number, nombreCom: string, actual: boolean) => {
+        setMensaje("");
+        setError("");
+        try {
+            await AdminService.cambiarEstadoLicencia(id, !actual);
+            setMensaje(`Comerciante "${nombreCom}" ${!actual ? 'habilitado' : 'suspendido'} exitosamente.`);
+            cargarComerciantes();
+        } catch (err: any) {
+            setError(err.message || "Error al cambiar el estado del comerciante.");
         }
     };
 
@@ -188,6 +196,10 @@ export const GestionComerciantes: React.FC = () => {
                                 <input type="text" value={editMerchantNombre} onChange={e => setEditMerchantNombre(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                             </div>
                             <div>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Número de Puesto *</label>
+                                <input type="text" placeholder="Ej. Puesto A-12" value={editMerchantNumeroPuesto} onChange={e => setEditMerchantNumeroPuesto(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                            </div>
+                            <div>
                                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Teléfono celular *</label>
                                 <div style={{ display: 'flex', border: '1px solid var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
                                     <span style={{ padding: '8px 10px', background: '#f3f4f6', fontSize: '0.85rem', fontWeight: 600, borderRight: '1px solid var(--border-color)' }}>+591</span>
@@ -228,7 +240,11 @@ export const GestionComerciantes: React.FC = () => {
                                 </div>
                             </div>
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Contraseña Inicial *</label>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Número de Puesto *</label>
+                                <input type="text" placeholder="Ej. Puesto A-12" value={numeroPuesto} onChange={e => setNumeroPuesto(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '6px' }}>Contraseña *</label>
                                 <input type="password" placeholder="Contraseña segura" value={pin} onChange={e => setPin(e.target.value)} required style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                             </div>
                             <div>
@@ -254,7 +270,9 @@ export const GestionComerciantes: React.FC = () => {
                                 <tr style={{ borderBottom: '2px solid var(--border-color)', color: 'var(--text-secondary)' }}>
                                     <th style={{ padding: '8px' }}>Nombre</th>
                                     <th style={{ padding: '8px' }}>CI</th>
+                                    <th style={{ padding: '8px' }}>Nro Puesto</th>
                                     <th style={{ padding: '8px' }}>Celular</th>
+                                    <th style={{ padding: '8px', textAlign: 'center' }}>Estado</th>
                                     <th style={{ padding: '8px', textAlign: 'center' }}>Acciones</th>
                                 </tr>
                             </thead>
@@ -263,7 +281,25 @@ export const GestionComerciantes: React.FC = () => {
                                     <tr key={com.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                         <td style={{ padding: '8px', fontWeight: 600 }}>{com.nombre}</td>
                                         <td style={{ padding: '8px' }}>{com.ci} {com.expedido || ''}</td>
+                                        <td style={{ padding: '8px', fontWeight: 700 }}>{com.numeroPuesto || 'S/N'}</td>
                                         <td style={{ padding: '8px' }}>+591 {com.telefono}</td>
+                                        <td style={{ padding: '8px', textAlign: 'center' }}>
+                                            <button 
+                                                onClick={() => handleToggleHabilitado(com.id, com.nombre, com.cuentaHabilitada)}
+                                                style={{
+                                                    background: com.cuentaHabilitada ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                                                    color: com.cuentaHabilitada ? '#22c55e' : '#ef4444',
+                                                    border: 'none',
+                                                    padding: '4px 10px',
+                                                    borderRadius: '12px',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: 700,
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                {com.cuentaHabilitada ? 'Habilitado' : 'Suspendido'}
+                                            </button>
+                                        </td>
                                         <td style={{ padding: '8px', textAlign: 'center', display: 'flex', gap: '8px', justifyContent: 'center' }}>
                                             <button onClick={() => {
                                                 setEditMerchantId(com.id);
@@ -271,6 +307,7 @@ export const GestionComerciantes: React.FC = () => {
                                                 setEditMerchantTelefono(com.telefono);
                                                 setEditMerchantCi(com.ci);
                                                 setEditMerchantExpedido(com.expedido || "");
+                                                setEditMerchantNumeroPuesto(com.numeroPuesto || "");
                                                 setEditMerchantPin("");
                                             }} style={{ color: 'var(--primary)', fontWeight: 700 }}>Editar</button>
                                             <button onClick={() => handleDarDeBajaComerciante(com.id, com.nombre)} style={{ color: '#ef4444', fontWeight: 700 }}>Dar de Baja</button>

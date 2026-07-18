@@ -34,18 +34,28 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET, "/api/portal/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/admin/categorias/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/public/multimedia/**").permitAll()
                 
-                // Exigir rol CLIENTE para endpoints transaccionales del cliente
-                .requestMatchers(HttpMethod.POST, "/api/portal/comerciantes/*/contactar").hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.POST, "/api/portal/**").hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.PUT, "/api/portal/**").hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.DELETE, "/api/portal/**").hasRole("CLIENTE")
+                // Endpoints de escritura de categorías exclusivos para SUPERADMIN
+                .requestMatchers(HttpMethod.POST, "/api/admin/categorias/**").hasRole("SUPERADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/categorias/**").hasRole("SUPERADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/categorias/**").hasRole("SUPERADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/categorias/**").hasRole("SUPERADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/categorias/**").hasRole("SUPERADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").hasRole("SUPERADMIN")
+
+                // Exigir autenticación para endpoints transaccionales del cliente/actor
+                .requestMatchers(HttpMethod.POST, "/api/portal/comerciantes/*/contactar").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/portal/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/portal/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/portal/**").authenticated()
                 
-                .requestMatchers(HttpMethod.POST, "/api/productos/**").hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("CLIENTE")
+                .requestMatchers(HttpMethod.POST, "/api/productos/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/productos/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/productos/**").authenticated()
                 
                 .anyRequest().permitAll()
             )

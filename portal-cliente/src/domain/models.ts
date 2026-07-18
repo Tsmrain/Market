@@ -22,6 +22,7 @@ export interface ProductoDetalle {
     idComerciante?: number;
     nombreComerciante?: string;
     telefonoComerciante?: string;
+    numeroPuesto?: string;
     galeria?: Array<{ id: number; url: string; tipo: string }>;
     estaDisponible: boolean;
     unidadMedida: string;

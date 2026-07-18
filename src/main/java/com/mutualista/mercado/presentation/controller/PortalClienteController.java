@@ -7,10 +7,10 @@ import com.mutualista.mercado.presentation.dto.CategoriaDTO;
 import com.mutualista.mercado.presentation.dto.ComerciantePerfilDTO;
 import com.mutualista.mercado.presentation.dto.ProductoDetalleDTO;
 import com.mutualista.mercado.presentation.dto.ProductoResumenDTO;
-import com.mutualista.mercado.repository.CategoriaRepository;
-import com.mutualista.mercado.repository.ComercianteRepository;
-import com.mutualista.mercado.repository.ProductoRepository;
-import com.mutualista.mercado.repository.UnidadMedidaMaestraRepository;
+import com.mutualista.mercado.domain.repository.CategoriaRepository;
+import com.mutualista.mercado.domain.repository.ComercianteRepository;
+import com.mutualista.mercado.domain.repository.ProductoRepository;
+import com.mutualista.mercado.domain.repository.UnidadMedidaMaestraRepository;
 
 
 import org.springframework.data.domain.Page;
@@ -64,12 +64,14 @@ public class PortalClienteController {
     // UC-A1 y UC-A1.1: Catálogo con Filtrado
     @GetMapping("/productos")
     @Transactional(readOnly = true)
-    public Page<ProductoResumenDTO> obtenerCatalogo(
-            @RequestParam(required = false) String buscar, 
+    public org.springframework.data.domain.Page<ProductoResumenDTO> listarProductos(
             @RequestParam(required = false) Long idCategoria,
-            Pageable pageable) {
+            @RequestParam(required = false) String buscar,
+            org.springframework.data.domain.Pageable pageable,
+            jakarta.servlet.http.HttpServletResponse response) {
         
-        Page<Producto> productos;
+        response.setHeader("Cache-Control", "public, max-age=120");
+        org.springframework.data.domain.Page<Producto> productos;
         if (buscar != null && !buscar.trim().isEmpty() && idCategoria != null) {
             productos = productoRepo.findByNombreAndCategoriaJerarquia(buscar, idCategoria, pageable);
         } else if (buscar != null && !buscar.trim().isEmpty()) {
@@ -84,19 +86,29 @@ public class PortalClienteController {
 
     @GetMapping("/productos/{idProducto}")
     @Transactional(readOnly = true)
-    public ProductoDetalleDTO obtenerDetalleProducto(@PathVariable Long idProducto) {
+    public ProductoDetalleDTO obtenerDetalleProducto(
+            @PathVariable Long idProducto,
+            jakarta.servlet.http.HttpServletResponse response) {
+        response.setHeader("Cache-Control", "public, max-age=120");
         Producto producto = productoRepo.findById(idProducto)
             .filter(p -> !p.isEliminado())
             .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         Comerciante comerciante = comercianteRepo.findByProductoId(idProducto).orElse(null);
+        if (comerciante == null || comerciante.isEliminado() || !comerciante.isCuentaHabilitada()) {
+            throw new RuntimeException("Producto no disponible");
+        }
         return new ProductoDetalleDTO(producto, comerciante);
     }
 
     @GetMapping("/comerciantes/{idComerciante}")
     @Transactional(readOnly = true)
     public ComerciantePerfilDTO obtenerPerfilComerciante(@PathVariable Long idComerciante) {
-        return new ComerciantePerfilDTO(comercianteRepo.findById(idComerciante)
-            .orElseThrow(() -> new RuntimeException("Comerciante no encontrado")));
+        Comerciante c = comercianteRepo.findById(idComerciante)
+            .orElseThrow(() -> new RuntimeException("Comerciante no encontrado"));
+        if (c.isEliminado() || !c.isCuentaHabilitada()) {
+            throw new RuntimeException("Comerciante inactivo");
+        }
+        return new ComerciantePerfilDTO(c);
     }
 
     // Modificación Iteración 12: Contexto de Producto en WhatsApp

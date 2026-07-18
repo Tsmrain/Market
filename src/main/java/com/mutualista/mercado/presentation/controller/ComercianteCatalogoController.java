@@ -6,10 +6,10 @@ import com.mutualista.mercado.domain.Comerciante;
 import com.mutualista.mercado.domain.HistorialCategoria;
 import com.mutualista.mercado.domain.Producto;
 import com.mutualista.mercado.infrastructure.storage.StorageService;
-import com.mutualista.mercado.repository.CategoriaRepository;
-import com.mutualista.mercado.repository.ComercianteRepository;
-import com.mutualista.mercado.repository.HistorialCategoriaRepository;
-import com.mutualista.mercado.repository.ProductoRepository;
+import com.mutualista.mercado.domain.repository.CategoriaRepository;
+import com.mutualista.mercado.domain.repository.ComercianteRepository;
+import com.mutualista.mercado.domain.repository.HistorialCategoriaRepository;
+import com.mutualista.mercado.domain.repository.ProductoRepository;
 
 
 import org.springframework.web.bind.annotation.*;

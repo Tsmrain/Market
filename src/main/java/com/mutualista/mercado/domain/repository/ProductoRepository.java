@@ -1,4 +1,4 @@
-package com.mutualista.mercado.repository;
+package com.mutualista.mercado.domain.repository;
 import com.mutualista.mercado.domain.Producto;
 
 
@@ -12,15 +12,17 @@ import java.util.List;
 
 public interface ProductoRepository extends CrudRepository<Producto, Long>, PagingAndSortingRepository<Producto, Long> {
     
-    // Filtros para la vista pública: Solo productos Activos (eliminado = false)
+    // Filtros para la vista pública: Solo productos Activos de comerciantes Habilitados
+    @Query("SELECT p FROM Comerciante c JOIN c.catalogo p WHERE c.cuentaHabilitada = true AND c.eliminado = false AND p.eliminado = false")
     Page<Producto> findByEliminadoFalse(Pageable pageable);
     
-    Page<Producto> findByNombreContainingIgnoreCaseAndEliminadoFalse(String nombre, Pageable pageable);
+    @Query("SELECT p FROM Comerciante c JOIN c.catalogo p WHERE c.cuentaHabilitada = true AND c.eliminado = false AND (LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) AND p.eliminado = false")
+    Page<Producto> findByNombreContainingIgnoreCaseAndEliminadoFalse(@Param("nombre") String nombre, Pageable pageable);
 
-    @Query("SELECT p FROM Producto p WHERE (p.categoria.id = :idCategoria OR p.categoria.categoriaPadre.id = :idCategoria) AND p.eliminado = false")
+    @Query("SELECT p FROM Comerciante c JOIN c.catalogo p WHERE c.cuentaHabilitada = true AND c.eliminado = false AND (p.categoria.id = :idCategoria OR p.categoria.categoriaPadre.id = :idCategoria) AND p.eliminado = false")
     Page<Producto> findByCategoriaJerarquia(@Param("idCategoria") Long idCategoria, Pageable pageable);
 
-    @Query("SELECT p FROM Producto p WHERE (LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) AND (p.categoria.id = :idCategoria OR p.categoria.categoriaPadre.id = :idCategoria) AND p.eliminado = false")
+    @Query("SELECT p FROM Comerciante c JOIN c.catalogo p WHERE c.cuentaHabilitada = true AND c.eliminado = false AND (LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) AND (p.categoria.id = :idCategoria OR p.categoria.categoriaPadre.id = :idCategoria) AND p.eliminado = false")
     Page<Producto> findByNombreAndCategoriaJerarquia(@Param("nombre") String nombre, @Param("idCategoria") Long idCategoria, Pageable pageable);
 
     // Consulta para el Panel del Comerciante: Muestra todos sus productos que NO estén eliminados (incluso los no disponibles)

@@ -1,4 +1,4 @@
-package com.mutualista.mercado.repository;
+package com.mutualista.mercado.domain.repository;
 import com.mutualista.mercado.domain.Comerciante;
 
 
@@ -18,6 +18,9 @@ public interface ComercianteRepository extends CrudRepository<Comerciante, Long>
 
     // Listado para el Administrador
     List<Comerciante> findByEliminadoFalse();
+
+    // Buscar por Asociación y no eliminado
+    List<Comerciante> findByAsociacionIdAndEliminadoFalse(Long asociacionId);
 
     // NUEVO: Agregación para Gráficos (Top 5 Comerciantes con más clics a WhatsApp)
     @Query("SELECT c.nombre, c.clicsContacto FROM Comerciante c WHERE c.eliminado = false ORDER BY c.clicsContacto DESC LIMIT 5")
