@@ -28,13 +28,13 @@ public class ClienteService {
     @Transactional
     public Cliente obtenerOCrearClienteSombra(Long usuarioId, String nombre) {
         // 1. Validar si ya es un cliente nativo
-        Optional<Cliente> nativeCli = clienteRepo.findById(usuarioId);
+        Optional<Cliente> nativeCli = clienteRepo.findByUsuarioId(usuarioId);
         if (nativeCli.isPresent()) {
             return nativeCli.get();
         }
 
         // 2. Si no existe, averiguar si es Comerciante
-        Optional<Comerciante> merchant = comercianteRepo.findById(usuarioId);
+        Optional<Comerciante> merchant = comercianteRepo.findByUsuarioId(usuarioId);
         String ci = "shadow_" + usuarioId;
         String exp = "SC";
         String cel = "00000000";
@@ -44,7 +44,7 @@ public class ClienteService {
             cel = merchant.get().getTelefono();
         } else {
             // 3. Si no, averiguar si es Administrador
-            Optional<AdministradorAsociacion> admin = adminRepo.findById(usuarioId);
+            Optional<AdministradorAsociacion> admin = adminRepo.findByUsuarioId(usuarioId);
             if (admin.isPresent()) {
                 ci = admin.get().getCi();
                 exp = admin.get().getExpedido();
@@ -59,6 +59,7 @@ public class ClienteService {
 
         return clienteRepo.findByCi(ci).orElseGet(() -> {
             Cliente shadow = new Cliente(finalCi, finalExp, "1234", finalNom, finalCel);
+            shadow.setUsuarioId(usuarioId);
             return clienteRepo.save(shadow);
         });
     }

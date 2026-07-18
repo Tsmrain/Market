@@ -13,6 +13,7 @@ export interface ResenaInfo {
     nombreCliente: string;
     calificacion: number;
     comentario: string;
+    esPropietario: boolean;
 }
 
 // Reflejo exacto de ProductoDetalleDTO del Backend

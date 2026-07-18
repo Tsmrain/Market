@@ -15,6 +15,7 @@ public interface ComercianteRepository extends CrudRepository<Comerciante, Long>
     
     // Buscar para control de duplicados (Ignora si está eliminado)
     Optional<Comerciante> findByCi(String ci);
+    Optional<Comerciante> findByUsuarioId(Long usuarioId);
 
     // Listado para el Administrador
     List<Comerciante> findByEliminadoFalse();

@@ -517,7 +517,23 @@ export const ProductoDetallePage: React.FC = () => {
                                     }}
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <strong style={{ color: 'var(--text-primary)' }}>{r.nombreCliente}</strong>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <strong style={{ color: r.esPropietario ? 'var(--primary)' : 'var(--text-primary)', fontWeight: 700 }}>
+                                                {r.nombreCliente}
+                                            </strong>
+                                            {r.esPropietario && (
+                                                <span style={{
+                                                    fontSize: '0.7rem',
+                                                    background: 'rgba(37, 99, 235, 0.1)',
+                                                    color: 'var(--primary)',
+                                                    padding: '2px 6px',
+                                                    borderRadius: '4px',
+                                                    fontWeight: 700
+                                                }}>
+                                                    [Propietario]
+                                                </span>
+                                            )}
+                                        </div>
                                         <span style={{ color: '#fbbf24', fontSize: '0.9rem' }}>
                                             {'★'.repeat(r.calificacion) + '☆'.repeat(5 - r.calificacion)}
                                         </span>

@@ -38,19 +38,35 @@ public class ProductoDetalleDTO {
         private String nombreCliente;
         private int calificacion;
         private String comentario;
+        private boolean esPropietario;
 
         public ResenaInfoDTO(Resena r) {
             this.nombreCliente = r.getCliente() != null ? r.getCliente().getNombre() : "Cliente Anónimo";
             this.calificacion = r.getCalificacion();
             this.comentario = r.getComentario();
+            this.esPropietario = false;
+        }
+
+        public ResenaInfoDTO(Resena r, Comerciante comerciantePropietario) {
+            this(r);
+            if (r.getCliente() != null && comerciantePropietario != null) {
+                if (r.getCliente().getUsuarioId() != null && comerciantePropietario.getUsuarioId() != null) {
+                    this.esPropietario = r.getCliente().getUsuarioId().equals(comerciantePropietario.getUsuarioId());
+                }
+            }
         }
 
         public String getNombreCliente() { return nombreCliente; }
         public int getCalificacion() { return calificacion; }
         public String getComentario() { return comentario; }
+        public boolean isEsPropietario() { return esPropietario; }
     }
 
     public ProductoDetalleDTO(Producto producto) {
+        this(producto, null);
+    }
+
+    public ProductoDetalleDTO(Producto producto, Comerciante comerciante) {
         this.id = producto.getId();
         this.nombre = producto.getNombre();
         this.precio = producto.getPrecio();
@@ -64,7 +80,9 @@ public class ProductoDetalleDTO {
         this.galeriaUrls = producto.getGaleria().stream().map(Multimedia::getUrl).collect(Collectors.toList());
         
         // Mapear reseñas detalladas
-        this.resenas = producto.getResenas().stream().map(ResenaInfoDTO::new).collect(Collectors.toList());
+        this.resenas = producto.getResenas().stream()
+                .map(r -> new ResenaInfoDTO(r, comerciante))
+                .collect(Collectors.toList());
 
         this.galeria = producto.getGaleria().stream().map(m -> {
             Map<String, Object> map = new HashMap<>();
@@ -73,10 +91,7 @@ public class ProductoDetalleDTO {
             map.put("tipo", m.getTipoArchivo());
             return map;
         }).collect(Collectors.toList());
-    }
 
-    public ProductoDetalleDTO(Producto producto, Comerciante comerciante) {
-        this(producto);
         if (comerciante != null) {
             this.idComerciante = comerciante.getId();
             this.nombreComerciante = comerciante.getNombre();

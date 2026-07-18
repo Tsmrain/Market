@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface AdministradorAsociacionRepository extends CrudRepository<AdministradorAsociacion, Long> {
     Optional<AdministradorAsociacion> findByCiAndEliminadoFalse(String ci);
     Optional<AdministradorAsociacion> findByCi(String ci);
+    Optional<AdministradorAsociacion> findByUsuarioId(Long usuarioId);
     List<AdministradorAsociacion> findByEliminadoFalse();
     Optional<AdministradorAsociacion> findByAsociacionIdAndEliminadoFalse(Long asociacionId);
 }

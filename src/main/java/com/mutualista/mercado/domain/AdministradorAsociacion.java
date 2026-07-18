@@ -7,6 +7,9 @@ public class AdministradorAsociacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "usuario_id", unique = true, nullable = false)
+    private Long usuarioId = java.util.UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     
     @Column(unique = true, nullable = false, updatable = false)
     private String ci;
@@ -62,4 +65,7 @@ public class AdministradorAsociacion {
     
     public Asociacion getAsociacion() { return asociacion; }
     public void setAsociacion(Asociacion asociacion) { this.asociacion = asociacion; }
+
+    public Long getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
 }

@@ -43,7 +43,7 @@ public class AuthController {
         if (comercianteOpt.isPresent()) {
             Comerciante c = comercianteOpt.get();
             if (c.validarPin(request.getPin())) {
-                String token = tokenProvider.generarToken(c.getId(), "COMERCIANTE");
+                String token = tokenProvider.generarToken(c.getUsuarioId(), "COMERCIANTE");
                 Map<String, Object> res = new HashMap<>();
                 res.put("mensaje", "Exito");
                 res.put("id", c.getId());
@@ -59,7 +59,7 @@ public class AuthController {
         if (adminOpt.isPresent()) {
             AdministradorAsociacion a = adminOpt.get();
             if (a.validarPassword(request.getPin())) {
-                String token = tokenProvider.generarToken(a.getId(), a.getRol());
+                String token = tokenProvider.generarToken(a.getUsuarioId(), a.getRol());
                 Map<String, Object> res = new HashMap<>();
                 res.put("mensaje", "Exito");
                 res.put("id", a.getId());
@@ -90,7 +90,7 @@ public class AuthController {
         Cliente nuevo = new Cliente(payload.get("ci"), payload.get("expedido"), payload.get("pin"), payload.get("nombre"), payload.get("celular"));
         clienteRepo.save(nuevo);
         
-        String token = tokenProvider.generarToken(nuevo.getId(), "CLIENTE");
+        String token = tokenProvider.generarToken(nuevo.getUsuarioId(), "CLIENTE");
         Map<String, Object> res = new HashMap<>();
         res.put("mensaje", "Cliente registrado");
         res.put("id", nuevo.getId());
@@ -105,7 +105,7 @@ public class AuthController {
         return clienteRepo.findByCi(request.getCi())
             .filter(c -> c.validarPin(request.getPin()))
             .map(c -> {
-                String token = tokenProvider.generarToken(c.getId(), "CLIENTE");
+                String token = tokenProvider.generarToken(c.getUsuarioId(), "CLIENTE");
                 Map<String, Object> res = new HashMap<>();
                 res.put("mensaje", "Exito");
                 res.put("id", c.getId());

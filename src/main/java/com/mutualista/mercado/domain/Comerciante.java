@@ -11,6 +11,9 @@ public class Comerciante {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "usuario_id", unique = true, nullable = false)
+    private Long usuarioId = java.util.UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     
     // REGLA 3: Inmutabilidad del CI (Desbloqueado para corrección de tipeo por Admin)
     @Column(unique = true, nullable = false)
@@ -164,4 +167,7 @@ public class Comerciante {
         }
         return "Sin facturas registradas";
     }
+
+    public Long getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
 }

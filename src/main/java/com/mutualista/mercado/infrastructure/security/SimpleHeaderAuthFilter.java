@@ -71,13 +71,13 @@ public class SimpleHeaderAuthFilter extends OncePerRequestFilter {
                 // Cargar nombre del actor para polimorfismo de roles
                 String nombre = "Usuario";
                 if ("SUPERADMIN".equals(session.getRol()) || "ADMIN_ASOCIACION".equals(session.getRol())) {
-                    Optional<AdministradorAsociacion> admin = adminRepo.findById(session.getUserId());
+                    Optional<AdministradorAsociacion> admin = adminRepo.findByUsuarioId(session.getUserId());
                     if (admin.isPresent()) nombre = admin.get().getNombre();
                 } else if ("COMERCIANTE".equals(session.getRol())) {
-                    Optional<Comerciante> merchant = comercianteRepo.findById(session.getUserId());
+                    Optional<Comerciante> merchant = comercianteRepo.findByUsuarioId(session.getUserId());
                     if (merchant.isPresent()) nombre = merchant.get().getNombre();
                 } else {
-                    Optional<Cliente> client = clienteRepo.findById(session.getUserId());
+                    Optional<Cliente> client = clienteRepo.findByUsuarioId(session.getUserId());
                     if (client.isPresent()) nombre = client.get().getNombre();
                 }
 

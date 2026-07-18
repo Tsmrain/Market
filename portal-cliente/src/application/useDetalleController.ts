@@ -51,14 +51,23 @@ export const useDetalleController = (idProductoStr: string | undefined) => {
         // Copia de seguridad del estado previo (Rollback UI)
         const previousProducto = producto ? { ...producto } : null;
 
+        const nuevaResena = {
+            nombreCliente: usuario ? usuario.nombre : 'Cliente Anónimo',
+            calificacion: calificacion,
+            comentario: comentario,
+            esPropietario: usuario && producto.idComerciante !== undefined ? (Number(usuario.id) === Number(producto.idComerciante)) : false
+        };
+
         // Mutación Optimista instantánea
         setProducto(prev => {
             if (!prev) return null;
+            const nuevasResenas = [nuevaResena, ...(prev.resenas || [])];
             const nuevosComentarios = [comentario, ...prev.comentarios];
             const totalEstrellas = prev.promedioEstrellas * prev.comentarios.length + calificacion;
             const nuevoPromedio = nuevosComentarios.length > 0 ? totalEstrellas / nuevosComentarios.length : calificacion;
             return {
                 ...prev,
+                resenas: nuevasResenas,
                 comentarios: nuevosComentarios,
                 promedioEstrellas: nuevoPromedio
             };
