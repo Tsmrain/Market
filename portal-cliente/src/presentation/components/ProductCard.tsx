@@ -1,12 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import type { ProductoResumen } from '../../domain/models';
+import { useTranslation } from 'react-i18next';
 
 interface ProductCardProps {
     producto: ProductoResumen;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
+    const { t } = useTranslation();
+
+    const tCategory = (cat: string) => {
+        const c = cat || 'CAT_GENERAL';
+        return t(c.startsWith('CAT_') ? c : `CAT_${c.toUpperCase()}`);
+    };
+
+    const tUnit = (unit: string) => {
+        const u = (unit || 'UNIDAD').toUpperCase();
+        return t(u.startsWith('UNIT_') ? u : `UNIT_${u}`);
+    };
+
     // Retorna un SVG limpio según el nombre del producto en lugar de usar emojis
     const getProductIcon = (nombre: string) => {
         const lower = nombre.toLowerCase();
@@ -138,7 +151,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                         borderRadius: '12px',
                         marginBottom: '6px'
                     }}>
-                        {producto.nombreCategoria}
+                        {tCategory(producto.nombreCategoria)}
                     </span>
                     
                     <h3 style={{
@@ -184,7 +197,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                     }}>
                         <span>{producto.precio.toFixed(2)}</span>
                         <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
-                            Bs. / <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{producto.unidadMedida || 'UNIDAD'}</span>
+                            Bs. / <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{tUnit(producto.unidadMedida)}</span>
                         </span>
                     </div>
 

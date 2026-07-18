@@ -9,6 +9,16 @@ export const ProductoDetallePage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
+
+    const tCategory = (cat: string) => {
+        const c = cat || 'CAT_GENERAL';
+        return t(c.startsWith('CAT_') ? c : `CAT_${c.toUpperCase()}`);
+    };
+
+    const tUnit = (unit: string) => {
+        const u = (unit || 'UNIDAD').toUpperCase();
+        return t(u.startsWith('UNIT_') ? u : `UNIT_${u}`);
+    };
     
     const { producto, cargando, usuario, estaAutenticado, handleMeInteresa, handleResena } = useDetalleController(id);
 
@@ -236,7 +246,7 @@ export const ProductoDetallePage: React.FC = () => {
                                 marginBottom: '12px',
                                 textTransform: 'uppercase'
                             }}>
-                                {producto.nombreCategoria}
+                                {tCategory(producto.nombreCategoria)}
                             </span>
                             
                             <h1 style={{
@@ -278,7 +288,7 @@ export const ProductoDetallePage: React.FC = () => {
                                 }}>
                                     <span>{producto.precio.toFixed(2)}</span>
                                     <span style={{ fontSize: '1.125rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
-                                        Bs. / <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{producto.unidadMedida || 'UNIDAD'}</span>
+                                        Bs. / <span style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>{tUnit(producto.unidadMedida)}</span>
                                     </span>
                                 </div>
                                 {!producto.estaDisponible && (

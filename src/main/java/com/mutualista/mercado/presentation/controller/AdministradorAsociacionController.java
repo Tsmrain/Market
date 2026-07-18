@@ -5,7 +5,6 @@ import com.mutualista.mercado.domain.Asociacion;
 import com.mutualista.mercado.domain.Comerciante;
 import com.mutualista.mercado.domain.CuotaMensual;
 import com.mutualista.mercado.domain.EstadoCuota;
-import com.mutualista.mercado.presentation.dto.AsociarAdminRequest;
 import com.mutualista.mercado.presentation.dto.LiquidacionGlobalDTO;
 import com.mutualista.mercado.domain.repository.AdministradorAsociacionRepository;
 import com.mutualista.mercado.domain.repository.AsociacionRepository;

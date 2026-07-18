@@ -7,7 +7,6 @@ import com.mutualista.mercado.domain.AdministradorAsociacion;
 import com.mutualista.mercado.domain.repository.ClienteRepository;
 import com.mutualista.mercado.domain.repository.ComercianteRepository;
 import com.mutualista.mercado.domain.repository.AdministradorAsociacionRepository;
-import com.mutualista.mercado.infrastructure.security.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -24,5 +24,15 @@
     "error_conexion": "Hubo un error de conexión, la acción no se guardó.",
     "cargando_producto": "Cargando producto...",
     "producto_no_disponible": "Producto no disponible",
-    "atras": "Volver al Catálogo"
+    "atras": "Volver al Catálogo",
+    "categorias_label": "Categorías",
+    "todos_label": "Todos",
+    "CAT_LACTEOS": "Lácteos",
+    "CAT_ABARROTES": "Abarrotes",
+    "UNIT_UNIDAD": "Unidad / Pieza",
+    "UNIT_KG": "Kilogramo",
+    "UNIT_GRAMO": "Gramos",
+    "UNIT_LITRO": "Litro",
+    "UNIT_DOCENA": "Docena",
+    "UNIT_CAJA": "Caja / Paquete"
 }

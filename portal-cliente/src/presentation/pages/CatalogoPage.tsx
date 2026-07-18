@@ -3,8 +3,10 @@ import { useCatalogoController } from '../../application/useCatalogoController';
 import { Header } from '../components/Header';
 import { ProductCard } from '../components/ProductCard';
 import { Pagination } from '../components/Pagination';
+import { useTranslation } from 'react-i18next';
 
 export const CatalogoPage: React.FC = () => {
+    const { t } = useTranslation();
     const { 
         datos, 
         cargando, 
@@ -36,7 +38,7 @@ export const CatalogoPage: React.FC = () => {
                 overflowX: 'auto'
             }}>
                 <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '0.875rem', cursor: 'default' }}>
-                    Categorías
+                    {t('categorias_label')}
                 </span>
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     {/* Opción Todos */}
@@ -55,7 +57,7 @@ export const CatalogoPage: React.FC = () => {
                             transition: 'color var(--transition-speed)'
                         }}
                     >
-                        Todos
+                        {t('todos_label')}
                     </button>
 
                     {/* Categorías dinámicas */}
@@ -76,7 +78,7 @@ export const CatalogoPage: React.FC = () => {
                                 transition: 'color var(--transition-speed)'
                             }}
                         >
-                            {cat.nombre}
+                            {t(cat.nombre)}
                         </button>
                     ))}
                 </div>

@@ -147,7 +147,7 @@ public class Comerciante {
                 java.time.LocalDate next = ultima.getFechaGeneracion().plusMonths(1);
                 String mesNombre = next.getMonth().getDisplayName(
                     java.time.format.TextStyle.FULL, 
-                    new java.util.Locale("es", "BO")
+                    java.util.Locale.forLanguageTag("es-BO")
                 );
                 mesNombre = mesNombre.substring(0, 1).toUpperCase() + mesNombre.substring(1).toLowerCase();
                 return next.getDayOfMonth() + " de " + mesNombre + " de " + next.getYear();
@@ -155,7 +155,7 @@ public class Comerciante {
                 java.time.LocalDate venc = ultima.getFechaGeneracion();
                 String mesNombre = venc.getMonth().getDisplayName(
                     java.time.format.TextStyle.FULL, 
-                    new java.util.Locale("es", "BO")
+                    java.util.Locale.forLanguageTag("es-BO")
                 );
                 mesNombre = mesNombre.substring(0, 1).toUpperCase() + mesNombre.substring(1).toLowerCase();
                 String vencStr = venc.getDayOfMonth() + " de " + mesNombre + " de " + venc.getYear();

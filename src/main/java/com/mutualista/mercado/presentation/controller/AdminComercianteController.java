@@ -2,7 +2,6 @@ package com.mutualista.mercado.presentation.controller;
 
 import com.mutualista.mercado.domain.Comerciante;
 import com.mutualista.mercado.domain.CuotaMensual;
-import com.mutualista.mercado.domain.EstadoCuota;
 import com.mutualista.mercado.domain.repository.ComercianteRepository;
 import com.mutualista.mercado.domain.repository.AsociacionRepository;
 import com.mutualista.mercado.domain.repository.AdministradorAsociacionRepository;

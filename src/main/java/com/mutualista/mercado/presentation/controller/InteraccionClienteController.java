@@ -43,7 +43,7 @@ public class InteraccionClienteController {
             actorNombre = (String) principal.get("nombre");
         }
 
-        Long actorId = actorIdStr != null ? Long.parseLong(actorIdStr) : request.getIdCliente();
+        Long actorId = actorIdStr != null ? Long.valueOf(actorIdStr) : request.getIdCliente();
         if (actorId == null) {
             throw new RuntimeException("Usuario no autenticado");
         }
@@ -74,7 +74,7 @@ public class InteraccionClienteController {
             actorNombre = (String) principal.get("nombre");
         }
 
-        Long actorId = actorIdStr != null ? Long.parseLong(actorIdStr) : idCliente;
+        Long actorId = actorIdStr != null ? Long.valueOf(actorIdStr) : idCliente;
         if (actorId == null) {
             throw new RuntimeException("Usuario no autenticado");
         }

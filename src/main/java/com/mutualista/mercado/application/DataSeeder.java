@@ -61,12 +61,12 @@ public class DataSeeder implements CommandLineRunner {
 
         // Seeding Master Data (MDM) if empty
         if (uniRepo.count() == 0) {
-            uniRepo.save(new UnidadMedidaMaestra("UNIDAD", "Unidad / Pieza", false));
-            uniRepo.save(new UnidadMedidaMaestra("KG", "Kilogramo", true));
-            uniRepo.save(new UnidadMedidaMaestra("GRAMO", "Gramos", true));
-            uniRepo.save(new UnidadMedidaMaestra("LITRO", "Litro", true));
-            uniRepo.save(new UnidadMedidaMaestra("DOCENA", "Docena", false));
-            uniRepo.save(new UnidadMedidaMaestra("CAJA", "Caja / Paquete", false));
+            uniRepo.save(new UnidadMedidaMaestra("UNIDAD", "UNIT_UNIDAD", false));
+            uniRepo.save(new UnidadMedidaMaestra("KG", "UNIT_KG", true));
+            uniRepo.save(new UnidadMedidaMaestra("GRAMO", "UNIT_GRAMO", true));
+            uniRepo.save(new UnidadMedidaMaestra("LITRO", "UNIT_LITRO", true));
+            uniRepo.save(new UnidadMedidaMaestra("DOCENA", "UNIT_DOCENA", false));
+            uniRepo.save(new UnidadMedidaMaestra("CAJA", "UNIT_CAJA", false));
         }
 
         // Seeding SuperAdmin (Carga Cero / Arranque en Frío con Resiliencia)
@@ -95,8 +95,8 @@ public class DataSeeder implements CommandLineRunner {
 
         // Seeding Categories
         if (categoriaRepo.count() == 0) {
-            categoriaRepo.save(new Categoria(null, "Lácteos"));
-            categoriaRepo.save(new Categoria(null, "Abarrotes"));
+            categoriaRepo.save(new Categoria(null, "CAT_LACTEOS"));
+            categoriaRepo.save(new Categoria(null, "CAT_ABARROTES"));
             System.out.println("Categorías de prueba inicializadas.");
         }
 
@@ -137,21 +137,21 @@ public class DataSeeder implements CommandLineRunner {
 
             // Obtener categorías de prueba
             Categoria lacteos = categoriaRepo.findAll().stream()
-                    .filter(cat -> "Lácteos".equals(cat.getNombre()))
+                    .filter(cat -> "CAT_LACTEOS".equals(cat.getNombre()))
                     .findFirst()
                     .orElse(null);
 
             Categoria abarrotes = categoriaRepo.findAll().stream()
-                    .filter(cat -> "Abarrotes".equals(cat.getNombre()))
+                    .filter(cat -> "CAT_ABARROTES".equals(cat.getNombre()))
                     .findFirst()
                     .orElse(null);
 
             if (lacteos != null) {
-                carmen.registrarProducto("Leche Pil Entera", 6.50, lacteos);
-                carmen.registrarProducto("Queso Menonita", 25.00, lacteos);
+                carmen.registrarProducto("Leche Pil Entera", 6.50, lacteos, "UNIT_LITRO");
+                carmen.registrarProducto("Queso Menonita", 25.00, lacteos, "UNIT_KG");
             }
             if (abarrotes != null) {
-                carmen.registrarProducto("Arroz Famoso 1kg", 8.00, abarrotes);
+                carmen.registrarProducto("Arroz Famoso 1kg", 8.00, abarrotes, "UNIT_KG");
             }
 
             comercianteRepo.save(carmen);

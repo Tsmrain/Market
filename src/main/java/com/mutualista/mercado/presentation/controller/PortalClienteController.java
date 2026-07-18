@@ -13,8 +13,6 @@ import com.mutualista.mercado.domain.repository.ProductoRepository;
 import com.mutualista.mercado.domain.repository.UnidadMedidaMaestraRepository;
 
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
