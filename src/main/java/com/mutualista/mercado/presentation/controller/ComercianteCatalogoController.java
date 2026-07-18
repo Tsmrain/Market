@@ -70,6 +70,7 @@ public class ComercianteCatalogoController {
             @RequestParam("idCategoria") Long idCategoria,
             @RequestParam(value = "unidadMedida", required = false, defaultValue = "UNIDAD") String unidadMedida,
             @RequestParam(value = "descripcion", required = false, defaultValue = "") String descripcion,
+            @RequestParam(value = "marca", required = false, defaultValue = "") String marca,
             @RequestParam("archivos") MultipartFile[] archivos) {
 
         Comerciante comerciante = comercianteRepo.findById(idComerciante)
@@ -87,6 +88,7 @@ public class ComercianteCatalogoController {
 
         // Registrar producto (Creator / Information Expert)
         Producto producto = comerciante.registrarProducto(nombre, descripcion, precio, categoria, unidadMedidaLimpia);
+        producto.setMarca(marca);
 
         // Procesar archivos
         for (MultipartFile archivo : archivos) {
@@ -153,11 +155,12 @@ public class ComercianteCatalogoController {
         double precio = Double.parseDouble(payload.get("precio").toString());
         String unidadMedidaRaw = (String) payload.getOrDefault("unidadMedida", "UNIDAD");
         String descripcion = (String) payload.getOrDefault("descripcion", "");
+        String marca = (String) payload.getOrDefault("marca", "");
 
         // Gobernanza de Datos: Normalización predictiva
         String unidadMedidaLimpia = normalizador.normalizar(unidadMedidaRaw);
 
-        producto.actualizarDatos(nombre, precio, unidadMedidaLimpia, descripcion);
+        producto.actualizarDatos(nombre, precio, unidadMedidaLimpia, descripcion, marca);
 
         // Manejo de Cambio de Categoría con Auditoría
         Long idCategoriaNueva = Long.valueOf(payload.get("idCategoria").toString());

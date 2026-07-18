@@ -20,6 +20,7 @@ export const EditarProducto: React.FC = () => {
     const [unidadesMaestras, setUnidadesMaestras] = useState<any[]>([]);
     const [descripcion, setDescripcion] = useState("");
     const [categorias, setCategorias] = useState<CategoriaInfo[]>([]);
+    const [marca, setMarca] = useState("");
 
     // Multimedia gallery state
     const [galeriaActual, setGaleriaActual] = useState<Array<{ id: number; url: string; tipo: string }>>([]);
@@ -56,6 +57,7 @@ export const EditarProducto: React.FC = () => {
             setPrecio(prod.precio.toString());
             const unit = prod.unidadMedida || "UNIDAD";
             setDescripcion(prod.descripcion || "");
+            setMarca(prod.marca || "");
             
             const standardCodes = unis.map((u: any) => u.codigo);
             if (standardCodes.includes(unit)) {
@@ -109,7 +111,8 @@ export const EditarProducto: React.FC = () => {
                 descripcion,
                 parseFloat(precio),
                 parseInt(idCategoria),
-                esOtro ? unidadMedidaOtro : unidadMedida
+                esOtro ? unidadMedidaOtro : unidadMedida,
+                marca
             );
             alert("¡Producto y categoría actualizados correctamente (Auditado)!");
             navigate('/panel/mercaderia');
@@ -249,6 +252,20 @@ export const EditarProducto: React.FC = () => {
                                         value={nombre}
                                         onChange={e => setNombre(e.target.value)}
                                         required
+                                        style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.95rem', boxSizing: 'border-box' }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="edit-marca" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                                        Marca (Ej. Mairaneño, Sofía o Casero)
+                                    </label>
+                                    <input
+                                        id="edit-marca"
+                                        type="text"
+                                        value={marca}
+                                        onChange={e => setMarca(e.target.value)}
+                                        placeholder="Ej. Casero"
                                         style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.95rem', boxSizing: 'border-box' }}
                                     />
                                 </div>

@@ -33,6 +33,7 @@ public class ProductoDetalleDTO {
     private boolean estaDisponible;
     private String unidadMedida;
     private String descripcion;
+    private String marca;
 
     public static class ResenaInfoDTO {
         private String nombreCliente;
@@ -74,6 +75,7 @@ public class ProductoDetalleDTO {
         this.estaDisponible = producto.isEstaDisponible();
         this.unidadMedida = producto.getUnidadMedida();
         this.descripcion = producto.getDescripcion() != null ? producto.getDescripcion() : "";
+        this.marca = producto.getMarca();
         this.cantidadInteresados = producto.getCantidadInteresados();
         this.promedioEstrellas = producto.getResenas().stream().mapToInt(Resena::getCalificacion).average().orElse(0.0);
         this.comentarios = producto.getResenas().stream().map(Resena::getComentario).collect(Collectors.toList());
@@ -118,4 +120,5 @@ public class ProductoDetalleDTO {
     public boolean isEstaDisponible() { return estaDisponible; }
     public String getUnidadMedida() { return unidadMedida; }
     public String getDescripcion() { return descripcion; }
+    public String getMarca() { return marca; }
 }

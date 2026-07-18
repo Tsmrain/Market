@@ -11,6 +11,7 @@ public class ProductoResumenDTO {
     private boolean estaDisponible; 
     private String unidadMedida;
     private String descripcion;
+    private String marca;
 
     public ProductoResumenDTO(Producto producto) {
         this.id = producto.getId();
@@ -21,6 +22,7 @@ public class ProductoResumenDTO {
         this.estaDisponible = producto.isEstaDisponible();
         this.unidadMedida = producto.getUnidadMedida();
         this.descripcion = producto.getDescripcion() != null ? producto.getDescripcion() : "";
+        this.marca = producto.getMarca();
     }
 
     public Long getId() { return id; }
@@ -31,4 +33,5 @@ public class ProductoResumenDTO {
     public boolean isEstaDisponible() { return estaDisponible; }
     public String getUnidadMedida() { return unidadMedida; }
     public String getDescripcion() { return descripcion; }
+    public String getMarca() { return marca; }
 }

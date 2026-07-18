@@ -22,6 +22,7 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
     const [archivos, setArchivos] = useState<File[]>([]);
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState("");
+    const [marca, setMarca] = useState("");
 
     // Cargar categorías y unidades al montar
     useEffect(() => {
@@ -92,7 +93,8 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                 parseFloat(precio),
                 parseInt(idCategoria),
                 esOtro ? unidadMedidaOtro : unidadMedida,
-                archivos
+                archivos,
+                marca
             );
             alert("¡Producto creado exitosamente!");
             onSuccess();
@@ -167,6 +169,30 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                             value={nombre}
                             onChange={e => setNombre(e.target.value)}
                             required
+                            style={{
+                                width: '100%',
+                                padding: '10px 12px',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '6px',
+                                fontSize: '0.9rem',
+                                outline: 'none',
+                                boxSizing: 'border-box',
+                                background: '#ffffff',
+                                color: 'var(--text-primary)'
+                            }}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="prod-marca" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                            Marca (Ej. Mairaneño, Sofía o Casero)
+                        </label>
+                        <input
+                            id="prod-marca"
+                            type="text"
+                            placeholder="Ej. Casero"
+                            value={marca}
+                            onChange={e => setMarca(e.target.value)}
                             style={{
                                 width: '100%',
                                 padding: '10px 12px',

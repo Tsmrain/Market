@@ -7,6 +7,7 @@ export interface ProductoResumen {
     estaDisponible: boolean;
     unidadMedida: string;
     descripcion: string;
+    marca?: string;
 }
 
 export interface ResenaInfo {
@@ -35,6 +36,7 @@ export interface ProductoDetalle {
     estaDisponible: boolean;
     unidadMedida: string;
     descripcion: string;
+    marca?: string;
 }
 
 // Reflejo de la paginación de Spring Data

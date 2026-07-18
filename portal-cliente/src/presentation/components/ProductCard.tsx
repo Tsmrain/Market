@@ -173,6 +173,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                         {producto.nombre}
                     </h3>
                     
+                    {producto.marca && (
+                        <div style={{
+                            fontSize: '0.75rem',
+                            color: '#9ca3af', // Subtle text-light gray
+                            fontWeight: 500,
+                            marginBottom: '6px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em'
+                        }}>
+                            Marca: {producto.marca}
+                        </div>
+                    )}
+                    
                     <p style={{
                         fontSize: '0.8rem',
                         color: 'var(--text-secondary)',

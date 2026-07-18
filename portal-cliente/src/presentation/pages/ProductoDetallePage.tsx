@@ -517,20 +517,18 @@ export const ProductoDetallePage: React.FC = () => {
                                     }}
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <strong style={{ color: r.esPropietario ? 'var(--primary)' : 'var(--text-primary)', fontWeight: 700 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <strong style={{ color: 'var(--text-primary)', fontWeight: 700 }}>
                                                 {r.nombreCliente}
                                             </strong>
                                             {r.esPropietario && (
                                                 <span style={{
-                                                    fontSize: '0.7rem',
-                                                    background: 'rgba(37, 99, 235, 0.1)',
-                                                    color: 'var(--primary)',
-                                                    padding: '2px 6px',
-                                                    borderRadius: '4px',
-                                                    fontWeight: 700
+                                                    fontSize: '0.8rem',
+                                                    color: '#F97316',
+                                                    fontWeight: 'bold',
+                                                    marginLeft: '8px'
                                                 }}>
-                                                    [Propietario]
+                                                    Comerciante
                                                 </span>
                                             )}
                                         </div>

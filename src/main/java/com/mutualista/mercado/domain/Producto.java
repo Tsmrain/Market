@@ -14,6 +14,7 @@ public class Producto {
     private Long id;
     private String nombre;
     private double precio;
+    private String marca = "";
 
     private boolean estaDisponible = true; 
     private boolean eliminado = false; 
@@ -72,10 +73,15 @@ public class Producto {
     }
 
     public void actualizarDatos(String nombre, double precio, String unidadMedida, String descripcion) {
+        actualizarDatos(nombre, precio, unidadMedida, descripcion, this.marca);
+    }
+
+    public void actualizarDatos(String nombre, double precio, String unidadMedida, String descripcion, String marca) {
         this.nombre = nombre;
         this.precio = precio;
         this.unidadMedida = unidadMedida != null ? unidadMedida : "UNIDAD";
         this.descripcion = descripcion != null ? descripcion : "";
+        this.marca = marca != null ? marca : "";
     }
     
     public void limpiarGaleria() { this.galeria.clear(); }
@@ -102,6 +108,8 @@ public class Producto {
 
     public int getCantidadInteresados() { return this.interesados.size(); }
     public Long getId() { return id; }
+    public String getMarca() { return marca; }
+    public void setMarca(String marca) { this.marca = marca != null ? marca : ""; }
     public String getNombre() { return nombre; }
     public double getPrecio() { return precio; }
     public Categoria getCategoria() { return categoria; }
