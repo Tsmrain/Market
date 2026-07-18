@@ -2,18 +2,10 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import translationES from './es/translation.json';
-import translationEN from './en/translation.json';
-import translationPT from './pt-BR/translation.json';
 
 const resources = {
     es: {
         translation: translationES
-    },
-    en: {
-        translation: translationEN
-    },
-    'pt-BR': {
-        translation: translationPT
     }
 };
 

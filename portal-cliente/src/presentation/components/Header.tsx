@@ -8,11 +8,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
     const { usuario, logout } = useAuthController();
-    const { t, i18n } = useTranslation();
-
-    const changeLanguage = (lng: string) => {
-        i18n.changeLanguage(lng);
-    };
+    const { t } = useTranslation();
 
     return (
         <header style={{
@@ -84,17 +80,8 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                 </div>
             </div>
 
-            {/* Profile Section & i18n Selector */}
+            {/* Profile Section & User Details */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                {/* Selector de idioma corporativo sin emojis */}
-                <div style={{ display: 'flex', gap: '8px', fontSize: '0.8rem', fontWeight: 600, alignItems: 'center' }}>
-                    <span onClick={() => changeLanguage('es')} style={{ cursor: 'pointer', color: i18n.language === 'es' ? 'var(--secondary)' : '#ffffff', opacity: i18n.language === 'es' ? 1 : 0.6, transition: 'opacity 0.2s' }}>ES</span>
-                    <span style={{ opacity: 0.3 }}>|</span>
-                    <span onClick={() => changeLanguage('en')} style={{ cursor: 'pointer', color: i18n.language === 'en' ? 'var(--secondary)' : '#ffffff', opacity: i18n.language === 'en' ? 1 : 0.6, transition: 'opacity 0.2s' }}>EN</span>
-                    <span style={{ opacity: 0.3 }}>|</span>
-                    <span onClick={() => changeLanguage('pt-BR')} style={{ cursor: 'pointer', color: i18n.language === 'pt-BR' ? 'var(--secondary)' : '#ffffff', opacity: i18n.language === 'pt-BR' ? 1 : 0.6, transition: 'opacity 0.2s' }}>PT</span>
-                </div>
-
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     {usuario && usuario.id !== 500 ? (
                         <>
