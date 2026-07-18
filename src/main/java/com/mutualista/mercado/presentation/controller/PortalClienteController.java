@@ -87,7 +87,7 @@ public class PortalClienteController {
     public ProductoDetalleDTO obtenerDetalleProducto(
             @PathVariable Long idProducto,
             jakarta.servlet.http.HttpServletResponse response) {
-        response.setHeader("Cache-Control", "public, max-age=120");
+        response.setHeader("Cache-Control", "no-cache");
         Producto producto = productoRepo.findById(idProducto)
             .filter(p -> !p.isEliminado())
             .orElseThrow(() -> new RuntimeException("Producto no encontrado"));

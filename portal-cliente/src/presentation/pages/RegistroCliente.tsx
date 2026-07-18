@@ -124,7 +124,7 @@ export const RegistroCliente: React.FC = () => {
                                 onChange={(e) => setExpedido(e.target.value)}
                                 required
                                 style={{
-                                    width: '80px',
+                                    width: '140px',
                                     padding: '10px 8px',
                                     border: '1px solid var(--border-color)',
                                     borderRadius: '6px',
@@ -135,15 +135,15 @@ export const RegistroCliente: React.FC = () => {
                                     boxSizing: 'border-box'
                                 }}
                             >
-                                <option value="SC">SC</option>
-                                <option value="LP">LP</option>
-                                <option value="CB">CB</option>
-                                <option value="OR">OR</option>
-                                <option value="PT">PT</option>
-                                <option value="TJ">TJ</option>
-                                <option value="CH">CH</option>
-                                <option value="BE">BE</option>
-                                <option value="PD">PD</option>
+                                <option value="SC">Santa Cruz</option>
+                                <option value="LP">La Paz</option>
+                                <option value="CB">Cochabamba</option>
+                                <option value="OR">Oruro</option>
+                                <option value="PT">Potosí</option>
+                                <option value="CH">Chuquisaca</option>
+                                <option value="TJ">Tarija</option>
+                                <option value="BE">Beni</option>
+                                <option value="PD">Pando</option>
                             </select>
                         </div>
                     </div>

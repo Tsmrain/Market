@@ -10,6 +10,7 @@ import com.mutualista.mercado.domain.repository.CategoriaRepository;
 import com.mutualista.mercado.domain.repository.ComercianteRepository;
 import com.mutualista.mercado.domain.repository.HistorialCategoriaRepository;
 import com.mutualista.mercado.domain.repository.ProductoRepository;
+import com.mutualista.mercado.domain.repository.UnidadMedidaMaestraRepository;
 
 
 import org.springframework.web.bind.annotation.*;
@@ -32,11 +33,12 @@ public class ComercianteCatalogoController {
     private final ImageOptimizationService optimizador;
     private final HistorialCategoriaRepository historialRepo;
     private final UnidadMedidaNormalizador normalizador;
+    private final UnidadMedidaMaestraRepository unidadRepo;
 
     public ComercianteCatalogoController(ComercianteRepository cRepo, ProductoRepository pRepo, 
                                          CategoriaRepository catRepo, StorageService sService, 
                                          ImageOptimizationService opt, HistorialCategoriaRepository hRepo,
-                                         UnidadMedidaNormalizador norm) {
+                                         UnidadMedidaNormalizador norm, UnidadMedidaMaestraRepository uRepo) {
         this.comercianteRepo = cRepo;
         this.productoRepo = pRepo;
         this.categoriaRepo = catRepo;
@@ -44,6 +46,7 @@ public class ComercianteCatalogoController {
         this.optimizador = opt;
         this.historialRepo = hRepo;
         this.normalizador = norm;
+        this.unidadRepo = uRepo;
     }
 
     @GetMapping
@@ -86,9 +89,17 @@ public class ComercianteCatalogoController {
         // Gobernanza de Datos: Normalización predictiva
         String unidadMedidaLimpia = normalizador.normalizar(unidadMedida);
 
+        // Validar Unidad de Medida contra el catálogo maestro
+        if (!unidadRepo.findByCodigo(unidadMedidaLimpia).isPresent()) {
+            throw new IllegalArgumentException("La unidad de medida '" + unidadMedidaLimpia + "' no existe en el catálogo maestro.");
+        }
+
+        // Asignación de marca opcional con fallback a "Genérico"
+        String marcaFinal = (marca == null || marca.trim().isEmpty()) ? "Genérico" : marca.trim();
+
         // Registrar producto (Creator / Information Expert)
         Producto producto = comerciante.registrarProducto(nombre, descripcion, precio, categoria, unidadMedidaLimpia);
-        producto.setMarca(marca);
+        producto.setMarca(marcaFinal);
 
         // Procesar archivos
         for (MultipartFile archivo : archivos) {
@@ -155,12 +166,20 @@ public class ComercianteCatalogoController {
         double precio = Double.parseDouble(payload.get("precio").toString());
         String unidadMedidaRaw = (String) payload.getOrDefault("unidadMedida", "UNIDAD");
         String descripcion = (String) payload.getOrDefault("descripcion", "");
-        String marca = (String) payload.getOrDefault("marca", "");
+        String marcaRaw = (String) payload.getOrDefault("marca", "");
 
         // Gobernanza de Datos: Normalización predictiva
         String unidadMedidaLimpia = normalizador.normalizar(unidadMedidaRaw);
 
-        producto.actualizarDatos(nombre, precio, unidadMedidaLimpia, descripcion, marca);
+        // Validar Unidad de Medida contra el catálogo maestro
+        if (!unidadRepo.findByCodigo(unidadMedidaLimpia).isPresent()) {
+            throw new IllegalArgumentException("La unidad de medida '" + unidadMedidaLimpia + "' no existe en el catálogo maestro.");
+        }
+
+        // Asignación de marca opcional con fallback a "Genérico"
+        String marcaFinal = (marcaRaw == null || marcaRaw.trim().isEmpty()) ? "Genérico" : marcaRaw.trim();
+
+        producto.actualizarDatos(nombre, precio, unidadMedidaLimpia, descripcion, marcaFinal);
 
         // Manejo de Cambio de Categoría con Auditoría
         Long idCategoriaNueva = Long.valueOf(payload.get("idCategoria").toString());

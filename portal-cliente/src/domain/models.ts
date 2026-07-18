@@ -28,6 +28,7 @@ export interface ProductoDetalle {
     comentarios: string[];
     resenas: ResenaInfo[];
     galeriaUrls: string[];
+    imagenesUrls?: string[];
     idComerciante?: number;
     nombreComerciante?: string;
     telefonoComerciante?: string;

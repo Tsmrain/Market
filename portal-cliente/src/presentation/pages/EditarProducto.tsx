@@ -15,8 +15,6 @@ export const EditarProducto: React.FC = () => {
     const [precio, setPrecio] = useState("");
     const [idCategoria, setIdCategoria] = useState("");
     const [unidadMedida, setUnidadMedida] = useState("UNIDAD");
-    const [esOtro, setEsOtro] = useState(false);
-    const [unidadMedidaOtro, setUnidadMedidaOtro] = useState("");
     const [unidadesMaestras, setUnidadesMaestras] = useState<any[]>([]);
     const [descripcion, setDescripcion] = useState("");
     const [categorias, setCategorias] = useState<CategoriaInfo[]>([]);
@@ -58,16 +56,7 @@ export const EditarProducto: React.FC = () => {
             const unit = prod.unidadMedida || "UNIDAD";
             setDescripcion(prod.descripcion || "");
             setMarca(prod.marca || "");
-            
-            const standardCodes = unis.map((u: any) => u.codigo);
-            if (standardCodes.includes(unit)) {
-                setUnidadMedida(unit);
-                setEsOtro(false);
-            } else {
-                setUnidadMedida("OTRO");
-                setEsOtro(true);
-                setUnidadMedidaOtro(unit);
-            }
+            setUnidadMedida(unit);
             
             // Buscar la categoría del producto en la lista cargada
             const catEncontrada = cats.find(c => c.nombre === prod.nombreCategoria);
@@ -111,7 +100,7 @@ export const EditarProducto: React.FC = () => {
                 descripcion,
                 parseFloat(precio),
                 parseInt(idCategoria),
-                esOtro ? unidadMedidaOtro : unidadMedida,
+                unidadMedida,
                 marca
             );
             alert("¡Producto y categoría actualizados correctamente (Auditado)!");
@@ -318,34 +307,16 @@ export const EditarProducto: React.FC = () => {
                                         <select
                                             id="edit-unidad"
                                             value={unidadMedida}
-                                            onChange={e => { setUnidadMedida(e.target.value); setEsOtro(e.target.value === "OTRO"); }}
+                                            onChange={e => setUnidadMedida(e.target.value)}
                                             required
                                             style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.95rem', boxSizing: 'border-box', background: '#ffffff' }}
                                         >
                                             {unidadesMaestras.map(u => (
                                                 <option key={u.id} value={u.codigo}>{u.nombre} ({u.codigo})</option>
                                             ))}
-                                            <option value="OTRO">OTRO (Especificar)</option>
                                         </select>
                                     </div>
                                 </div>
-
-                                {esOtro && (
-                                    <div style={{ marginBottom: '16px' }}>
-                                        <label htmlFor="edit-unidad-otro" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                                            Especificar Unidad de Medida *
-                                        </label>
-                                        <input
-                                            id="edit-unidad-otro"
-                                            type="text"
-                                            placeholder="Ej. Amarro, Racimo, Carga..."
-                                            value={unidadMedidaOtro}
-                                            onChange={e => setUnidadMedidaOtro(e.target.value)}
-                                            required
-                                            style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.95rem', boxSizing: 'border-box' }}
-                                        />
-                                    </div>
-                                )}
 
                                 <div style={{ marginBottom: '16px' }}>
                                     <label htmlFor="edit-categoria" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>

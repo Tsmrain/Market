@@ -180,15 +180,15 @@ export const GestionComerciantes: React.FC = () => {
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     <input type="text" value={editMerchantCi} onChange={e => setEditMerchantCi(e.target.value)} required style={{ flexGrow: 1, padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                                     <select value={editMerchantExpedido} onChange={e => setEditMerchantExpedido(e.target.value)} required style={{ padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--card-bg)' }}>
-                                        <option value="SC">SC</option>
-                                        <option value="LP">LP</option>
-                                        <option value="CB">CB</option>
-                                        <option value="OR">OR</option>
-                                        <option value="PT">PT</option>
-                                        <option value="TJ">TJ</option>
-                                        <option value="CH">CH</option>
-                                        <option value="BE">BE</option>
-                                        <option value="PD">PD</option>
+                                        <option value="SC">Santa Cruz</option>
+                                        <option value="LP">La Paz</option>
+                                        <option value="CB">Cochabamba</option>
+                                        <option value="OR">Oruro</option>
+                                        <option value="PT">Potosí</option>
+                                        <option value="CH">Chuquisaca</option>
+                                        <option value="TJ">Tarija</option>
+                                        <option value="BE">Beni</option>
+                                        <option value="PD">Pando</option>
                                     </select>
                                 </div>
                             </div>
@@ -228,15 +228,15 @@ export const GestionComerciantes: React.FC = () => {
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     <input type="text" placeholder="Ej. 1234567" value={ci} onChange={e => setCi(e.target.value)} required style={{ flexGrow: 1, padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px' }} />
                                     <select value={expedido} onChange={e => setExpedido(e.target.value)} required style={{ padding: '8px 10px', border: '1px solid var(--border-color)', borderRadius: '4px', background: 'var(--card-bg)' }}>
-                                        <option value="SC">SC</option>
-                                        <option value="LP">LP</option>
-                                        <option value="CB">CB</option>
-                                        <option value="OR">OR</option>
-                                        <option value="PT">PT</option>
-                                        <option value="TJ">TJ</option>
-                                        <option value="CH">CH</option>
-                                        <option value="BE">BE</option>
-                                        <option value="PD">PD</option>
+                                        <option value="SC">Santa Cruz</option>
+                                        <option value="LP">La Paz</option>
+                                        <option value="CB">Cochabamba</option>
+                                        <option value="OR">Oruro</option>
+                                        <option value="PT">Potosí</option>
+                                        <option value="CH">Chuquisaca</option>
+                                        <option value="TJ">Tarija</option>
+                                        <option value="BE">Beni</option>
+                                        <option value="PD">Pando</option>
                                     </select>
                                 </div>
                             </div>

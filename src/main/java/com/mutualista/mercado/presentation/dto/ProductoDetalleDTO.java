@@ -20,6 +20,7 @@ public class ProductoDetalleDTO {
     private List<String> comentarios;
     private List<String> galeriaUrls; 
     private List<Map<String, Object>> galeria;
+    private List<String> imagenesUrls;
 
     // NUEVA LISTA DETALLADA DE RESEÑAS (Model-View Separation)
     private List<ResenaInfoDTO> resenas;
@@ -80,6 +81,7 @@ public class ProductoDetalleDTO {
         this.promedioEstrellas = producto.getResenas().stream().mapToInt(Resena::getCalificacion).average().orElse(0.0);
         this.comentarios = producto.getResenas().stream().map(Resena::getComentario).collect(Collectors.toList());
         this.galeriaUrls = producto.getGaleria().stream().map(Multimedia::getUrl).collect(Collectors.toList());
+        this.imagenesUrls = producto.getGaleria().stream().map(Multimedia::getUrl).collect(Collectors.toList());
         
         // Mapear reseñas detalladas
         this.resenas = producto.getResenas().stream()
@@ -110,6 +112,7 @@ public class ProductoDetalleDTO {
     public double getPromedioEstrellas() { return promedioEstrellas; }
     public List<String> getComentarios() { return comentarios; }
     public List<String> getGaleriaUrls() { return galeriaUrls; }
+    public List<String> getImagenesUrls() { return imagenesUrls; }
     public List<Map<String, Object>> getGaleria() { return galeria; }
     public List<ResenaInfoDTO> getResenas() { return resenas; }
 

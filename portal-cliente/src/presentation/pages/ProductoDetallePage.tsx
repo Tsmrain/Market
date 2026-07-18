@@ -112,7 +112,7 @@ export const ProductoDetallePage: React.FC = () => {
 
     const galeria = producto?.galeria && producto.galeria.length > 0
         ? producto.galeria
-        : (producto?.galeriaUrls || []).map((url, idx) => ({ id: idx, url, tipo: url.endsWith('.mp4') ? 'video' : 'imagen' }));
+        : (producto?.imagenesUrls || producto?.galeriaUrls || []).map((url, idx) => ({ id: idx, url, tipo: url.endsWith('.mp4') ? 'video' : 'imagen' }));
 
     const mediaPrincipal = mediaActiva || (galeria.length > 0 ? galeria[0] : null);
 

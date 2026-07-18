@@ -16,8 +16,6 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
     const [categorias, setCategorias] = useState<CategoriaInfo[]>([]);
     const [unidadesMaestras, setUnidadesMaestras] = useState<any[]>([]);
     const [unidadMedida, setUnidadMedida] = useState("UNIDAD");
-    const [esOtro, setEsOtro] = useState(false);
-    const [unidadMedidaOtro, setUnidadMedidaOtro] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [archivos, setArchivos] = useState<File[]>([]);
     const [cargando, setCargando] = useState(false);
@@ -92,7 +90,7 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                 descripcion,
                 parseFloat(precio),
                 parseInt(idCategoria),
-                esOtro ? unidadMedidaOtro : unidadMedida,
+                unidadMedida,
                 archivos,
                 marca
             );
@@ -267,7 +265,7 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                             <select
                                 id="prod-unidad"
                                 value={unidadMedida}
-                                onChange={e => { setUnidadMedida(e.target.value); setEsOtro(e.target.value === "OTRO"); }}
+                                onChange={e => setUnidadMedida(e.target.value)}
                                 required
                                 style={{
                                     width: '100%',
@@ -285,37 +283,9 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                                 {unidadesMaestras.map(u => (
                                     <option key={u.id} value={u.codigo}>{u.nombre} ({u.codigo})</option>
                                 ))}
-                                <option value="OTRO">OTRO (Especificar)</option>
                             </select>
                         </div>
                     </div>
-
-                    {esOtro && (
-                        <div style={{ marginBottom: '16px' }}>
-                            <label htmlFor="prod-unidad-otro" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
-                                Especificar Unidad de Medida *
-                            </label>
-                            <input
-                                id="prod-unidad-otro"
-                                type="text"
-                                placeholder="Ej. Amarro, Racimo, Carga..."
-                                value={unidadMedidaOtro}
-                                onChange={e => setUnidadMedidaOtro(e.target.value)}
-                                required
-                                style={{
-                                    width: '100%',
-                                    padding: '10px 12px',
-                                    border: '1px solid var(--border-color)',
-                                    borderRadius: '6px',
-                                    fontSize: '0.9rem',
-                                    outline: 'none',
-                                    boxSizing: 'border-box',
-                                    background: '#ffffff',
-                                    color: 'var(--text-primary)'
-                                }}
-                            />
-                        </div>
-                    )}
 
                     <div style={{ marginBottom: '16px' }}>
                         <label htmlFor="prod-categoria" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
