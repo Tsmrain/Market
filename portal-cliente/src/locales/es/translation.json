@@ -34,5 +34,7 @@
     "UNIT_GRAMO": "Gramos",
     "UNIT_LITRO": "Litro",
     "UNIT_DOCENA": "Docena",
-    "UNIT_CAJA": "Caja / Paquete"
+    "UNIT_CAJA": "Caja / Paquete",
+    "login_required_action": "Para realizar esta acción, primero debes iniciar sesión o crear una cuenta de Cliente.",
+    "resenas_detalladas": "Comentarios y Reseñas"
 }

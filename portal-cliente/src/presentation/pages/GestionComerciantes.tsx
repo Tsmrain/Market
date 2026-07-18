@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AdminService } from '../../application/AdminService';
+import { obtenerNombreDepartamento } from '../../utils/formateadores';
 
 export const GestionComerciantes: React.FC = () => {
     // Merchant list state
@@ -280,7 +281,7 @@ export const GestionComerciantes: React.FC = () => {
                                 {comerciantes.map((com: any) => (
                                     <tr key={com.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                         <td style={{ padding: '8px', fontWeight: 600 }}>{com.nombre}</td>
-                                        <td style={{ padding: '8px' }}>{com.ci} {com.expedido || ''}</td>
+                                        <td style={{ padding: '8px' }}>{com.ci} {com.expedido ? `(${obtenerNombreDepartamento(com.expedido)})` : ''}</td>
                                         <td style={{ padding: '8px', fontWeight: 700 }}>{com.numeroPuesto || 'S/N'}</td>
                                         <td style={{ padding: '8px' }}>+591 {com.telefono}</td>
                                         <td style={{ padding: '8px', textAlign: 'center' }}>

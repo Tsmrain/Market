@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PasswordInput } from '../components/PasswordInput';
+import { obtenerNombreDepartamento } from '../../utils/formateadores';
 
 export const GestionAdministradores: React.FC = () => {
     const [admins, setAdmins] = useState<any[]>([]);
@@ -269,7 +270,7 @@ export const GestionAdministradores: React.FC = () => {
                                 {admins.map((adm: any) => (
                                     <tr key={adm.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                         <td style={{ padding: '8px', fontWeight: 600 }}>{adm.nombre}</td>
-                                        <td style={{ padding: '8px' }}>{adm.ci} {adm.expedido || ''}</td>
+                                        <td style={{ padding: '8px' }}>{adm.ci} {adm.expedido ? `(${obtenerNombreDepartamento(adm.expedido)})` : ''}</td>
                                         <td style={{ padding: '8px' }}>{adm.telefono || '---'}</td>
                                         <td style={{ padding: '8px', fontWeight: 600, color: 'var(--primary)' }}>
                                             {adm.asociacionNombre || 'Ninguna'}

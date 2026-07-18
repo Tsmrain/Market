@@ -30,6 +30,7 @@ export const ProductoDetallePage: React.FC = () => {
     const handleContactar = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (!estaAutenticado) {
+            alert(t('login_required_action'));
             navigate('/login/cliente', { state: { from: location.pathname } });
             return;
         }
@@ -355,6 +356,7 @@ export const ProductoDetallePage: React.FC = () => {
                                 onClick={async () => {
                                     // UC-A6 (Me interesa) - Polimorfismo: Cualquier actor autenticado
                                     if (!estaAutenticado) {
+                                        alert(t('login_required_action'));
                                         navigate('/login/cliente', { state: { from: location.pathname } });
                                     } else {
                                         await handleMeInteresa();
@@ -394,7 +396,7 @@ export const ProductoDetallePage: React.FC = () => {
                 {/* Reviews and comments section */}
                 <section style={{ borderTop: '1px solid var(--border-color)', marginTop: '36px', paddingTop: '32px' }}>
                     <h3 style={{ margin: '0 0 20px 0', fontSize: '1.25rem', fontWeight: 700 }}>
-                        {t('comentarios_resenas')}
+                        {t('resenas_detalladas')}
                     </h3>
 
                     <div style={{
@@ -462,6 +464,7 @@ export const ProductoDetallePage: React.FC = () => {
                             onClick={async () => {
                                 // UC-A7 (Comentar / Reseñar) - Polimorfismo: Cualquier actor autenticado
                                 if (!estaAutenticado) {
+                                    alert(t('login_required_action'));
                                     navigate('/login/cliente', { state: { from: location.pathname } });
                                     return;
                                 }
@@ -491,13 +494,13 @@ export const ProductoDetallePage: React.FC = () => {
                         Comentarios recientes
                     </h4>
 
-                    {producto.comentarios.length === 0 ? (
+                    {(!producto.resenas || producto.resenas.length === 0) ? (
                         <p style={{ color: 'var(--text-light)', fontStyle: 'italic', margin: 0 }}>
                             {t('sin_comentarios')}
                         </p>
                     ) : (
                         <ul style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {producto.comentarios.map((c, index) => (
+                            {producto.resenas.map((r, index) => (
                                 <li 
                                     key={index} 
                                     style={{
@@ -507,10 +510,19 @@ export const ProductoDetallePage: React.FC = () => {
                                         borderRadius: '6px',
                                         color: 'var(--text-secondary)',
                                         fontSize: '0.95rem',
-                                        lineHeight: 1.5
+                                        lineHeight: 1.5,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '6px'
                                     }}
                                 >
-                                    {c}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <strong style={{ color: 'var(--text-primary)' }}>{r.nombreCliente}</strong>
+                                        <span style={{ color: '#fbbf24', fontSize: '0.9rem' }}>
+                                            {'★'.repeat(r.calificacion) + '☆'.repeat(5 - r.calificacion)}
+                                        </span>
+                                    </div>
+                                    <p style={{ margin: 0, color: 'var(--text-secondary)' }}>{r.comentario}</p>
                                 </li>
                             ))}
                         </ul>

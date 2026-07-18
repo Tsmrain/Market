@@ -21,6 +21,9 @@ public class ProductoDetalleDTO {
     private List<String> galeriaUrls; 
     private List<Map<String, Object>> galeria;
 
+    // NUEVA LISTA DETALLADA DE RESEÑAS (Model-View Separation)
+    private List<ResenaInfoDTO> resenas;
+
     // NUEVOS CAMPOS: Comerciante propietario
     private Long idComerciante;
     private String nombreComerciante;
@@ -30,6 +33,22 @@ public class ProductoDetalleDTO {
     private boolean estaDisponible;
     private String unidadMedida;
     private String descripcion;
+
+    public static class ResenaInfoDTO {
+        private String nombreCliente;
+        private int calificacion;
+        private String comentario;
+
+        public ResenaInfoDTO(Resena r) {
+            this.nombreCliente = r.getCliente() != null ? r.getCliente().getNombre() : "Cliente Anónimo";
+            this.calificacion = r.getCalificacion();
+            this.comentario = r.getComentario();
+        }
+
+        public String getNombreCliente() { return nombreCliente; }
+        public int getCalificacion() { return calificacion; }
+        public String getComentario() { return comentario; }
+    }
 
     public ProductoDetalleDTO(Producto producto) {
         this.id = producto.getId();
@@ -44,6 +63,9 @@ public class ProductoDetalleDTO {
         this.comentarios = producto.getResenas().stream().map(Resena::getComentario).collect(Collectors.toList());
         this.galeriaUrls = producto.getGaleria().stream().map(Multimedia::getUrl).collect(Collectors.toList());
         
+        // Mapear reseñas detalladas
+        this.resenas = producto.getResenas().stream().map(ResenaInfoDTO::new).collect(Collectors.toList());
+
         this.galeria = producto.getGaleria().stream().map(m -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", m.getId());
@@ -72,6 +94,7 @@ public class ProductoDetalleDTO {
     public List<String> getComentarios() { return comentarios; }
     public List<String> getGaleriaUrls() { return galeriaUrls; }
     public List<Map<String, Object>> getGaleria() { return galeria; }
+    public List<ResenaInfoDTO> getResenas() { return resenas; }
 
     public Long getIdComerciante() { return idComerciante; }
     public String getNombreComerciante() { return nombreComerciante; }

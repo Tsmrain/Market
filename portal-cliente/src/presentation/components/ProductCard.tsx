@@ -64,26 +64,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
     };
 
     return (
-        <div style={{
-            background: 'var(--card-bg)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '8px',
-            padding: '16px',
-            boxShadow: 'var(--shadow-sm)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            transition: 'transform var(--transition-speed), box-shadow var(--transition-speed)',
-            cursor: 'pointer'
-        }}
-        onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-        }}
-        onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-        }}
+        <Link 
+            to={`/productos/${producto.id}`}
+            style={{
+                textDecoration: 'none',
+                color: 'inherit',
+                background: 'var(--card-bg)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                padding: '16px',
+                boxShadow: 'var(--shadow-sm)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                transition: 'transform var(--transition-speed), box-shadow var(--transition-speed)',
+                cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+            }}
         >
             {/* Image container: Ratio 4:3, object-fit: cover */}
             <div style={{
@@ -201,26 +205,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                         </span>
                     </div>
 
-                    <Link to={`/productos/${producto.id}`} style={{ textDecoration: 'none' }}>
-                        <button style={{
-                            width: '100%',
-                            background: 'var(--secondary)',
-                            color: '#ffffff',
-                            padding: '10px 16px',
-                            borderRadius: '6px',
-                            fontWeight: 600,
-                            fontSize: '0.875rem',
-                            textAlign: 'center',
-                            boxShadow: 'var(--shadow-sm)'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--primary-dark)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'var(--secondary)'}
-                        >
-                            {producto.estaDisponible ? 'Ver detalle / Comprar' : 'Ver detalle'}
-                        </button>
-                    </Link>
+                    <div style={{
+                        width: '100%',
+                        background: 'var(--secondary)',
+                        color: '#ffffff',
+                        padding: '10px 16px',
+                        borderRadius: '6px',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        textAlign: 'center',
+                        boxShadow: 'var(--shadow-sm)',
+                        boxSizing: 'border-box'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--primary-dark)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'var(--secondary)'}
+                    >
+                        {producto.estaDisponible ? 'Ver detalle / Comprar' : 'Ver detalle'}
+                    </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };

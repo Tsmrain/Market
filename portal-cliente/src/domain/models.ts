@@ -9,6 +9,12 @@ export interface ProductoResumen {
     descripcion: string;
 }
 
+export interface ResenaInfo {
+    nombreCliente: string;
+    calificacion: number;
+    comentario: string;
+}
+
 // Reflejo exacto de ProductoDetalleDTO del Backend
 export interface ProductoDetalle {
     id: number;
@@ -18,6 +24,7 @@ export interface ProductoDetalle {
     cantidadInteresados: number;
     promedioEstrellas: number;
     comentarios: string[];
+    resenas: ResenaInfo[];
     galeriaUrls: string[];
     idComerciante?: number;
     nombreComerciante?: string;
