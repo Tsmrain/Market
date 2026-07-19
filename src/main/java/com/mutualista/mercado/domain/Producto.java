@@ -19,6 +19,9 @@ public class Producto {
     private boolean estaDisponible = true; 
     private boolean eliminado = false; 
 
+    @Enumerated(EnumType.STRING)
+    private EstadoProducto estado = EstadoProducto.ACTIVO;
+
     @ManyToOne
     @JoinColumn(name = "categoria_id") // Quitada inmutabilidad física en la relación
     private Categoria categoria;
@@ -117,6 +120,15 @@ public class Producto {
     public boolean isEliminado() { return eliminado; }
     public List<Resena> getResenas() { return Collections.unmodifiableList(resenas); }
     public List<Multimedia> getGaleria() { return Collections.unmodifiableList(galeria); }
+
+    public EstadoProducto getEstado() { return estado; }
+    public void setEstado(EstadoProducto estado) { this.estado = estado; }
+
+    public void archivar() {
+        this.estado = EstadoProducto.ARCHIVADO;
+        this.estaDisponible = false;
+        this.eliminado = true;
+    }
 
     public void cambiarCategoria(Categoria nuevaCategoria) {
         this.categoria = nuevaCategoria;

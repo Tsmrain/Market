@@ -75,11 +75,13 @@ export const ComercianteService = {
     },
 
     eliminarProducto: async (idComerciante: number, idProducto: number): Promise<void> => {
-        const response = await fetch(`${API_PANEL}/${idComerciante}/productos/${idProducto}`, {
-            method: 'DELETE'
+        const response = await fetch(`${API_PANEL}/${idComerciante}/productos/${idProducto}/archivar`, {
+            method: 'PUT'
         });
         if (!response.ok) {
-            throw new Error('Error al eliminar el producto');
+            const data = await response.json().catch(() => ({}));
+            const errMsg = data.mensaje || data.error || data.message || 'Error al archivar el producto';
+            throw new Error(errMsg);
         }
     },
 

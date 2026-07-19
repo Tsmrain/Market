@@ -57,25 +57,12 @@ input, select, textarea {
 
 /* Utility Responsive Layouts (Premium & Fluid) */
 
-/* Contenedor fluido que usa todo el ancho en laptops de pantalla ancha */
 .fluid-container {
-  width: 100%;
+  width: 100vw;
   max-width: 100%;
-  padding: 16px;
-  margin: 0 auto;
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
-}
-
-@media (min-width: 768px) {
-  .fluid-container {
-    padding: 32px 40px;
-  }
-}
-
-@media (min-width: 1400px) {
-  .fluid-container {
-    max-width: 1350px; /* Excelente equilibrio visual en pantallas extra anchas */
-  }
 }
 
 /* Rejilla adaptativa para Formularios y Tablas (Admin) */

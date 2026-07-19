@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/admin/categorias/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/public/multimedia/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
                 
                 // Endpoints de escritura de categorías exclusivos para SUPERADMIN
                 .requestMatchers(HttpMethod.POST, "/api/admin/categorias/**").hasRole("SUPERADMIN")

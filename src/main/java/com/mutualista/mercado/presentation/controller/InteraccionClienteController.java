@@ -127,4 +127,9 @@ public class InteraccionClienteController {
 
         return messageSource.getMessage("interest.registered", new Object[]{ producto.getCantidadInteresados() }, LocaleContextHolder.getLocale());
     }
+
+    @DeleteMapping("/{idProducto}/resenas/{idResena}")
+    public Map<String, String> eliminarResena(@PathVariable Long idProducto, @PathVariable Long idResena) {
+        throw new UnsupportedOperationException("Borrado fisico de opiniones deshabilitado. Las reseñas no pueden ser removidas para preservar la integridad historica.");
+    }
 }

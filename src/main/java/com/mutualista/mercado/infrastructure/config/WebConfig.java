@@ -10,8 +10,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Mapea la URL /api/public/multimedia/ hacia la carpeta física ./uploads/
-        registry.addResourceHandler("/api/public/multimedia/**")
+        // Mapea la URL /uploads/ hacia la carpeta física ./uploads/
+        registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:./uploads/");
     }
 

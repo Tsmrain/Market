@@ -132,20 +132,18 @@ public class ComercianteCatalogoController {
     }
 
     @DeleteMapping("/{idProducto}")
-    @Transactional
     public Map<String, String> eliminarProducto(@PathVariable Long idComerciante, @PathVariable Long idProducto) {
+        throw new UnsupportedOperationException("Borrado fisico deshabilitado. Use la transicion de estado de archivar.");
+    }
+
+    @PutMapping("/{idProducto}/archivar")
+    @Transactional
+    public Map<String, String> archivarProducto(@PathVariable Long idComerciante, @PathVariable Long idProducto) {
         Producto producto = productoRepo.findById(idProducto)
             .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        
-        // Sincronización de Destrucción de Archivos Físicos (Prevenir Storage Leaks)
-        producto.getGaleria().forEach(m -> {
-            storageService.borrarArchivo(m.getUrl());
-        });
-        producto.limpiarGaleria(); // Limpia los registros de la galería en cascada (orphan removal)
-        
-        producto.eliminarLogicamente();
+        producto.archivar();
         productoRepo.save(producto);
-        return Map.of("mensaje", "Producto eliminado exitosamente.");
+        return Map.of("mensaje", "Producto archivado exitosamente.");
     }
 
     // 1. EDICIÓN PURA DE TEXTO Y CATEGORÍA (Con Auditoría)

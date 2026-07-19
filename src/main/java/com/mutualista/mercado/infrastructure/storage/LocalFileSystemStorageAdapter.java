@@ -10,6 +10,18 @@ import java.util.UUID;
 public class LocalFileSystemStorageAdapter implements StorageService {
     private final String RUTA_BASE = "uploads/";
 
+    @jakarta.annotation.PostConstruct
+    public void init() {
+        try {
+            Path dir = Paths.get(RUTA_BASE);
+            if (!Files.exists(dir)) {
+                Files.createDirectories(dir);
+            }
+        } catch (Exception e) {
+            System.err.println("Error al inicializar directorio de subidas local: " + e.getMessage());
+        }
+    }
+
     @Override
     public String guardarArchivo(byte[] contenido, String nombreOriginal) {
         try {
@@ -27,7 +39,7 @@ public class LocalFileSystemStorageAdapter implements StorageService {
             Files.write(rutaFisica, contenido);
             
             // Retorna la URL lógica que el frontend consumirá
-            return "/api/public/multimedia/" + nombreArchivo;
+            return "/uploads/" + nombreArchivo;
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar en disco local", e);
         }

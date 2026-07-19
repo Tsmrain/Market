@@ -261,6 +261,19 @@ export const ProductoDetallePage: React.FC = () => {
                                 {producto.nombre}
                             </h1>
 
+                            {producto.marca && (
+                                <p style={{
+                                    margin: '0 0 12px 0',
+                                    fontSize: '0.85rem',
+                                    fontWeight: 700,
+                                    color: (producto.marca.toLowerCase() === 'genérico' || producto.marca.toLowerCase() === 'generico') ? 'var(--text-light)' : 'var(--secondary)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em'
+                                }}>
+                                    Marca: {producto.marca}
+                                </p>
+                            )}
+
                             <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                 <p style={{ margin: 0 }}><strong>{t('comerciante')}:</strong> {producto.nombreComerciante || t('no_especificado')}</p>
                                 <p style={{ margin: 0 }}><strong>{t('puesto')}:</strong> {producto.numeroPuesto || t('no_especificado')}</p>

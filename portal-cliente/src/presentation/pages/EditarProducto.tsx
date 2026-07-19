@@ -20,6 +20,14 @@ export const EditarProducto: React.FC = () => {
     const [categorias, setCategorias] = useState<CategoriaInfo[]>([]);
     const [marca, setMarca] = useState("");
 
+    // Original backup states for Optimistic UI
+    const [originalNombre, setOriginalNombre] = useState("");
+    const [originalPrecio, setOriginalPrecio] = useState("");
+    const [originalIdCategoria, setOriginalIdCategoria] = useState("");
+    const [originalUnidadMedida, setOriginalUnidadMedida] = useState("UNIDAD");
+    const [originalDescripcion, setOriginalDescripcion] = useState("");
+    const [originalMarca, setOriginalMarca] = useState("");
+
     // Multimedia gallery state
     const [galeriaActual, setGaleriaActual] = useState<Array<{ id: number; url: string; tipo: string }>>([]);
     const [archivosNuevos, setArchivosNuevos] = useState<File[]>([]);
@@ -61,16 +69,22 @@ export const EditarProducto: React.FC = () => {
             setUnidadesMaestras(unis);
 
             setNombre(prod.nombre);
+            setOriginalNombre(prod.nombre);
             setPrecio(prod.precio.toString());
+            setOriginalPrecio(prod.precio.toString());
             const unit = prod.unidadMedida || "UNIDAD";
             setDescripcion(prod.descripcion || "");
+            setOriginalDescripcion(prod.descripcion || "");
             setMarca(prod.marca || "");
+            setOriginalMarca(prod.marca || "");
             setUnidadMedida(unit);
+            setOriginalUnidadMedida(unit);
             
             // Buscar la categoría del producto en la lista cargada
             const catEncontrada = cats.find(c => c.nombre === prod.nombreCategoria);
             if (catEncontrada) {
                 setIdCategoria(catEncontrada.id.toString());
+                setOriginalIdCategoria(catEncontrada.id.toString());
             }
 
             // Cargar galería estructurada
@@ -100,28 +114,63 @@ export const EditarProducto: React.FC = () => {
 
         if (!nombre.trim() || !precio.trim() || !idCategoria || !id || !usuario) return;
 
+        // Backup de valores originales (últimos exitosos cargados o guardados)
+        const backup = {
+            nombre: originalNombre,
+            precio: originalPrecio,
+            idCategoria: originalIdCategoria,
+            unidadMedida: originalUnidadMedida,
+            descripcion: originalDescripcion,
+            marca: originalMarca
+        };
+
+        // Actualizar visualmente de forma optimista
+        setOriginalNombre(nombre);
+        setOriginalPrecio(precio);
+        setOriginalIdCategoria(idCategoria);
+        setOriginalUnidadMedida(unidadMedida);
+        setOriginalDescripcion(descripcion);
+        setOriginalMarca(marca);
+        setMensaje("Guardando cambios en segundo plano...");
         setCargando(true);
-        try {
-            await ComercianteService.editarProducto(
-                usuario.id,
-                parseInt(id),
-                nombre,
-                descripcion,
-                parseFloat(precio),
-                parseInt(idCategoria),
-                unidadMedida,
-                marca
-            );
+
+        // Disparar en segundo plano
+        ComercianteService.editarProducto(
+            usuario.id,
+            parseInt(id),
+            nombre,
+            descripcion,
+            parseFloat(precio),
+            parseInt(idCategoria),
+            unidadMedida,
+            marca
+        ).then(() => {
             alert("¡Producto y categoría actualizados correctamente (Auditado)!");
             navigate('/panel/mercaderia');
-        } catch (err: any) {
+        }).catch((err: any) => {
             console.error(err);
             const msg = err.message || "Error al actualizar los datos del producto.";
+            
+            // Revertir estados a los valores del backup silenciosamente
+            setNombre(backup.nombre);
+            setOriginalNombre(backup.nombre);
+            setPrecio(backup.precio);
+            setOriginalPrecio(backup.precio);
+            setIdCategoria(backup.idCategoria);
+            setOriginalIdCategoria(backup.idCategoria);
+            setUnidadMedida(backup.unidadMedida);
+            setOriginalUnidadMedida(backup.unidadMedida);
+            setDescripcion(backup.descripcion);
+            setOriginalDescripcion(backup.descripcion);
+            setMarca(backup.marca);
+            setOriginalMarca(backup.marca);
+
             setError(msg);
-            alert(`Error al actualizar el producto: ${msg}`);
-        } finally {
+            setMensaje("");
+            alert(`Error al actualizar el producto (Estado revertido): ${msg}`);
+        }).finally(() => {
             setCargando(false);
-        }
+        });
     };
 
     // 4. Subir nuevos archivos multimedia

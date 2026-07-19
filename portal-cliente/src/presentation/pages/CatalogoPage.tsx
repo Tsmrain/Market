@@ -36,37 +36,46 @@ export const CatalogoPage: React.FC = () => {
             {/* Main Content */}
             <main className="catalogo-main" style={{
                 flexGrow: 1,
-                padding: '32px 24px',
-                maxWidth: '1200px',
-                width: '100%',
-                margin: '0 auto',
+                padding: 0,
+                margin: 0,
+                maxWidth: '100%',
+                width: '100vw',
                 boxSizing: 'border-box'
             }}>
                 <style>{`
                     .catalogo-main {
                         display: grid;
-                        grid-template-columns: 260px 1fr;
-                        gap: 32px;
+                        grid-template-columns: 300px 1fr;
+                        gap: 0px;
                     }
                     @media (max-width: 768px) {
                         .catalogo-main {
                             grid-template-columns: 1fr;
-                            gap: 24px;
+                            gap: 0px;
+                        }
+                        .catalogo-sidebar {
+                            border-right: none !important;
+                            border-bottom: 1px solid var(--border-color) !important;
+                            min-height: auto !important;
+                            width: 100% !important;
                         }
                     }
                 `}</style>
                 {/* Columna Izquierda: Barra Lateral de Filtros */}
-                <aside style={{
+                <aside className="catalogo-sidebar" style={{
                     background: '#ffffff',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '8px',
+                    borderRight: '1px solid var(--border-color)',
+                    borderLeft: 'none',
+                    borderTop: 'none',
+                    borderBottom: 'none',
+                    borderRadius: '0px',
                     padding: '24px',
-                    height: 'fit-content',
+                    minHeight: '100vh',
+                    height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '24px',
-                    boxShadow: 'var(--shadow-sm)',
-                    textAlign: 'left'
+                    gap: '20px',
+                    boxSizing: 'border-box'
                 }}>
                     {/* Lista Vertical de Categorías */}
                     <div>
@@ -235,7 +244,7 @@ export const CatalogoPage: React.FC = () => {
                 </aside>
 
                 {/* Columna Derecha: Grilla de Productos */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', padding: '32px 24px', boxSizing: 'border-box' }}>
                     {/* Loading state */}
                     {cargando && (
                         <div style={{ 
