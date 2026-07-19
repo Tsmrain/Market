@@ -1,7 +1,6 @@
 package com.mutualista.mercado.presentation.dto;
 
 import com.mutualista.mercado.domain.Comerciante;
-import com.mutualista.mercado.domain.Multimedia;
 import com.mutualista.mercado.domain.Producto;
 import com.mutualista.mercado.domain.Resena;
 
