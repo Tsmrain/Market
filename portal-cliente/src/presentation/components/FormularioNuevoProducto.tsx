@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CatalogoService } from '../../application/CatalogoService';
 import { ComercianteService } from '../../application/ComercianteService';
 import type { CategoriaInfo } from '../../domain/models';
+import { CategoriaSelectorTree } from './CategoriaSelectorTree';
 
 interface FormularioNuevoProductoProps {
     idComerciante: number;
@@ -41,9 +42,8 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                 ]);
                 setCategorias(dataCats);
                 setUnidadesMaestras(dataUnis);
-                if (dataCats.length > 0) {
-                    setIdCategoria(dataCats[0].id.toString());
-                }
+                setIdCategoria("");
+                setIdCategoriaPadre("");
                 if (dataUnis.length > 0) {
                     setUnidadMedida(dataUnis[0].codigo);
                 }
@@ -54,6 +54,15 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
         };
         cargar();
     }, []);
+
+    useEffect(() => {
+        if (idCategoriaPadre) {
+            const subs = categorias.filter(c => c.idCategoriaPadre && c.idCategoriaPadre.toString() === idCategoriaPadre);
+            if (subs.length === 0) {
+                setIdCategoria(idCategoriaPadre);
+            }
+        }
+    }, [idCategoriaPadre, categorias]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files;
@@ -297,33 +306,19 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                     </div>
 
                     <div style={{ marginBottom: '16px' }}>
-                        <label htmlFor="prod-categoria" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
                             Categoría *
                         </label>
-                        <select
-                            id="prod-categoria"
-                            value={idCategoria}
-                            onChange={e => setIdCategoria(e.target.value)}
-                            required
-                            style={{
-                                width: '100%',
-                                padding: '10px 12px',
-                                border: '1px solid var(--border-color)',
-                                borderRadius: '6px',
-                                fontSize: '0.9rem',
-                                outline: 'none',
-                                boxSizing: 'border-box',
-                                background: '#ffffff',
-                                color: 'var(--text-primary)',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            {categorias.map(cat => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.nombre}
-                                </option>
-                            ))}
-                        </select>
+                        <CategoriaSelectorTree
+                            categorias={categorias}
+                            idCategoriaSeleccionada={idCategoria}
+                            onSelect={(id) => setIdCategoria(id)}
+                        />
+                        {!idCategoria && (
+                            <p style={{ fontSize: '0.78rem', color: '#b91c1c', marginTop: '6px' }}>
+                                Haz clic en una subcategoría del árbol para seleccionarla.
+                            </p>
+                        )}
                     </div>
 
                     <div>

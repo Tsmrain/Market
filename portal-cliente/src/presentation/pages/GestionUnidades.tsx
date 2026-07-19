@@ -66,14 +66,18 @@ export const GestionUnidades: React.FC = () => {
         setMensaje("");
         setError("");
 
-        if (!editNombre.trim() || !editId) {
-            setError("El nombre es obligatorio.");
+        if (!editCodigo.trim() || !editNombre.trim() || !editId) {
+            setError("El código y el nombre son obligatorios.");
+            return;
+        }
+        if (editCodigo.includes(" ")) {
+            setError("El código no puede contener espacios en blanco.");
             return;
         }
 
         setCargando(true);
         try {
-            await SuperAdminService.editarUnidad(editId, editNombre, editAdmiteDecimales);
+            await SuperAdminService.editarUnidad(editId, editCodigo, editNombre, editAdmiteDecimales);
             setMensaje("Unidad de medida actualizada exitosamente.");
             setEditId(null);
             cargarUnidades();
@@ -138,8 +142,24 @@ export const GestionUnidades: React.FC = () => {
                     {editId ? (
                         <form onSubmit={handleEditUnitSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary-dark)', margin: 0 }}>
-                                Editar Unidad: {editCodigo}
+                                Editar Unidad
                             </h3>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
+                                    Código de Unidad *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editCodigo}
+                                    onChange={e => setEditCodigo(e.target.value.toUpperCase())}
+                                    required
+                                    placeholder="ej: KG, LITRO, UNIDAD"
+                                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.9rem', boxSizing: 'border-box', fontFamily: 'monospace', textTransform: 'uppercase' }}
+                                />
+                                <small style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+                                    Sin espacios. Se guardará en mayúsculas.
+                                </small>
+                            </div>
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
                                     Nombre Descriptivo *

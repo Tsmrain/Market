@@ -14,7 +14,7 @@ export const LoginSuperAdmin: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
-        
+
         if (!ci.trim()) {
             setError("Por favor ingresa tu Carnet de Identidad");
             return;
@@ -27,7 +27,7 @@ export const LoginSuperAdmin: React.FC = () => {
         setCargando(true);
         try {
             await loginComerciante(ci, pin);
-            
+
             const stored = localStorage.getItem('usuario_sesion');
             if (stored) {
                 const sesion = JSON.parse(stored);

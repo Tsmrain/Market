@@ -64,12 +64,12 @@ export const ConfiguracionSistema: React.FC = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', padding: '10px' }}>
-            <div style={{ 
-                background: 'var(--card-bg)', 
-                border: '1px solid var(--border-color)', 
-                borderRadius: '8px', 
-                padding: '24px', 
-                boxShadow: 'var(--shadow-sm)' 
+            <div style={{
+                background: 'var(--card-bg)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                padding: '24px',
+                boxShadow: 'var(--shadow-sm)'
             }}>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-dark)', margin: 0, textTransform: 'uppercase' }}>
                     Configuración del Sistema
@@ -79,11 +79,11 @@ export const ConfiguracionSistema: React.FC = () => {
                 </p>
             </div>
 
-            <div style={{ 
-                background: 'var(--card-bg)', 
-                border: '1px solid var(--border-color)', 
-                borderRadius: '8px', 
-                padding: '32px', 
+            <div style={{
+                background: 'var(--card-bg)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                padding: '32px',
                 boxShadow: 'var(--shadow-sm)',
                 maxWidth: '600px',
                 width: '100%',
@@ -94,13 +94,13 @@ export const ConfiguracionSistema: React.FC = () => {
                 </h3>
 
                 {mensajeExito && (
-                    <div style={{ 
-                        background: '#f0fdf4', 
+                    <div style={{
+                        background: '#f0fdf4',
                         border: '1px solid #22c55e',
-                        color: '#15803d', 
-                        padding: '12px 16px', 
-                        borderRadius: '6px', 
-                        fontSize: '0.9rem', 
+                        color: '#15803d',
+                        padding: '12px 16px',
+                        borderRadius: '6px',
+                        fontSize: '0.9rem',
                         fontWeight: 600,
                         marginBottom: '20px'
                     }}>
@@ -109,13 +109,13 @@ export const ConfiguracionSistema: React.FC = () => {
                 )}
 
                 {mensajeError && (
-                    <div style={{ 
-                        background: '#fef2f2', 
-                        border: '1px solid #ef4444', 
-                        color: '#b91c1c', 
-                        padding: '12px 16px', 
-                        borderRadius: '6px', 
-                        fontSize: '0.9rem', 
+                    <div style={{
+                        background: '#fef2f2',
+                        border: '1px solid #ef4444',
+                        color: '#b91c1c',
+                        padding: '12px 16px',
+                        borderRadius: '6px',
+                        fontSize: '0.9rem',
                         fontWeight: 600,
                         marginBottom: '20px'
                     }}>
@@ -131,11 +131,11 @@ export const ConfiguracionSistema: React.FC = () => {
                             <label style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                                 Tarifa de Suscripción Mensual (Bs)
                             </label>
-                            <input 
-                                type="number" 
-                                step="0.1" 
+                            <input
+                                type="number"
+                                step="0.1"
                                 min="0.1"
-                                value={tarifa} 
+                                value={tarifa}
                                 onChange={e => setTarifa(e.target.value)}
                                 style={{
                                     width: '100%',
@@ -154,8 +154,8 @@ export const ConfiguracionSistema: React.FC = () => {
                             </span>
                         </div>
 
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             disabled={cargando}
                             style={{
                                 background: 'var(--primary)',

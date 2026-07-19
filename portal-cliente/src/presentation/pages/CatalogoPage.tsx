@@ -1,14 +1,141 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useCatalogoController } from '../../application/useCatalogoController';
 import { Header } from '../components/Header';
 import { ProductCard } from '../components/ProductCard';
 import { Pagination } from '../components/Pagination';
+import type { CategoriaInfo } from '../../domain/models';
+
+// ── Pure Fabrication: buildCategoryTree ──────────────────────────────────────
+interface CategoriaNode extends CategoriaInfo {
+    children: CategoriaNode[];
+}
+
+function buildCategoryTree(flat: CategoriaInfo[]): CategoriaNode[] {
+    const map = new Map<number, CategoriaNode>();
+    const roots: CategoriaNode[] = [];
+    flat.forEach(c => map.set(c.id, { ...c, children: [] }));
+    flat.forEach(c => {
+        const node = map.get(c.id)!;
+        if (c.idCategoriaPadre != null) {
+            map.get(c.idCategoriaPadre)?.children.push(node);
+        } else {
+            roots.push(node);
+        }
+    });
+    return roots;
+}
+
+// ── Accordion Item (sub-componente puro) ─────────────────────────────────────
+interface AccordionItemProps {
+    node: CategoriaNode;
+    categoriaSeleccionada: number | undefined;
+    onSelect: (id: number | undefined) => void;
+}
+
+const AccordionItem: React.FC<AccordionItemProps> = ({ node, categoriaSeleccionada, onSelect }) => {
+    const hasChildren = node.children.length > 0;
+    // Auto-expand si algún hijo está seleccionado
+    const [expanded, setExpanded] = useState(() =>
+        hasChildren && node.children.some(ch => ch.id === categoriaSeleccionada)
+    );
+
+    const isActive = categoriaSeleccionada === node.id;
+
+    const rootBtnStyle: React.CSSProperties = {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        textAlign: 'left',
+        padding: '8px 10px',
+        border: 'none',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '0.88rem',
+        fontWeight: isActive ? 700 : 600,
+        background: isActive ? 'rgba(37,99,235,0.09)' : 'transparent',
+        color: isActive ? 'var(--primary)' : 'var(--text-primary)',
+        transition: 'background 0.15s',
+    };
+
+    const leafBtnStyle: React.CSSProperties = {
+        display: 'block',
+        width: '100%',
+        textAlign: 'left',
+        padding: '6px 10px 6px 18px',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        fontSize: '0.82rem',
+        fontWeight: categoriaSeleccionada === node.id ? 600 : 400,
+        background: 'transparent',
+        color: categoriaSeleccionada === node.id ? 'var(--primary)' : 'var(--text-secondary)',
+        transition: 'background 0.12s',
+    };
+
+    return (
+        <div>
+            <button
+                style={rootBtnStyle}
+                onClick={() => {
+                    if (hasChildren) {
+                        setExpanded(p => !p);
+                    } else {
+                        onSelect(node.id);
+                    }
+                }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(0,0,0,0.04)'; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
+            >
+                <span>{node.nombre}</span>
+                {hasChildren && (
+                    <span style={{ fontSize: '0.7rem', opacity: 0.55, marginLeft: '6px' }}>
+                        {expanded ? '▾' : '▸'}
+                    </span>
+                )}
+            </button>
+
+            {hasChildren && expanded && (
+                <div style={{
+                    borderLeft: '2px solid var(--border-color)',
+                    marginLeft: '14px',
+                    paddingTop: '2px',
+                    paddingBottom: '4px',
+                }}>
+                    {node.children.map(child => (
+                        <button
+                            key={child.id}
+                            style={{
+                                ...leafBtnStyle,
+                                fontWeight: categoriaSeleccionada === child.id ? 600 : 400,
+                                color: categoriaSeleccionada === child.id ? 'var(--primary)' : 'var(--text-secondary)',
+                                background: categoriaSeleccionada === child.id ? 'rgba(37,99,235,0.07)' : 'transparent',
+                            }}
+                            onClick={() => onSelect(child.id)}
+                            onMouseEnter={e => {
+                                if (categoriaSeleccionada !== child.id)
+                                    e.currentTarget.style.background = 'rgba(0,0,0,0.04)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background =
+                                    categoriaSeleccionada === child.id ? 'rgba(37,99,235,0.07)' : 'transparent';
+                            }}
+                        >
+                            {child.nombre}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 
 export const CatalogoPage: React.FC = () => {
-    const { 
-        datos, 
-        cargando, 
-        cambiarPagina, 
+    const {
+        datos,
+        cargando,
+        cambiarPagina,
         buscarProducto,
         categorias,
         categoriaSeleccionada,
@@ -77,48 +204,39 @@ export const CatalogoPage: React.FC = () => {
                     gap: '20px',
                     boxSizing: 'border-box'
                 }}>
-                    {/* Lista Vertical de Categorías */}
+                    {/* Lista Jerárquica de Categorías — Acordeón */}
                     <div>
                         <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             Categorías
                         </h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <button 
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                            {/* Botón "Todas" */}
+                            <button
                                 onClick={() => seleccionarCategoria(undefined)}
                                 style={{
                                     textAlign: 'left',
-                                    padding: '8px 12px',
-                                    background: categoriaSeleccionada === undefined ? 'rgba(37, 99, 235, 0.08)' : 'none',
+                                    padding: '8px 10px',
+                                    background: categoriaSeleccionada === undefined ? 'rgba(37,99,235,0.09)' : 'transparent',
                                     color: categoriaSeleccionada === undefined ? 'var(--primary)' : 'var(--text-secondary)',
                                     fontWeight: categoriaSeleccionada === undefined ? 700 : 500,
-                                    fontSize: '0.85rem',
+                                    fontSize: '0.88rem',
                                     border: 'none',
-                                    borderRadius: '4px',
+                                    borderRadius: '6px',
                                     cursor: 'pointer',
                                     width: '100%'
                                 }}
                             >
                                 Todas las Categorías
                             </button>
-                            {categorias.map((cat) => (
-                                <button 
-                                    key={cat.id} 
-                                    onClick={() => seleccionarCategoria(cat.id)}
-                                    style={{
-                                        textAlign: 'left',
-                                        padding: '8px 12px',
-                                        background: categoriaSeleccionada === cat.id ? 'rgba(37, 99, 235, 0.08)' : 'none',
-                                        color: categoriaSeleccionada === cat.id ? 'var(--primary)' : 'var(--text-secondary)',
-                                        fontWeight: categoriaSeleccionada === cat.id ? 700 : 500,
-                                        fontSize: '0.85rem',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        width: '100%'
-                                    }}
-                                >
-                                    {cat.nombre}
-                                </button>
+
+                            {/* Árbol de acordeón */}
+                            {useMemo(() => buildCategoryTree(categorias), [categorias]).map(node => (
+                                <AccordionItem
+                                    key={node.id}
+                                    node={node}
+                                    categoriaSeleccionada={categoriaSeleccionada}
+                                    onSelect={seleccionarCategoria}
+                                />
                             ))}
                         </div>
                     </div>
@@ -131,9 +249,9 @@ export const CatalogoPage: React.FC = () => {
                             Rango de Precio (Bs.)
                         </h4>
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <input 
-                                type="number" 
-                                placeholder="Mín" 
+                            <input
+                                type="number"
+                                placeholder="Mín"
                                 value={inputPrecioMin}
                                 onChange={e => setInputPrecioMin(e.target.value)}
                                 style={{
@@ -149,9 +267,9 @@ export const CatalogoPage: React.FC = () => {
                                 }}
                             />
                             <span style={{ color: 'var(--text-light)', fontSize: '0.8rem' }}>-</span>
-                            <input 
-                                type="number" 
-                                placeholder="Máx" 
+                            <input
+                                type="number"
+                                placeholder="Máx"
                                 value={inputPrecioMax}
                                 onChange={e => setInputPrecioMax(e.target.value)}
                                 style={{
@@ -176,8 +294,8 @@ export const CatalogoPage: React.FC = () => {
                         <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             Calificación Mínima
                         </h4>
-                        <select 
-                            value={inputEstrellas || ""} 
+                        <select
+                            value={inputEstrellas || ""}
                             onChange={e => setInputEstrellas(e.target.value ? Number(e.target.value) : undefined)}
                             style={{
                                 width: '100%',
@@ -202,7 +320,7 @@ export const CatalogoPage: React.FC = () => {
 
                     {/* Botones de Acción */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-                        <button 
+                        <button
                             onClick={aplicarFiltros}
                             style={{
                                 background: 'var(--primary)',
@@ -221,7 +339,7 @@ export const CatalogoPage: React.FC = () => {
                         >
                             Aplicar Filtros
                         </button>
-                        <button 
+                        <button
                             onClick={limpiarFiltros}
                             style={{
                                 background: '#f3f4f6',
@@ -247,10 +365,10 @@ export const CatalogoPage: React.FC = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', padding: '32px 24px', boxSizing: 'border-box' }}>
                     {/* Loading state */}
                     {cargando && (
-                        <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'center', 
-                            alignItems: 'center', 
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
                             gap: '8px',
                             margin: '40px 0',
                             color: 'var(--primary)',
@@ -301,10 +419,10 @@ export const CatalogoPage: React.FC = () => {
 
                     {/* Pagination */}
                     {!cargando && datos && (
-                        <Pagination 
-                            currentPage={datos.number} 
-                            totalPages={datos.totalPages} 
-                            onPageChange={cambiarPagina} 
+                        <Pagination
+                            currentPage={datos.number}
+                            totalPages={datos.totalPages}
+                            onPageChange={cambiarPagina}
                         />
                     )}
                 </div>

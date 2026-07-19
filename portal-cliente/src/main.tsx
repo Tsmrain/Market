@@ -18,7 +18,7 @@ window.fetch = async (input, init) => {
 
     let nextInit = init || {};
     const headers = new Headers(nextInit.headers || {});
-    
+
     // 1. Inyectar Bearer Token para autenticación
     if (token && !headers.has('Authorization')) {
         headers.set('Authorization', 'Bearer ' + token);
@@ -32,7 +32,7 @@ window.fetch = async (input, init) => {
     nextInit.headers = headers;
 
     const response = await originalFetch(input, nextInit);
-    
+
     // Detectar 401 Unauthorized globales y desloguear
     if (response.status === 401) {
         let isSuper = false;
@@ -44,7 +44,7 @@ window.fetch = async (input, init) => {
         }
         localStorage.removeItem('usuario_sesion');
         window.dispatchEvent(new Event('usuario_sesion_changed'));
-        
+
         if (isSuper) {
             window.location.href = '/superadmin/login';
         } else {

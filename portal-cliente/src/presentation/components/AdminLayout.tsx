@@ -38,8 +38,8 @@ export const AdminLayout: React.FC = () => {
                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                     </svg>
                     <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>
-                        {usuario.nombreAsociacion 
-                            ? `Portal Administrativo de ${usuario.nombreAsociacion}` 
+                        {usuario.nombreAsociacion
+                            ? `Portal Administrativo de ${usuario.nombreAsociacion}`
                             : 'Portal Administrativo'}
                     </span>
                 </div>
@@ -47,7 +47,7 @@ export const AdminLayout: React.FC = () => {
                     <Link to="/" style={{ color: '#ffffff', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>
                         Ver Catálogo Público
                     </Link>
-                    <button 
+                    <button
                         onClick={() => { logout(); navigate('/'); }}
                         style={{
                             background: 'rgba(255, 255, 255, 0.15)',
@@ -70,7 +70,7 @@ export const AdminLayout: React.FC = () => {
 
             {/* Layout Fluid Container */}
             <main className="fluid-container" style={{ flexGrow: 1 }}>
-                
+
                 {/* Secondary Horizontal Tabs Navigation */}
                 <nav style={{
                     display: 'flex',

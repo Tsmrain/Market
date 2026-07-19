@@ -39,13 +39,13 @@ export const ComercianteLayout: React.FC = () => {
                     </svg>
                     <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Panel de Comerciante</span>
                 </div>
-                
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <span style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.9)' }}>
                         Tienda: <strong>{usuario?.nombre || 'Comerciante'}</strong>
                     </span>
-                    <Link 
-                        to="/" 
+                    <Link
+                        to="/"
                         className="btn btn-secondary"
                         style={{
                             background: 'rgba(255, 255, 255, 0.15)',
@@ -63,7 +63,7 @@ export const ComercianteLayout: React.FC = () => {
                     >
                         Ver Catálogo Público
                     </Link>
-                    <button 
+                    <button
                         onClick={() => { logout(); navigate('/'); }}
                         style={{
                             background: 'rgba(255, 255, 255, 0.15)',

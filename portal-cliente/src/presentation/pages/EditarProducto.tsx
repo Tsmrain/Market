@@ -4,6 +4,8 @@ import { useAuthController } from '../../application/useAuthController';
 import { CatalogoService } from '../../application/CatalogoService';
 import { ComercianteService } from '../../application/ComercianteService';
 import type { CategoriaInfo } from '../../domain/models';
+import { UploadMultimedia } from '../components/UploadMultimedia';
+import { CategoriaSelectorTree } from '../components/CategoriaSelectorTree';
 
 export const EditarProducto: React.FC = () => {
     const { usuario, esComerciante } = useAuthController();
@@ -77,9 +79,16 @@ export const EditarProducto: React.FC = () => {
             setOriginalDescripcion(prod.descripcion || "");
             setMarca(prod.marca || "");
             setOriginalMarca(prod.marca || "");
-            setUnidadMedida(unit);
-            setOriginalUnidadMedida(unit);
-            
+
+            const unitExists = unis.some((u: any) => u.codigo === unit);
+            if (unitExists) {
+                setUnidadMedida(unit);
+                setOriginalUnidadMedida(unit);
+            } else {
+                setUnidadMedida("");
+                setOriginalUnidadMedida("");
+            }
+
             // Buscar la categoría del producto en la lista cargada
             const catEncontrada = cats.find(c => c.nombre === prod.nombreCategoria);
             if (catEncontrada) {
@@ -112,7 +121,7 @@ export const EditarProducto: React.FC = () => {
         setError("");
         setMensaje("");
 
-        if (!nombre.trim() || !precio.trim() || !idCategoria || !id || !usuario) return;
+        if (!nombre.trim() || !precio.trim() || !idCategoria || !id || !usuario || !unidadMedida) return;
 
         // Backup de valores originales (últimos exitosos cargados o guardados)
         const backup = {
@@ -150,7 +159,7 @@ export const EditarProducto: React.FC = () => {
         }).catch((err: any) => {
             console.error(err);
             const msg = err.message || "Error al actualizar los datos del producto.";
-            
+
             // Revertir estados a los valores del backup silenciosamente
             setNombre(backup.nombre);
             setOriginalNombre(backup.nombre);
@@ -371,6 +380,7 @@ export const EditarProducto: React.FC = () => {
                                             required
                                             style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.95rem', boxSizing: 'border-box', background: '#ffffff' }}
                                         >
+                                            <option value="">-- Seleccione una opción --</option>
                                             {unidadesMaestras.map(u => (
                                                 <option key={u.id} value={u.codigo}>{u.nombre} ({u.codigo})</option>
                                             ))}
@@ -379,20 +389,19 @@ export const EditarProducto: React.FC = () => {
                                 </div>
 
                                 <div style={{ marginBottom: '16px' }}>
-                                    <label htmlFor="edit-categoria" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
                                         Categoría *
                                     </label>
-                                    <select
-                                        id="edit-categoria"
-                                        value={idCategoria}
-                                        onChange={e => setIdCategoria(e.target.value)}
-                                        required
-                                        style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border-color)', borderRadius: '6px', fontSize: '0.95rem', boxSizing: 'border-box', background: '#ffffff' }}
-                                    >
-                                        {categorias.map(cat => (
-                                            <option key={cat.id} value={cat.id}>{cat.nombre}</option>
-                                        ))}
-                                    </select>
+                                    <CategoriaSelectorTree
+                                        categorias={categorias}
+                                        idCategoriaSeleccionada={idCategoria}
+                                        onSelect={(id) => setIdCategoria(id)}
+                                    />
+                                    {!idCategoria && (
+                                        <p style={{ fontSize: '0.78rem', color: '#b91c1c', marginTop: '6px' }}>
+                                            Selecciona una subcategoría del árbol para continuar.
+                                        </p>
+                                    )}
                                 </div>
                             </form>
 
@@ -407,110 +416,71 @@ export const EditarProducto: React.FC = () => {
                                     La primera imagen listada en la galería es la que se mostrará como portada principal en el catálogo.
                                 </p>
 
-                                {/* Listado de multimedia actual */}
+                                {/* Componente de subida de archivos (Pure Fabrication) */}
+                                <UploadMultimedia idProducto={parseInt(id!)} onUploadSuccess={cargarDatos} />
+
+                                {/* Cuadrícula de miniaturas debajo */}
                                 <div style={{
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
                                     gap: '12px',
-                                    marginBottom: '20px'
+                                    marginTop: '20px'
                                 }}>
-                                    {galeriaActual.map((item) => (
-                                        <div key={item.id} style={{
-                                            position: 'relative',
-                                            borderRadius: '6px',
-                                            border: '1px solid var(--border-color)',
-                                            height: '110px',
-                                            overflow: 'hidden',
-                                            background: '#f3f4f6',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}>
-                                            {item.tipo === 'video' ? (
-                                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
-                                                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                                                    </svg>
-                                                    <span style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Video</span>
-                                                </div>
-                                            ) : (
-                                                <img src={`http://localhost:8080${item.url}`} alt="Multimedia" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                            )}
+                                    {galeriaActual.map((item) => {
+                                        const finalUrl = item.url.startsWith('http') ? item.url : `http://localhost:8080${item.url}`;
+                                        const esVideo = finalUrl.toLowerCase().endsWith('.mp4');
 
-                                            {/* Botón rojo de borrar individual */}
-                                            <button
-                                                type="button"
-                                                onClick={() => handleEliminarFoto(item.id)}
-                                                disabled={cargandoMultimedia}
-                                                style={{
-                                                    position: 'absolute',
-                                                    top: '4px',
-                                                    right: '4px',
-                                                    background: '#ef4444',
-                                                    color: '#ffffff',
-                                                    border: 'none',
-                                                    borderRadius: '4px',
-                                                    width: '24px',
-                                                    height: '24px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    cursor: 'pointer',
-                                                    fontSize: '0.8rem',
-                                                    boxShadow: 'var(--shadow-sm)'
-                                                }}
-                                                title="Eliminar"
-                                            >
-                                                ✕
-                                            </button>
-                                        </div>
-                                    ))}
+                                        return (
+                                            <div key={item.id} style={{
+                                                position: 'relative',
+                                                borderRadius: '6px',
+                                                border: '1px solid var(--border-color)',
+                                                height: '110px',
+                                                overflow: 'hidden',
+                                                background: '#f3f4f6',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                {esVideo ? (
+                                                    <video src={finalUrl} className="miniatura" controls style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                ) : (
+                                                    <img src={finalUrl} className="miniatura" alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                )}
+
+                                                {/* Botón rojo de borrar individual */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleEliminarFoto(item.id)}
+                                                    disabled={cargandoMultimedia}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '4px',
+                                                        right: '4px',
+                                                        background: '#ef4444',
+                                                        color: '#ffffff',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        width: '24px',
+                                                        height: '24px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        fontSize: '0.8rem',
+                                                        boxShadow: 'var(--shadow-sm)',
+                                                        zIndex: 10
+                                                    }}
+                                                    title="Eliminar"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
                                     {galeriaActual.length === 0 && (
                                         <div style={{ gridColumn: '1 / -1', padding: '16px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.8rem', border: '1px dashed var(--border-color)', borderRadius: '6px' }}>
                                             No hay imágenes registradas para este producto
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Formulario para subir nuevas imágenes */}
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                                        Subir nuevos archivos (Fotos / Videos)
-                                    </label>
-                                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                                        <input
-                                            type="file"
-                                            multiple
-                                            accept="image/*,video/mp4"
-                                            onChange={e => setArchivosNuevos(e.target.files ? Array.from(e.target.files) : [])}
-                                            style={{ fontSize: '0.85rem' }}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={handleSubirArchivos}
-                                            disabled={cargandoMultimedia || archivosNuevos.length === 0}
-                                            style={{
-                                                background: 'var(--secondary)',
-                                                color: '#ffffff',
-                                                padding: '8px 16px',
-                                                border: 'none',
-                                                borderRadius: '4px',
-                                                fontWeight: 700,
-                                                fontSize: '0.85rem',
-                                                cursor: (cargandoMultimedia || archivosNuevos.length === 0) ? 'not-allowed' : 'pointer'
-                                            }}
-                                        >
-                                            {cargandoMultimedia ? 'Subiendo...' : 'Subir Archivos'}
-                                        </button>
-                                    </div>
-                                    {previews.length > 0 && (
-                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
-                                            {previews.map((url, idx) => (
-                                                <div key={idx} style={{ width: '80px', height: '80px', borderRadius: '6px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
-                                                    <img src={url} alt="Vista previa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                </div>
-                                            ))}
                                         </div>
                                     )}
                                 </div>
@@ -519,7 +489,7 @@ export const EditarProducto: React.FC = () => {
                             <button
                                 type="submit"
                                 form="edit-product-form"
-                                disabled={cargando}
+                                disabled={cargando || !unidadMedida}
                                 style={{
                                     background: 'var(--secondary)',
                                     color: '#ffffff',

@@ -73,12 +73,12 @@ export const HistorialPagos: React.FC = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', padding: '10px' }}>
-            <div style={{ 
-                background: 'var(--card-bg)', 
-                border: '3px solid var(--primary-dark)', 
-                borderRadius: '12px', 
-                padding: '24px', 
-                boxShadow: 'var(--shadow-sm)' 
+            <div style={{
+                background: 'var(--card-bg)',
+                border: '3px solid var(--primary-dark)',
+                borderRadius: '12px',
+                padding: '24px',
+                boxShadow: 'var(--shadow-sm)'
             }}>
                 <h2 style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--primary-dark)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
                     Mis Facturas del Sistema
@@ -102,14 +102,14 @@ export const HistorialPagos: React.FC = () => {
             )}
 
             {error && (
-                <div style={{ 
-                    background: '#fef2f2', 
-                    border: '3px solid #ef4444', 
-                    color: '#b91c1c', 
-                    padding: '20px', 
-                    borderRadius: '8px', 
-                    fontSize: '1.25rem', 
-                    fontWeight: 700 
+                <div style={{
+                    background: '#fef2f2',
+                    border: '3px solid #ef4444',
+                    color: '#b91c1c',
+                    padding: '20px',
+                    borderRadius: '8px',
+                    fontSize: '1.25rem',
+                    fontWeight: 700
                 }}>
                     Error: {error}
                 </div>
@@ -166,10 +166,10 @@ export const HistorialPagos: React.FC = () => {
                                     </span>
                                 </div>
 
-                                <div style={{ 
-                                    fontSize: '1.6rem', 
-                                    fontWeight: 900, 
-                                    color: textColor, 
+                                <div style={{
+                                    fontSize: '1.6rem',
+                                    fontWeight: 900,
+                                    color: textColor,
                                     marginTop: '8px',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -178,13 +178,13 @@ export const HistorialPagos: React.FC = () => {
                                     {titleText}
                                 </div>
 
-                                <div style={{ 
-                                    marginTop: '8px', 
-                                    fontSize: '1.25rem', 
-                                    fontWeight: 700, 
-                                    lineHeight: '1.6', 
-                                    display: 'flex', 
-                                    flexDirection: 'column', 
+                                <div style={{
+                                    marginTop: '8px',
+                                    fontSize: '1.25rem',
+                                    fontWeight: 700,
+                                    lineHeight: '1.6',
+                                    display: 'flex',
+                                    flexDirection: 'column',
                                     gap: '8px',
                                     color: '#374151'
                                 }}>
@@ -203,10 +203,10 @@ export const HistorialPagos: React.FC = () => {
                                     ) : (
                                         <>
                                             {esAnulado ? (
-                                                <div style={{ 
-                                                    background: '#fffbeb', 
-                                                    border: '2px dashed #f59e0b', 
-                                                    padding: '16px', 
+                                                <div style={{
+                                                    background: '#fffbeb',
+                                                    border: '2px dashed #f59e0b',
+                                                    padding: '16px',
                                                     borderRadius: '8px',
                                                     color: '#b45309',
                                                     fontSize: '1.2rem'
@@ -259,13 +259,13 @@ export const HistorialPagos: React.FC = () => {
                     })}
 
                     {facturas.length === 0 && (
-                        <div style={{ 
-                            background: 'var(--card-bg)', 
-                            border: '3px dashed var(--border-color)', 
-                            borderRadius: '12px', 
-                            padding: '40px', 
-                            textAlign: 'center', 
-                            fontSize: '1.5rem', 
+                        <div style={{
+                            background: 'var(--card-bg)',
+                            border: '3px dashed var(--border-color)',
+                            borderRadius: '12px',
+                            padding: '40px',
+                            textAlign: 'center',
+                            fontSize: '1.5rem',
                             fontWeight: 700,
                             color: 'var(--text-secondary)'
                         }}>

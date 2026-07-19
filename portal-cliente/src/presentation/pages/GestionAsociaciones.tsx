@@ -42,7 +42,7 @@ export const GestionAsociaciones: React.FC = () => {
 
         setCargando(true);
         try {
-            const url = editId 
+            const url = editId
                 ? `http://localhost:8080/api/superadmin/asociaciones/${editId}`
                 : 'http://localhost:8080/api/superadmin/asociaciones';
             const method = editId ? 'PUT' : 'POST';

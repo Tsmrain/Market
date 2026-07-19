@@ -34,7 +34,7 @@ export const GestionAdministradores: React.FC = () => {
                 const data = await resAdmins.json();
                 setAdmins(data);
             }
-            
+
             // Cargar asociaciones
             const resAsocs = await fetch('http://localhost:8080/api/superadmin/asociaciones');
             if (resAsocs.ok) {

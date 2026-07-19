@@ -19,7 +19,7 @@ export const ProductoDetallePage: React.FC = () => {
         const u = (unit || 'UNIDAD').toUpperCase();
         return t(u.startsWith('UNIT_') ? u : `UNIT_${u}`);
     };
-    
+
     const { producto, cargando, usuario, estaAutenticado, handleMeInteresa, handleResena } = useDetalleController(id);
 
     const [comentario, setComentario] = useState("");
@@ -36,7 +36,7 @@ export const ProductoDetallePage: React.FC = () => {
             return;
         }
         if (!producto || !producto.telefonoComerciante) return;
-        
+
         try {
             // Intenta registrar la interacción en segundo plano si está logueado
             if (usuario && usuario.id && producto.idComerciante !== undefined) {
@@ -57,15 +57,15 @@ export const ProductoDetallePage: React.FC = () => {
         return (
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                 {[...Array(5)].map((_, i) => (
-                    <svg 
-                        key={i} 
-                        width="18" 
-                        height="18" 
-                        viewBox="0 0 24 24" 
-                        fill={i < fullStars ? 'var(--secondary)' : 'none'} 
-                        stroke="var(--secondary)" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
+                    <svg
+                        key={i}
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill={i < fullStars ? 'var(--secondary)' : 'none'}
+                        stroke="var(--secondary)"
+                        strokeWidth="2"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
                     >
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
@@ -190,15 +190,15 @@ export const ProductoDetallePage: React.FC = () => {
                                     justifyContent: 'center'
                                 }}>
                                     {mediaPrincipal?.tipo === 'video' ? (
-                                        <video 
-                                            src={mediaPrincipal.url} 
-                                            controls 
+                                        <video
+                                            src={mediaPrincipal.url}
+                                            controls
                                             style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                         />
                                     ) : (
-                                        <img 
-                                            src={mediaPrincipal?.url} 
-                                            alt={producto.nombre} 
+                                        <img
+                                            src={mediaPrincipal?.url}
+                                            alt={producto.nombre}
                                             style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                                         />
                                     )}
@@ -250,7 +250,7 @@ export const ProductoDetallePage: React.FC = () => {
                             }}>
                                 {tCategory(producto.nombreCategoria)}
                             </span>
-                            
+
                             <h1 style={{
                                 fontSize: '1.75rem',
                                 fontWeight: 800,
@@ -282,7 +282,7 @@ export const ProductoDetallePage: React.FC = () => {
                             {/* Ratings section */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
                                 {renderStars(producto.promedioEstrellas)}
-                                
+
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#ef4444' }}>
                                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -338,7 +338,7 @@ export const ProductoDetallePage: React.FC = () => {
                         {/* Action Buttons */}
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', width: '100%' }}>
                             {producto.estaDisponible && (
-                                <button 
+                                <button
                                     onClick={handleContactar}
                                     style={{
                                         flexGrow: 1,
@@ -366,7 +366,7 @@ export const ProductoDetallePage: React.FC = () => {
                                 </button>
                             )}
 
-                            <button 
+                            <button
                                 onClick={async () => {
                                     // UC-A6 (Me interesa) - Polimorfismo: Cualquier actor autenticado
                                     if (!estaAutenticado) {
@@ -423,13 +423,13 @@ export const ProductoDetallePage: React.FC = () => {
                         <h4 style={{ margin: '0 0 16px 0', fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                             {t('opinion_cliente')}
                         </h4>
-                        
+
                         <div style={{ marginBottom: '16px' }}>
                             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
                                 {t('calificacion')}:
                             </label>
-                            <select 
-                                value={calificacion} 
+                            <select
+                                value={calificacion}
                                 onChange={e => setCalificacion(Number(e.target.value))}
                                 style={{
                                     background: '#ffffff',
@@ -454,10 +454,10 @@ export const ProductoDetallePage: React.FC = () => {
                             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
                                 Comentario:
                             </label>
-                            <textarea 
-                                rows={3} 
-                                placeholder={t('escribe_comentario')} 
-                                value={comentario} 
+                            <textarea
+                                rows={3}
+                                placeholder={t('escribe_comentario')}
+                                value={comentario}
                                 onChange={e => setComentario(e.target.value)}
                                 style={{
                                     width: '100%',
@@ -478,11 +478,11 @@ export const ProductoDetallePage: React.FC = () => {
                             <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
                                 Evidencias multimedia (Opcional, Máx 2 imágenes):
                             </label>
-                            <input 
+                            <input
                                 id="resena-files"
-                                type="file" 
-                                multiple 
-                                accept="image/*" 
+                                type="file"
+                                multiple
+                                accept="image/*"
                                 onChange={e => {
                                     const files = e.target.files ? Array.from(e.target.files) : [];
                                     if (files.length > 2) {
@@ -500,7 +500,7 @@ export const ProductoDetallePage: React.FC = () => {
                             />
                         </div>
 
-                        <button 
+                        <button
                             onClick={async () => {
                                 // UC-A7 (Comentar / Reseñar) - Polimorfismo: Cualquier actor autenticado
                                 if (!estaAutenticado) {
@@ -514,7 +514,7 @@ export const ProductoDetallePage: React.FC = () => {
                                 setEvidencias([]);
                                 const fileInput = document.getElementById("resena-files") as HTMLInputElement;
                                 if (fileInput) fileInput.value = "";
-                            }} 
+                            }}
                             style={{
                                 background: 'var(--primary)',
                                 color: '#ffffff',
@@ -532,7 +532,7 @@ export const ProductoDetallePage: React.FC = () => {
                             {t('enviar_resena')}
                         </button>
                     </div>
-                    
+
                     <h4 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: 600 }}>
                         Comentarios recientes
                     </h4>
@@ -544,8 +544,8 @@ export const ProductoDetallePage: React.FC = () => {
                     ) : (
                         <ul style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             {producto.resenas.map((r, index) => (
-                                <li 
-                                    key={index} 
+                                <li
+                                    key={index}
                                     style={{
                                         background: '#ffffff',
                                         border: '1px solid var(--border-color)',
@@ -584,9 +584,9 @@ export const ProductoDetallePage: React.FC = () => {
                                         <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                                             {r.evidenciasUrls.map((url, idx) => (
                                                 <a key={idx} href={url} target="_blank" rel="noopener noreferrer">
-                                                    <img 
-                                                        src={url} 
-                                                        alt={`Evidencia ${idx + 1}`} 
+                                                    <img
+                                                        src={url}
+                                                        alt={`Evidencia ${idx + 1}`}
                                                         style={{
                                                             width: '80px',
                                                             height: '80px',

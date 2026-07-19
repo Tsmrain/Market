@@ -44,7 +44,7 @@ export const useCatalogoController = () => {
             const pMaxKey = precioMax !== undefined ? precioMax : 'none';
             const estKey = estrellasMinimas !== undefined ? estrellasMinimas : 'none';
             const cacheKey = `${busqueda}-${catKey}-${pMinKey}-${pMaxKey}-${estKey}-${paginaActual}`;
-            
+
             if (cachePaginas.has(cacheKey)) {
                 setDatos(cachePaginas.get(cacheKey)!);
                 return;
@@ -53,9 +53,9 @@ export const useCatalogoController = () => {
             setCargando(true);
             try {
                 const resultado = await CatalogoService.obtenerCatalogo(
-                    paginaActual, 
-                    20, 
-                    busqueda, 
+                    paginaActual,
+                    20,
+                    busqueda,
                     categoriaSeleccionada,
                     precioMin,
                     precioMax,
@@ -104,11 +104,11 @@ export const useCatalogoController = () => {
         setPaginaActual(0);
     };
 
-    return { 
-        datos, 
-        cargando, 
-        paginaActual, 
-        cambiarPagina, 
+    return {
+        datos,
+        cargando,
+        paginaActual,
+        cambiarPagina,
         buscarProducto,
         categorias,
         categoriaSeleccionada,

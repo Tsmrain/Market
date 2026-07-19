@@ -28,7 +28,7 @@ export const useDetalleController = (idProductoStr: string | undefined) => {
 
     const handleMeInteresa = async () => {
         if (!estaAutenticado || !producto) return alert(t('debes_iniciar_sesion'));
-        
+
         // Copia de seguridad del estado previo (Rollback UI)
         const previousProducto = producto ? { ...producto } : null;
 
@@ -47,7 +47,7 @@ export const useDetalleController = (idProductoStr: string | undefined) => {
 
     const handleResena = async (calificacion: number, comentario: string, evidencias?: File[]) => {
         if (!estaAutenticado || !producto) return alert(t('debes_iniciar_sesion'));
-        
+
         // Copia de seguridad del estado previo (Rollback UI)
         const previousProducto = producto ? { ...producto } : null;
 

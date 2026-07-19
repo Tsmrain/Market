@@ -81,15 +81,15 @@ export const SuperAdminService = {
         }
     },
 
-    editarUnidad: async (id: number, nombre: string, admiteDecimales: boolean): Promise<void> => {
+    editarUnidad: async (id: number, codigo: string, nombre: string, admiteDecimales: boolean): Promise<void> => {
         const response = await fetch(`http://localhost:8080/api/superadmin/unidades/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, admiteDecimales })
+            body: JSON.stringify({ codigo, nombre, admiteDecimales })
         });
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
-            throw new Error(data.error || 'Error al actualizar unidad de medida');
+            throw new Error(data.error || data.message || 'Error al actualizar unidad de medida');
         }
     },
 

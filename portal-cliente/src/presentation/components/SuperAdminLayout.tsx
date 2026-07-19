@@ -41,8 +41,8 @@ export const SuperAdminLayout: React.FC = () => {
                     <span style={{ fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Super Administrador del Sistema</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <a 
-                        href="/" 
+                    <a
+                        href="/"
                         style={{
                             color: '#ffffff',
                             textDecoration: 'none',
@@ -53,7 +53,7 @@ export const SuperAdminLayout: React.FC = () => {
                     >
                         Ver Catálogo Público
                     </a>
-                    <button 
+                    <button
                         onClick={() => { logout(); navigate('/'); }}
                         style={{
                             background: 'rgba(255, 255, 255, 0.15)',
@@ -76,7 +76,7 @@ export const SuperAdminLayout: React.FC = () => {
 
             {/* Layout Fluid Container */}
             <main className="fluid-container" style={{ flexGrow: 1 }}>
-                
+
                 {/* Secondary Horizontal Tabs Navigation */}
                 <nav style={{
                     display: 'flex',

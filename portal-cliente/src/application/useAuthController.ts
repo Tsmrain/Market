@@ -122,8 +122,8 @@ export const useAuthController = () => {
     // Referencia interna al fetch nativo sin interceptar para evitar bucles durante el login
     const originalFetch = window.fetch;
 
-    return { 
-        usuario, 
+    return {
+        usuario,
         estaAutenticado: usuario !== null && usuario.id !== 500,
         esComerciante: usuario !== null && usuario.rol === 'COMERCIANTE',
         esAdmin: usuario !== null && (usuario.rol === 'ADMIN' || usuario.rol === 'ADMIN_ASOCIACION'),

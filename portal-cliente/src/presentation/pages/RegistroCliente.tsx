@@ -7,7 +7,7 @@ export const RegistroCliente: React.FC = () => {
     const { registrarCliente } = useAuthController();
     const navigate = useNavigate();
     const location = useLocation();
-    
+
     const [ci, setCi] = useState("");
     const [expedido, setExpedido] = useState("SC");
     const [pin, setPin] = useState("");
@@ -119,8 +119,8 @@ export const RegistroCliente: React.FC = () => {
                                     color: 'var(--text-primary)'
                                 }}
                             />
-                            <select 
-                                value={expedido} 
+                            <select
+                                value={expedido}
                                 onChange={(e) => setExpedido(e.target.value)}
                                 required
                                 style={{

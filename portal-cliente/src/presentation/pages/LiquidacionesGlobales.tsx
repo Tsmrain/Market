@@ -4,7 +4,7 @@ export const LiquidacionesGlobales: React.FC = () => {
     const [mes, setMes] = useState<number>(() => new Date().getMonth() + 1);
     const [anio, setAnio] = useState<number>(() => new Date().getFullYear());
     const [liquidaciones, setLiquidaciones] = useState<any[]>([]);
-    
+
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState("");
 

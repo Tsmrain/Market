@@ -23,7 +23,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
     // Retorna un SVG limpio según el nombre del producto en lugar de usar emojis
     const getProductIcon = (nombre: string) => {
         const lower = nombre.toLowerCase();
-        
+
         if (lower.includes('tomate') || lower.includes('platano') || lower.includes('plátano') || lower.includes('frutilla') || lower.includes('naranja')) {
             return (
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -33,7 +33,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                 </svg>
             );
         }
-        
+
         if (lower.includes('hamburguesa') || lower.includes('salchipapa') || lower.includes('jugo')) {
             return (
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -64,7 +64,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
     };
 
     return (
-        <Link 
+        <Link
             to={`/productos/${producto.id}`}
             style={{
                 textDecoration: 'none',
@@ -127,7 +127,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                     filter: producto.estaDisponible ? 'none' : 'grayscale(100%) opacity(0.6)'
                 }}>
                     {producto.imagenPrincipal ? (
-                        <img 
+                        <img
                             src={`http://localhost:8080${producto.imagenPrincipal}`}
                             alt={producto.nombre}
                             style={{
@@ -157,7 +157,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                     }}>
                         {tCategory(producto.nombreCategoria)}
                     </span>
-                    
+
                     <h3 style={{
                         fontSize: '1rem',
                         fontWeight: 700,
@@ -172,7 +172,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                     }}>
                         {producto.nombre}
                     </h3>
-                    
+
                     {producto.marca && (
                         <div style={{
                             fontSize: '0.75rem',
@@ -185,7 +185,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
                             Marca: {producto.marca}
                         </div>
                     )}
-                    
+
                     <p style={{
                         fontSize: '0.8rem',
                         color: 'var(--text-secondary)',

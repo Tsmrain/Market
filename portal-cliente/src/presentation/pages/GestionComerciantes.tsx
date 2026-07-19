@@ -285,7 +285,7 @@ export const GestionComerciantes: React.FC = () => {
                                         <td style={{ padding: '8px', fontWeight: 700 }}>{com.numeroPuesto || 'S/N'}</td>
                                         <td style={{ padding: '8px' }}>+591 {com.telefono}</td>
                                         <td style={{ padding: '8px', textAlign: 'center' }}>
-                                            <button 
+                                            <button
                                                 onClick={() => handleToggleHabilitado(com.id, com.nombre, com.cuentaHabilitada)}
                                                 style={{
                                                     background: com.cuentaHabilitada ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',

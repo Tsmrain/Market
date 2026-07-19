@@ -58,7 +58,7 @@ export const MiPerfil: React.FC = () => {
             };
 
             const response = await ComercianteService.actualizarPerfil(usuario.id, perfilActualizado);
-            
+
             // Mutación local exitosa
             setNombre(response.nombre || "");
             setTelefono(response.telefono || "");

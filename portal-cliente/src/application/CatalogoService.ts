@@ -75,7 +75,7 @@ export const CatalogoService = {
 
         const response = await fetch(`http://localhost:8080/api/productos/${idProducto}/resenas`, {
             method: 'POST',
-            headers: { 
+            headers: {
                 'X-User-Id': String(idCliente)
             },
             body: formData

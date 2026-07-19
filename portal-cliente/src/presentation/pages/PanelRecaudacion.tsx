@@ -180,9 +180,9 @@ export const PanelRecaudacion: React.FC = () => {
             <div style={{ background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '24px', boxShadow: 'var(--shadow-md)' }}>
                 {/* Search Input - Evasión Heurística Chrome */}
                 <div style={{ marginBottom: '16px' }}>
-                    <input 
-                        type="text" 
-                        placeholder="Buscar comerciante por nombre, número de puesto o CI..." 
+                    <input
+                        type="text"
+                        placeholder="Buscar comerciante por nombre, número de puesto o CI..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         autoComplete="off"
@@ -205,7 +205,7 @@ export const PanelRecaudacion: React.FC = () => {
                 <h4 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 16px 0' }}>
                     Estado de Comerciantes
                 </h4>
-                
+
                 <div className="table-responsive">
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
                         <thead>
@@ -253,23 +253,23 @@ export const PanelRecaudacion: React.FC = () => {
                                             <td style={{ padding: '12px 8px', textAlign: 'center' }}>
                                                 {c.estadoPago === 'PENDIENTE' ? (
                                                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
-                                                        <button 
-                                                            onClick={() => setPagoModal({ comercianteId: c.id, nombreCom: c.nombre })} 
+                                                        <button
+                                                            onClick={() => setPagoModal({ comercianteId: c.id, nombreCom: c.nombre })}
                                                             style={{ background: 'var(--secondary)', color: '#ffffff', padding: '6px 12px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700, border: 'none', cursor: 'pointer' }}
                                                         >
                                                             Registrar Pago
                                                         </button>
-                                                        <a 
+                                                        <a
                                                             href={`https://wa.me/591${c.telefono}?text=${encodeURIComponent(`Hola ${c.nombre}, te recuerdo que debes pagar tu Factura del Sistema para poder seguir vendiendo en línea en el Mercado Mutualista.`)}`}
-                                                            target="_blank" 
+                                                            target="_blank"
                                                             rel="noopener noreferrer"
-                                                            style={{ 
-                                                                background: '#25d366', 
-                                                                color: '#ffffff', 
-                                                                padding: '6px 12px', 
-                                                                borderRadius: '4px', 
-                                                                fontSize: '0.75rem', 
-                                                                fontWeight: 700, 
+                                                            style={{
+                                                                background: '#25d366',
+                                                                color: '#ffffff',
+                                                                padding: '6px 12px',
+                                                                borderRadius: '4px',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: 700,
                                                                 textDecoration: 'none',
                                                                 display: 'inline-block'
                                                             }}
@@ -285,19 +285,19 @@ export const PanelRecaudacion: React.FC = () => {
                                                             return diffHours <= 24;
                                                         })();
                                                         return (
-                                                            <button 
+                                                            <button
                                                                 disabled={!esEditable}
-                                                                onClick={() => handleAnularPago(c.id, c.nombre)} 
+                                                                onClick={() => handleAnularPago(c.id, c.nombre)}
                                                                 title={!esEditable ? "El tiempo de gracia de 24 horas para anular este pago ha expirado" : "Anular este pago de cuota"}
-                                                                style={{ 
-                                                                    background: esEditable ? '#ef4444' : '#d1d5db', 
-                                                                    color: esEditable ? '#ffffff' : '#9ca3af', 
-                                                                    padding: '6px 12px', 
-                                                                    borderRadius: '4px', 
-                                                                    fontSize: '0.75rem', 
-                                                                    fontWeight: 700, 
-                                                                    border: 'none', 
-                                                                    cursor: esEditable ? 'pointer' : 'not-allowed' 
+                                                                style={{
+                                                                    background: esEditable ? '#ef4444' : '#d1d5db',
+                                                                    color: esEditable ? '#ffffff' : '#9ca3af',
+                                                                    padding: '6px 12px',
+                                                                    borderRadius: '4px',
+                                                                    fontSize: '0.75rem',
+                                                                    fontWeight: 700,
+                                                                    border: 'none',
+                                                                    cursor: esEditable ? 'pointer' : 'not-allowed'
                                                                 }}
                                                             >
                                                                 Anular Pago
@@ -352,9 +352,9 @@ export const PanelRecaudacion: React.FC = () => {
                         <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', margin: '0 0 20px 0' }}>
                             Por favor seleccione el método de pago utilizado por el comerciante <strong>{pagoModal.nombreCom}</strong>:
                         </p>
-                        
+
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
-                            <button 
+                            <button
                                 onClick={() => {
                                     handleRegistrarPago(pagoModal.comercianteId, pagoModal.nombreCom, "Efectivo");
                                     setPagoModal(null);
@@ -372,7 +372,7 @@ export const PanelRecaudacion: React.FC = () => {
                             >
                                 Pagó en Efectivo
                             </button>
-                            <button 
+                            <button
                                 onClick={() => {
                                     handleRegistrarPago(pagoModal.comercianteId, pagoModal.nombreCom, "QR");
                                     setPagoModal(null);
@@ -392,7 +392,7 @@ export const PanelRecaudacion: React.FC = () => {
                             </button>
                         </div>
 
-                        <button 
+                        <button
                             onClick={() => setPagoModal(null)}
                             style={{
                                 background: '#f3f4f6',

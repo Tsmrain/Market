@@ -64,7 +64,7 @@ export const PanelComerciante: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <Link 
+                <Link
                     to="/panel/mercaderia"
                     style={{
                         display: 'inline-flex',
@@ -92,7 +92,7 @@ export const PanelComerciante: React.FC = () => {
                     Gestionar mi Mercadería
                 </Link>
 
-                <Link 
+                <Link
                     to="/"
                     style={{
                         display: 'inline-flex',

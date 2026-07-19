@@ -74,9 +74,9 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             onFocusCapture={(e) => e.currentTarget.style.borderColor = 'var(--secondary)'}
             onBlurCapture={(e) => e.currentTarget.style.borderColor = 'transparent'}
             >
-                <input 
-                    type="text" 
-                    placeholder={t('buscar_productos')} 
+                <input
+                    type="text"
+                    placeholder={t('buscar_productos')}
                     onChange={(e) => onSearch(e.target.value)}
                     style={{
                         width: '100%',
@@ -124,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                                 <span>{usuario.nombre}</span>
                             </div>
                             {usuario.rol === 'CLIENTE' && (
-                                <a 
+                                <a
                                     href="/perfil"
                                     style={{
                                         color: '#ffffff',
@@ -141,7 +141,7 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                                 </a>
                             )}
                             {usuario.rol !== 'CLIENTE' && (
-                                <a 
+                                <a
                                     href={usuario.rol === 'ADMIN' ? "/admin" : "/panel"}
                                     style={{
                                         color: '#ffffff',
@@ -157,7 +157,7 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                                     {t('panel')} →
                                 </a>
                             )}
-                            <button 
+                            <button
                                 onClick={logout}
                                 style={{
                                     background: 'rgba(239, 68, 68, 0.2)',
@@ -178,7 +178,7 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                         </>
                     ) : (
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                            <a 
+                            <a
                                 href="/login/cliente"
                                 style={{
                                     color: '#ffffff',
@@ -192,7 +192,7 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                             >
                                 {t('ingresar')}
                             </a>
-                            <a 
+                            <a
                                 href="/registro/cliente"
                                 style={{
                                     color: '#ffffff',
@@ -206,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
                             >
                                 {t('registrarse')}
                             </a>
-                            <a 
+                            <a
                                 href="/login"
                                 style={{
                                     color: '#ffffff',

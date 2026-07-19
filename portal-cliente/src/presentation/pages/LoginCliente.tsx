@@ -15,7 +15,7 @@ export const LoginCliente: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
-        
+
         if (!ci.trim()) {
             setError("Por favor ingresa tu Carnet de Identidad");
             return;

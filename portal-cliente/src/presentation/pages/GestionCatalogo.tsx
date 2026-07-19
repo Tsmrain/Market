@@ -43,7 +43,7 @@ export const GestionCatalogo: React.FC = () => {
         if (!usuario) return;
         try {
             await ComercianteService.alternarDisponibilidad(usuario.id, idProducto);
-            
+
             // Actualizar estado local inmediatamente
             setProductos(prev => prev.map(p => {
                 if (p.id === idProducto) {
@@ -63,7 +63,7 @@ export const GestionCatalogo: React.FC = () => {
 
         try {
             await ComercianteService.eliminarProducto(usuario.id, idProducto);
-            
+
             // Remover del estado local inmediatamente
             setProductos(prev => prev.filter(p => p.id !== idProducto));
         } catch (err: any) {
@@ -188,8 +188,8 @@ export const GestionCatalogo: React.FC = () => {
                                 </thead>
                                 <tbody>
                                     {productos.map((prod) => (
-                                        <tr 
-                                            key={prod.id} 
+                                        <tr
+                                            key={prod.id}
                                             style={{
                                                 borderBottom: '1px solid var(--border-color)',
                                                 transition: 'background 0.2s'
@@ -248,7 +248,7 @@ export const GestionCatalogo: React.FC = () => {
                                                         <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                                     </svg>
                                                 </Link>
-                                                
+
                                                 <button
                                                     onClick={() => handleEliminar(prod.id)}
                                                     title="Eliminar de catálogo"
@@ -285,10 +285,10 @@ export const GestionCatalogo: React.FC = () => {
 
             {/* Modal de Nuevo Producto */}
             {mostrarForm && (
-                <FormularioNuevoProducto 
-                    idComerciante={usuario.id} 
-                    onSuccess={handleSuccess} 
-                    onCancel={() => setMostrarForm(false)} 
+                <FormularioNuevoProducto
+                    idComerciante={usuario.id}
+                    onSuccess={handleSuccess}
+                    onCancel={() => setMostrarForm(false)}
                 />
             )}
         </div>

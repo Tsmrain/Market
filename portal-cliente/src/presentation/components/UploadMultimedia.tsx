@@ -73,7 +73,7 @@ export const UploadMultimedia: React.FC<UploadMultimediaProps> = ({ idProducto, 
             <h4 style={{ margin: '0 0 12px 0', color: 'var(--primary-dark)', fontSize: '0.95rem', fontWeight: 700 }}>
                 Galería
             </h4>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                 <label style={{
                     display: 'inline-flex',
@@ -94,11 +94,11 @@ export const UploadMultimedia: React.FC<UploadMultimediaProps> = ({ idProducto, 
                         <line x1="8" y1="12" x2="16" y2="12" />
                     </svg>
                     Seleccionar Fotos
-                    <input 
+                    <input
                         id="multimedia-upload-input"
-                        type="file" 
-                        multiple 
-                        accept="image/*,video/mp4" 
+                        type="file"
+                        multiple
+                        accept="image/*,video/mp4"
                         onChange={handleFileChange}
                         disabled={subiendo}
                         style={{ display: 'none' }}
@@ -138,11 +138,11 @@ export const UploadMultimedia: React.FC<UploadMultimediaProps> = ({ idProducto, 
                     </button>
                 )}
             </div>
-            
+
             {mensaje && (
-                <p style={{ 
-                    marginTop: '10px', 
-                    fontSize: '0.85rem', 
+                <p style={{
+                    marginTop: '10px',
+                    fontSize: '0.85rem',
                     color: subiendo ? 'var(--primary-dark)' : 'var(--text-secondary)',
                     fontWeight: 500
                 }}>

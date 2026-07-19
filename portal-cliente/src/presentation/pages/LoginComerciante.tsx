@@ -14,7 +14,7 @@ export const LoginComerciante: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
-        
+
         if (!ci.trim()) {
             setError("Por favor ingresa tu Carnet de Identidad");
             return;
@@ -27,7 +27,7 @@ export const LoginComerciante: React.FC = () => {
         setCargando(true);
         try {
             await loginComerciante(ci, pin);
-            
+
             // Comprobar la sesión guardada para enrutar
             const stored = localStorage.getItem('usuario_sesion');
             if (stored) {
