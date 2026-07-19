@@ -32,7 +32,8 @@ export const ComercianteService = {
         });
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
-            throw new Error(data.error || 'Error al agregar el producto');
+            const errMsg = data.error || data.message || data.mensaje || 'Error al agregar el producto';
+            throw new Error(errMsg);
         }
     },
 
@@ -44,7 +45,8 @@ export const ComercianteService = {
         });
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
-            throw new Error(data.error || 'Error al editar el producto');
+            const errMsg = data.error || data.message || data.mensaje || 'Error al editar el producto';
+            throw new Error(errMsg);
         }
     },
 

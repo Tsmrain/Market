@@ -11,7 +11,7 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
     const { t } = useTranslation();
 
     return (
-        <header style={{
+        <header className="app-header" style={{
             position: 'sticky',
             top: 0,
             zIndex: 1000,
@@ -25,8 +25,31 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             gap: '16px',
             flexWrap: 'wrap'
         }}>
+            <style>{`
+                @media (max-width: 768px) {
+                    .app-header {
+                        flex-direction: column !important;
+                        align-items: stretch !important;
+                        padding: 12px 16px !important;
+                        gap: 12px !important;
+                    }
+                    .app-header-search {
+                        max-width: 100% !important;
+                        width: 100% !important;
+                        order: 3;
+                    }
+                    .app-header-logo {
+                        justify-content: center;
+                    }
+                    .app-header-actions {
+                        justify-content: center;
+                        width: 100%;
+                        order: 2;
+                    }
+                }
+            `}</style>
             {/* Logo */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="app-header-logo" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--secondary)' }}>
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                     <polyline points="9 22 9 12 15 12 15 22" />
@@ -37,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             </div>
 
             {/* Search Bar */}
-            <div style={{
+            <div className="app-header-search" style={{
                 display: 'flex',
                 flexGrow: 1,
                 maxWidth: '600px',
@@ -81,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({ onSearch }) => {
             </div>
 
             {/* Profile Section & User Details */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div className="app-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     {usuario && usuario.id !== 500 ? (
                         <>

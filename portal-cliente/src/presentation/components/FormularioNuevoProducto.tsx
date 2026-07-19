@@ -18,6 +18,15 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
     const [unidadMedida, setUnidadMedida] = useState("UNIDAD");
     const [descripcion, setDescripcion] = useState("");
     const [archivos, setArchivos] = useState<File[]>([]);
+    const [previews, setPreviews] = useState<string[]>([]);
+
+    useEffect(() => {
+        const objectUrls = archivos.map(file => URL.createObjectURL(file));
+        setPreviews(objectUrls);
+        return () => {
+            objectUrls.forEach(url => URL.revokeObjectURL(url));
+        };
+    }, [archivos]);
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState("");
     const [marca, setMarca] = useState("");
@@ -319,7 +328,7 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
 
                     <div>
                         <label htmlFor="prod-archivos" style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '6px' }}>
-                            Imágenes del Producto * (Máx 5MB)
+                            Galería * (Máx 5MB)
                         </label>
                         <input
                             id="prod-archivos"
@@ -340,6 +349,15 @@ export const FormularioNuevoProducto: React.FC<FormularioNuevoProductoProps> = (
                                 color: 'var(--text-secondary)'
                             }}
                         />
+                        {previews.length > 0 && (
+                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+                                {previews.map((url, idx) => (
+                                    <div key={idx} style={{ width: '80px', height: '80px', borderRadius: '6px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                                        <img src={url} alt="Vista previa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Botones */}

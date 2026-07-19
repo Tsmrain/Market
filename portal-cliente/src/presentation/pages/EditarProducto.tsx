@@ -23,6 +23,15 @@ export const EditarProducto: React.FC = () => {
     // Multimedia gallery state
     const [galeriaActual, setGaleriaActual] = useState<Array<{ id: number; url: string; tipo: string }>>([]);
     const [archivosNuevos, setArchivosNuevos] = useState<File[]>([]);
+    const [previews, setPreviews] = useState<string[]>([]);
+
+    useEffect(() => {
+        const objectUrls = archivosNuevos.map(file => URL.createObjectURL(file));
+        setPreviews(objectUrls);
+        return () => {
+            objectUrls.forEach(url => URL.revokeObjectURL(url));
+        };
+    }, [archivosNuevos]);
 
     // Loading states
     const [cargando, setCargando] = useState(false);
@@ -107,7 +116,9 @@ export const EditarProducto: React.FC = () => {
             navigate('/panel/mercaderia');
         } catch (err: any) {
             console.error(err);
-            setError(err.message || "Error al actualizar los datos del producto.");
+            const msg = err.message || "Error al actualizar los datos del producto.";
+            setError(msg);
+            alert(`Error al actualizar el producto: ${msg}`);
         } finally {
             setCargando(false);
         }
@@ -341,7 +352,7 @@ export const EditarProducto: React.FC = () => {
                             {/* Sección 2: CRUD de Galería Multimedia */}
                             <div>
                                 <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary-dark)', margin: '0 0 8px 0' }}>
-                                    Galería Multimedia (Máx. 5 fotos)
+                                    Galería
                                 </h3>
                                 <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 16px 0' }}>
                                     La primera imagen listada en la galería es la que se mostrará como portada principal en el catálogo.
@@ -444,6 +455,15 @@ export const EditarProducto: React.FC = () => {
                                             {cargandoMultimedia ? 'Subiendo...' : 'Subir Archivos'}
                                         </button>
                                     </div>
+                                    {previews.length > 0 && (
+                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+                                            {previews.map((url, idx) => (
+                                                <div key={idx} style={{ width: '80px', height: '80px', borderRadius: '6px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                                                    <img src={url} alt="Vista previa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
