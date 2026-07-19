@@ -15,6 +15,7 @@ export interface ResenaInfo {
     calificacion: number;
     comentario: string;
     esPropietario: boolean;
+    evidenciasUrls?: string[];
 }
 
 // Reflejo exacto de ProductoDetalleDTO del Backend

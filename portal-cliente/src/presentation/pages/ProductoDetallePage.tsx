@@ -24,6 +24,7 @@ export const ProductoDetallePage: React.FC = () => {
 
     const [comentario, setComentario] = useState("");
     const [calificacion, setCalificacion] = useState(5);
+    const [evidencias, setEvidencias] = useState<File[]>([]);
     const [mediaActiva, setMediaActiva] = useState<{ id?: number; url: string; tipo: string } | null>(null);
 
     // UC-A5 (Contactar al Comerciante) - Restringido a usuarios autenticados
@@ -460,6 +461,32 @@ export const ProductoDetallePage: React.FC = () => {
                             />
                         </div>
 
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                                Evidencias multimedia (Opcional, Máx 2 imágenes):
+                            </label>
+                            <input 
+                                id="resena-files"
+                                type="file" 
+                                multiple 
+                                accept="image/*" 
+                                onChange={e => {
+                                    const files = e.target.files ? Array.from(e.target.files) : [];
+                                    if (files.length > 2) {
+                                        alert("No se permiten mas de 2 archivos de evidencia.");
+                                        e.target.value = "";
+                                        setEvidencias([]);
+                                    } else {
+                                        setEvidencias(files);
+                                    }
+                                }}
+                                style={{
+                                    fontSize: '0.9rem',
+                                    color: 'var(--text-primary)'
+                                }}
+                            />
+                        </div>
+
                         <button 
                             onClick={async () => {
                                 // UC-A7 (Comentar / Reseñar) - Polimorfismo: Cualquier actor autenticado
@@ -469,8 +496,11 @@ export const ProductoDetallePage: React.FC = () => {
                                     return;
                                 }
                                 if (!comentario.trim()) return alert("Por favor escribe un comentario");
-                                await handleResena(calificacion, comentario);
+                                await handleResena(calificacion, comentario, evidencias);
                                 setComentario("");
+                                setEvidencias([]);
+                                const fileInput = document.getElementById("resena-files") as HTMLInputElement;
+                                if (fileInput) fileInput.value = "";
                             }} 
                             style={{
                                 background: 'var(--primary)',
@@ -537,6 +567,26 @@ export const ProductoDetallePage: React.FC = () => {
                                         </span>
                                     </div>
                                     <p style={{ margin: 0, color: 'var(--text-secondary)' }}>{r.comentario}</p>
+                                    {r.evidenciasUrls && r.evidenciasUrls.length > 0 && (
+                                        <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                                            {r.evidenciasUrls.map((url, idx) => (
+                                                <a key={idx} href={url} target="_blank" rel="noopener noreferrer">
+                                                    <img 
+                                                        src={url} 
+                                                        alt={`Evidencia ${idx + 1}`} 
+                                                        style={{
+                                                            width: '80px',
+                                                            height: '80px',
+                                                            objectFit: 'cover',
+                                                            borderRadius: '4px',
+                                                            border: '1px solid var(--border-color)',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    />
+                                                </a>
+                                            ))}
+                                        </div>
+                                    )}
                                 </li>
                             ))}
                         </ul>

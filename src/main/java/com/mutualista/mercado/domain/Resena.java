@@ -2,6 +2,8 @@ package com.mutualista.mercado.domain;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 public class Resena {
@@ -14,6 +16,10 @@ public class Resena {
 
     @ManyToOne
     private Cliente cliente;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "resena_id")
+    private List<Multimedia> evidencias = new ArrayList<>();
 
     protected Resena() {}
 
@@ -29,4 +35,10 @@ public class Resena {
     public String getComentario() { return comentario; }
     public Cliente getCliente() { return cliente; }
     public LocalDateTime getFecha() { return fecha; }
+    
+    public List<Multimedia> getEvidencias() { return evidencias; }
+    
+    public void agregarEvidencia(String url, String tipoArchivo) {
+        this.evidencias.add(new Multimedia(url, tipoArchivo));
+    }
 }

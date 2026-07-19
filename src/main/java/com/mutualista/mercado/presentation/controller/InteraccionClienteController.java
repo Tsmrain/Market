@@ -2,10 +2,13 @@ package com.mutualista.mercado.presentation.controller;
 
 import com.mutualista.mercado.domain.Cliente;
 import com.mutualista.mercado.domain.Producto;
-import com.mutualista.mercado.presentation.dto.NuevaResenaRequest;
+import com.mutualista.mercado.domain.Resena;
 import com.mutualista.mercado.domain.repository.ProductoRepository;
 import com.mutualista.mercado.application.ClienteService;
+import com.mutualista.mercado.infrastructure.storage.StorageService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -20,19 +23,28 @@ public class InteraccionClienteController {
     private final ProductoRepository productoRepo;
     private final ClienteService clienteService;
     private final MessageSource messageSource;
+    private final StorageService storageService;
 
     public InteraccionClienteController(ProductoRepository productoRepo, 
                                         ClienteService clienteService,
-                                        MessageSource messageSource) {
+                                        MessageSource messageSource,
+                                        StorageService storageService) {
         this.productoRepo = productoRepo;
         this.clienteService = clienteService;
         this.messageSource = messageSource;
+        this.storageService = storageService;
     }
 
     // Caso de Uso: UC-A7 (Agregar Reseña)
-    @PostMapping("/{idProducto}/resenas")
+    @PostMapping(value = "/{idProducto}/resenas", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
-    public String agregarResena(@PathVariable Long idProducto, @RequestBody NuevaResenaRequest request) {
+    public String agregarResena(
+            @PathVariable Long idProducto,
+            @RequestParam("calificacion") int calificacion,
+            @RequestParam("comentario") String comentario,
+            @RequestParam(value = "idCliente", required = false) Long idCliente,
+            @RequestParam(value = "evidencias", required = false) MultipartFile[] evidencias) {
+
         // 1. Obtener la identidad del actor autenticado desde el contexto de seguridad
         var auth = SecurityContextHolder.getContext().getAuthentication();
         String actorIdStr = null;
@@ -43,7 +55,7 @@ public class InteraccionClienteController {
             actorNombre = (String) principal.get("nombre");
         }
 
-        Long actorId = actorIdStr != null ? Long.valueOf(actorIdStr) : request.getIdCliente();
+        Long actorId = actorIdStr != null ? Long.valueOf(actorIdStr) : idCliente;
         if (actorId == null) {
             throw new RuntimeException("Usuario no autenticado");
         }
@@ -55,7 +67,31 @@ public class InteraccionClienteController {
         Cliente cliente = clienteService.obtenerOCrearClienteSombra(actorId, actorNombre);
 
         // 3. Patrón Creator: Delegar al Dominio
-        producto.agregarResena(cliente, request.getCalificacion(), request.getComentario());
+        Resena nuevaResena = producto.agregarResena(cliente, calificacion, comentario);
+
+        // Validación de Variaciones Protegidas para máximo 2 archivos
+        if (evidencias != null && evidencias.length > 0) {
+            int validFilesCount = 0;
+            for (MultipartFile archivo : evidencias) {
+                if (archivo != null && !archivo.isEmpty()) {
+                    validFilesCount++;
+                }
+            }
+            if (validFilesCount > 2) {
+                throw new IllegalArgumentException("No se permiten mas de 2 archivos de evidencia en la reseña.");
+            }
+
+            for (MultipartFile archivo : evidencias) {
+                if (archivo == null || archivo.isEmpty()) continue;
+                try {
+                    String url = storageService.guardarArchivo(archivo.getBytes(), archivo.getOriginalFilename());
+                    nuevaResena.agregarEvidencia(url, "imagen");
+                } catch (Exception e) {
+                    throw new RuntimeException("Error al guardar archivo de evidencia.", e);
+                }
+            }
+        }
+
         productoRepo.save(producto);
 
         return messageSource.getMessage("review.added", null, LocaleContextHolder.getLocale());

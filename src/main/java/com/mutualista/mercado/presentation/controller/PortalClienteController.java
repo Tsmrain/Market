@@ -65,20 +65,24 @@ public class PortalClienteController {
     public org.springframework.data.domain.Page<ProductoResumenDTO> listarProductos(
             @RequestParam(required = false) Long idCategoria,
             @RequestParam(required = false) String buscar,
+            @RequestParam(required = false) Double precioMin,
+            @RequestParam(required = false) Double precioMax,
+            @RequestParam(required = false) Integer estrellasMinimas,
             org.springframework.data.domain.Pageable pageable,
             jakarta.servlet.http.HttpServletResponse response) {
         
-        response.setHeader("Cache-Control", "public, max-age=120");
-        org.springframework.data.domain.Page<Producto> productos;
-        if (buscar != null && !buscar.trim().isEmpty() && idCategoria != null) {
-            productos = productoRepo.findByNombreAndCategoriaJerarquia(buscar, idCategoria, pageable);
-        } else if (buscar != null && !buscar.trim().isEmpty()) {
-            productos = productoRepo.findByNombreContainingIgnoreCaseAndEliminadoFalse(buscar, pageable);
-        } else if (idCategoria != null) {
-            productos = productoRepo.findByCategoriaJerarquia(idCategoria, pageable);
-        } else {
-            productos = productoRepo.findByEliminadoFalse(pageable);
-        }
+        response.setHeader("Cache-Control", "no-cache");
+        Double estrellas = estrellasMinimas != null ? estrellasMinimas.doubleValue() : null;
+        String buscarLimpio = (buscar != null && !buscar.trim().isEmpty()) ? buscar.trim() : null;
+
+        org.springframework.data.domain.Page<Producto> productos = productoRepo.findProductosConFiltros(
+                idCategoria,
+                buscarLimpio,
+                precioMin,
+                precioMax,
+                estrellas,
+                pageable
+        );
         return productos.map(ProductoResumenDTO::new);
     }
 

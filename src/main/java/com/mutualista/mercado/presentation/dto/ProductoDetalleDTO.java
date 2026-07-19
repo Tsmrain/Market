@@ -41,12 +41,22 @@ public class ProductoDetalleDTO {
         private int calificacion;
         private String comentario;
         private boolean esPropietario;
+        private List<String> evidenciasUrls;
 
         public ResenaInfoDTO(Resena r) {
             this.nombreCliente = r.getCliente() != null ? r.getCliente().getNombre() : "Cliente Anónimo";
             this.calificacion = r.getCalificacion();
             this.comentario = r.getComentario();
             this.esPropietario = false;
+            
+            String baseUrl = "";
+            try {
+                baseUrl = org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            } catch (Exception e) {}
+            final String finalBaseUrl = baseUrl;
+            this.evidenciasUrls = r.getEvidencias() != null ? r.getEvidencias().stream()
+                    .map(m -> m.getUrl().startsWith("http") ? m.getUrl() : finalBaseUrl + m.getUrl())
+                    .collect(Collectors.toList()) : new java.util.ArrayList<>();
         }
 
         public ResenaInfoDTO(Resena r, Comerciante comerciantePropietario) {
@@ -62,6 +72,7 @@ public class ProductoDetalleDTO {
         public int getCalificacion() { return calificacion; }
         public String getComentario() { return comentario; }
         public boolean isEsPropietario() { return esPropietario; }
+        public List<String> getEvidenciasUrls() { return evidenciasUrls; }
     }
 
     public ProductoDetalleDTO(Producto producto) {
@@ -69,6 +80,12 @@ public class ProductoDetalleDTO {
     }
 
     public ProductoDetalleDTO(Producto producto, Comerciante comerciante) {
+        String baseUrl = "";
+        try {
+            baseUrl = org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+        } catch (Exception e) {}
+        final String finalBaseUrl = baseUrl;
+
         this.id = producto.getId();
         this.nombre = producto.getNombre();
         this.precio = producto.getPrecio();
@@ -80,8 +97,12 @@ public class ProductoDetalleDTO {
         this.cantidadInteresados = producto.getCantidadInteresados();
         this.promedioEstrellas = producto.getResenas().stream().mapToInt(Resena::getCalificacion).average().orElse(0.0);
         this.comentarios = producto.getResenas().stream().map(Resena::getComentario).collect(Collectors.toList());
-        this.galeriaUrls = producto.getGaleria().stream().map(Multimedia::getUrl).collect(Collectors.toList());
-        this.imagenesUrls = producto.getGaleria().stream().map(Multimedia::getUrl).collect(Collectors.toList());
+        this.galeriaUrls = producto.getGaleria().stream()
+                .map(m -> m.getUrl().startsWith("http") ? m.getUrl() : finalBaseUrl + m.getUrl())
+                .collect(Collectors.toList());
+        this.imagenesUrls = producto.getGaleria().stream()
+                .map(m -> m.getUrl().startsWith("http") ? m.getUrl() : finalBaseUrl + m.getUrl())
+                .collect(Collectors.toList());
         
         // Mapear reseñas detalladas
         this.resenas = producto.getResenas().stream()
@@ -91,7 +112,8 @@ public class ProductoDetalleDTO {
         this.galeria = producto.getGaleria().stream().map(m -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", m.getId());
-            map.put("url", m.getUrl());
+            String fullUrl = m.getUrl().startsWith("http") ? m.getUrl() : finalBaseUrl + m.getUrl();
+            map.put("url", fullUrl);
             map.put("tipo", m.getTipoArchivo());
             return map;
         }).collect(Collectors.toList());

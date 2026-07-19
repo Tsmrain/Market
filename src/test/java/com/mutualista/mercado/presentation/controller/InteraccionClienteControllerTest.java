@@ -8,6 +8,7 @@ import com.mutualista.mercado.domain.repository.ClienteRepository;
 import com.mutualista.mercado.domain.repository.ComercianteRepository;
 import com.mutualista.mercado.domain.repository.AdministradorAsociacionRepository;
 import com.mutualista.mercado.infrastructure.security.TokenProvider;
+import com.mutualista.mercado.infrastructure.storage.StorageService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.BDDMockito;
@@ -39,6 +40,9 @@ public class InteraccionClienteControllerTest {
     @MockitoBean
     private MessageSource messageSource;
 
+    @MockitoBean
+    private StorageService storageService;
+
     // Dependencias inyectadas en SimpleHeaderAuthFilter
     @MockitoBean
     private TokenProvider tokenProvider;
@@ -63,10 +67,11 @@ public class InteraccionClienteControllerTest {
         BDDMockito.given(clienteService.obtenerOCrearClienteSombra(Mockito.anyLong(), Mockito.anyString()))
                 .willReturn(mockCliente);
 
-        mockMvc.perform(post("/api/productos/1/resenas")
-                .with(csrf())
-                .contentType("application/json")
-                .content("{\"idCliente\":1,\"calificacion\":5,\"comentario\":\"Excelente\"}"))
+        mockMvc.perform(multipart("/api/productos/1/resenas")
+                .param("idCliente", "1")
+                .param("calificacion", "5")
+                .param("comentario", "Excelente")
+                .with(csrf()))
                 .andExpect(status().isOk());
     }
 }

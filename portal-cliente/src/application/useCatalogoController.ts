@@ -13,6 +13,16 @@ export const useCatalogoController = () => {
     const [datos, setDatos] = useState<Page<ProductoResumen> | null>(null);
     const [cargando, setCargando] = useState<boolean>(false);
 
+    // Filtros de entrada (en UI)
+    const [inputPrecioMin, setInputPrecioMin] = useState<string>('');
+    const [inputPrecioMax, setInputPrecioMax] = useState<string>('');
+    const [inputEstrellas, setInputEstrellas] = useState<number | undefined>(undefined);
+
+    // Filtros aplicados activos
+    const [precioMin, setPrecioMin] = useState<number | undefined>(undefined);
+    const [precioMax, setPrecioMax] = useState<number | undefined>(undefined);
+    const [estrellasMinimas, setEstrellasMinimas] = useState<number | undefined>(undefined);
+
     // Cargar listado de categorías al montar el componente
     useEffect(() => {
         const cargarCategorias = async () => {
@@ -26,13 +36,15 @@ export const useCatalogoController = () => {
         cargarCategorias();
     }, []);
 
-    // Cargar productos al cambiar página, búsqueda o categoría
+    // Cargar productos al cambiar página, búsqueda, categoría o filtros activos
     useEffect(() => {
         const cargarDatos = async () => {
             const catKey = categoriaSeleccionada !== undefined ? categoriaSeleccionada : 'all';
-            const cacheKey = `${busqueda}-${catKey}-${paginaActual}`;
+            const pMinKey = precioMin !== undefined ? precioMin : 'none';
+            const pMaxKey = precioMax !== undefined ? precioMax : 'none';
+            const estKey = estrellasMinimas !== undefined ? estrellasMinimas : 'none';
+            const cacheKey = `${busqueda}-${catKey}-${pMinKey}-${pMaxKey}-${estKey}-${paginaActual}`;
             
-            // Decisión Arquitectónica: Verificar Caché antes de red (Tu regla #2)
             if (cachePaginas.has(cacheKey)) {
                 setDatos(cachePaginas.get(cacheKey)!);
                 return;
@@ -44,9 +56,12 @@ export const useCatalogoController = () => {
                     paginaActual, 
                     20, 
                     busqueda, 
-                    categoriaSeleccionada
+                    categoriaSeleccionada,
+                    precioMin,
+                    precioMax,
+                    estrellasMinimas
                 );
-                cachePaginas.set(cacheKey, resultado); // Guardar en caché
+                cachePaginas.set(cacheKey, resultado);
                 setDatos(resultado);
             } catch (error) {
                 console.error(error);
@@ -56,7 +71,7 @@ export const useCatalogoController = () => {
         };
 
         cargarDatos();
-    }, [paginaActual, busqueda, categoriaSeleccionada]);
+    }, [paginaActual, busqueda, categoriaSeleccionada, precioMin, precioMax, estrellasMinimas]);
 
     const cambiarPagina = (nuevaPagina: number) => {
         setPaginaActual(nuevaPagina);
@@ -64,12 +79,29 @@ export const useCatalogoController = () => {
 
     const buscarProducto = (termino: string) => {
         setBuscar(termino);
-        setPaginaActual(0); // Reiniciar a la primera página al buscar
+        setPaginaActual(0);
     };
 
     const seleccionarCategoria = (idCategoria: number | undefined) => {
         setCategoriaSeleccionada(idCategoria);
-        setPaginaActual(0); // Reiniciar a la primera página al filtrar por categoría
+        setPaginaActual(0);
+    };
+
+    const aplicarFiltros = () => {
+        setPrecioMin(inputPrecioMin.trim() ? parseFloat(inputPrecioMin) : undefined);
+        setPrecioMax(inputPrecioMax.trim() ? parseFloat(inputPrecioMax) : undefined);
+        setEstrellasMinimas(inputEstrellas);
+        setPaginaActual(0);
+    };
+
+    const limpiarFiltros = () => {
+        setInputPrecioMin('');
+        setInputPrecioMax('');
+        setInputEstrellas(undefined);
+        setPrecioMin(undefined);
+        setPrecioMax(undefined);
+        setEstrellasMinimas(undefined);
+        setPaginaActual(0);
     };
 
     return { 
@@ -80,6 +112,14 @@ export const useCatalogoController = () => {
         buscarProducto,
         categorias,
         categoriaSeleccionada,
-        seleccionarCategoria
+        seleccionarCategoria,
+        inputPrecioMin,
+        setInputPrecioMin,
+        inputPrecioMax,
+        setInputPrecioMax,
+        inputEstrellas,
+        setInputEstrellas,
+        aplicarFiltros,
+        limpiarFiltros
     };
 };

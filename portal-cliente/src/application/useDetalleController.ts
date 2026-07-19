@@ -45,17 +45,20 @@ export const useDetalleController = (idProductoStr: string | undefined) => {
         }
     };
 
-    const handleResena = async (calificacion: number, comentario: string) => {
+    const handleResena = async (calificacion: number, comentario: string, evidencias?: File[]) => {
         if (!estaAutenticado || !producto) return alert(t('debes_iniciar_sesion'));
         
         // Copia de seguridad del estado previo (Rollback UI)
         const previousProducto = producto ? { ...producto } : null;
 
+        const evidenciasUrls = evidencias ? evidencias.map(file => URL.createObjectURL(file)) : [];
+
         const nuevaResena = {
             nombreCliente: usuario ? usuario.nombre : 'Cliente Anónimo',
             calificacion: calificacion,
             comentario: comentario,
-            esPropietario: usuario && producto.idComerciante !== undefined ? (Number(usuario.id) === Number(producto.idComerciante)) : false
+            esPropietario: usuario && producto.idComerciante !== undefined ? (Number(usuario.id) === Number(producto.idComerciante)) : false,
+            evidenciasUrls: evidenciasUrls
         };
 
         // Mutación Optimista instantánea
@@ -74,7 +77,7 @@ export const useDetalleController = (idProductoStr: string | undefined) => {
         });
 
         try {
-            await CatalogoService.agregarResena(producto.id, usuario!.id, calificacion, comentario);
+            await CatalogoService.agregarResena(producto.id, usuario!.id, calificacion, comentario, evidencias);
             alert(t('resena_exito'));
         } catch (error) {
             // Revertir estado si falla la petición
