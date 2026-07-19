@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
-                
+
                 // Endpoints de escritura de categorías exclusivos para SUPERADMIN
                 .requestMatchers(HttpMethod.POST, "/api/admin/categorias/**").hasRole("SUPERADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/admin/categorias/**").hasRole("SUPERADMIN")
@@ -52,11 +52,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/portal/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/portal/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/portal/**").authenticated()
-                
+
                 .requestMatchers(HttpMethod.POST, "/api/productos/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/productos/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/productos/**").authenticated()
-                
+
                 .anyRequest().permitAll()
             )
             .addFilterBefore(simpleHeaderAuthFilter, UsernamePasswordAuthenticationFilter.class);

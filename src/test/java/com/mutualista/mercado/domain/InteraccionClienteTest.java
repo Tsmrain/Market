@@ -24,13 +24,13 @@ class InteraccionClienteTest {
     void testAtributoDerivado_CantidadInteresados() {
         Categoria cat = new Categoria(1L, "Frutas");
         Producto producto = new Producto("Manzana", 3.00, cat);
-        
+
         Cliente cliente1 = new Cliente(501L, "cliente1@email.com");
         Cliente cliente2 = new Cliente(502L, "cliente2@email.com");
 
         producto.agregarInteresado(cliente1);
         producto.agregarInteresado(cliente2);
-        
+
         // Si el mismo cliente hace clic de nuevo, el Set lo ignora (Regla de negocio implícita)
         producto.agregarInteresado(cliente1);
 

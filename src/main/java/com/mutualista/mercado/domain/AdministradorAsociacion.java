@@ -10,13 +10,13 @@ public class AdministradorAsociacion {
 
     @Column(name = "usuario_id", unique = true, nullable = false)
     private Long usuarioId = java.util.UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
-    
+
     @Column(unique = true, nullable = false, updatable = false)
     private String ci;
-    
+
     @Column(nullable = false, length = 100)
     private String password;
-    
+
     private String nombre;
     private String telefono;
     private String expedido;
@@ -45,8 +45,8 @@ public class AdministradorAsociacion {
     public void actualizarDatos(String nombre, String nuevoPassword, String telefono) {
         this.nombre = nombre;
         this.telefono = telefono;
-        if (nuevoPassword != null && !nuevoPassword.trim().isEmpty()) { 
-            this.password = nuevoPassword; 
+        if (nuevoPassword != null && !nuevoPassword.trim().isEmpty()) {
+            this.password = nuevoPassword;
         }
     }
 
@@ -62,7 +62,7 @@ public class AdministradorAsociacion {
     public boolean isEliminado() { return eliminado; }
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
-    
+
     public Asociacion getAsociacion() { return asociacion; }
     public void setAsociacion(Asociacion asociacion) { this.asociacion = asociacion; }
 

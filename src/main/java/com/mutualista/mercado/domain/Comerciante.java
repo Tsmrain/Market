@@ -14,20 +14,20 @@ public class Comerciante {
 
     @Column(name = "usuario_id", unique = true, nullable = false)
     private Long usuarioId = java.util.UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
-    
+
     // REGLA 3: Inmutabilidad del CI (Desbloqueado para corrección de tipeo por Admin)
     @Column(unique = true, nullable = false)
-    private String ci; 
-    
+    private String ci;
+
     @Column(nullable = false, length = 100)
-    private String pin; 
-    
+    private String pin;
+
     private String nombre;
     private String telefono;
     private int clicsContacto = 0;
     private String expedido;
     private String numeroPuesto;
-    
+
     // Estado para Borrado Lógico
     private boolean eliminado = false;
     private boolean cuentaHabilitada = true;
@@ -38,13 +38,13 @@ public class Comerciante {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "comerciante_id")
-    private List<Producto> catalogo = new ArrayList<>(); 
+    private List<Producto> catalogo = new ArrayList<>();
 
     @OneToMany(mappedBy = "comerciante", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<CuotaMensual> cuotas = new ArrayList<>();
 
-    protected Comerciante() {} 
+    protected Comerciante() {}
 
     public Comerciante(String ci, String expedido, String pin, String nombre, String telefono) {
         this.ci = ci;
@@ -98,6 +98,17 @@ public class Comerciante {
         }
     }
 
+    // GRASP: Information Expert
+    public void verificarSolvencia() {
+        if (this.cuotas != null) {
+            for (CuotaMensual cuota : this.cuotas) {
+                if (cuota.getEstado() == EstadoCuota.PENDIENTE) {
+                    throw new DomainValidationException("El comerciante tiene cuotas vencidas/pendientes y no puede gestionar productos.");
+                }
+            }
+        }
+    }
+
     public void actualizarDatos(String ci, String expedido, String nombre, String telefono, String nuevoPin) {
         this.ci = ci;
         this.expedido = expedido;
@@ -125,10 +136,10 @@ public class Comerciante {
     public void setNumeroPuesto(String numeroPuesto) { this.numeroPuesto = numeroPuesto; }
     public int getClicsContacto() { return clicsContacto; }
     public boolean isEliminado() { return eliminado; }
-    
+
     public Asociacion getAsociacion() { return asociacion; }
     public void setAsociacion(Asociacion asociacion) { this.asociacion = asociacion; }
-    
+
     public boolean isCuentaHabilitada() { return cuentaHabilitada; }
     public void setCuentaHabilitada(boolean cuentaHabilitada) { this.cuentaHabilitada = cuentaHabilitada; }
 
@@ -149,7 +160,7 @@ public class Comerciante {
             if (ultima.getEstado() == EstadoCuota.PAGADO) {
                 java.time.LocalDate next = ultima.getFechaGeneracion().plusMonths(1);
                 String mesNombre = next.getMonth().getDisplayName(
-                    java.time.format.TextStyle.FULL, 
+                    java.time.format.TextStyle.FULL,
                     java.util.Locale.forLanguageTag("es-BO")
                 );
                 mesNombre = mesNombre.substring(0, 1).toUpperCase() + mesNombre.substring(1).toLowerCase();
@@ -157,7 +168,7 @@ public class Comerciante {
             } else {
                 java.time.LocalDate venc = ultima.getFechaGeneracion();
                 String mesNombre = venc.getMonth().getDisplayName(
-                    java.time.format.TextStyle.FULL, 
+                    java.time.format.TextStyle.FULL,
                     java.util.Locale.forLanguageTag("es-BO")
                 );
                 mesNombre = mesNombre.substring(0, 1).toUpperCase() + mesNombre.substring(1).toLowerCase();

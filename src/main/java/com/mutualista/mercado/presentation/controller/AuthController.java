@@ -26,8 +26,8 @@ public class AuthController {
     private final AdministradorAsociacionRepository adminRepo;
     private final TokenProvider tokenProvider;
 
-    public AuthController(ComercianteRepository cRepo, 
-                          ClienteRepository cliRepo, 
+    public AuthController(ComercianteRepository cRepo,
+                          ClienteRepository cliRepo,
                           AdministradorAsociacionRepository adminRepo,
                           TokenProvider tokenProvider) {
         this.comercianteRepo = cRepo;
@@ -89,7 +89,7 @@ public class AuthController {
         }
         Cliente nuevo = new Cliente(payload.get("ci"), payload.get("expedido"), payload.get("pin"), payload.get("nombre"), payload.get("celular"));
         clienteRepo.save(nuevo);
-        
+
         String token = tokenProvider.generarToken(nuevo.getUsuarioId(), "CLIENTE");
         Map<String, Object> res = new HashMap<>();
         res.put("mensaje", "Cliente registrado");

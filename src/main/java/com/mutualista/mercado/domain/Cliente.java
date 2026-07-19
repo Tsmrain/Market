@@ -10,14 +10,14 @@ public class Cliente {
 
     @Column(name = "usuario_id", unique = true, nullable = false)
     private Long usuarioId = java.util.UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
-    
+
     // REGLA 3: Inmutabilidad a nivel de Base de Datos (Protected Variations)
     @Column(unique = true, nullable = false, updatable = false)
     private String ci;
-    
+
     @Column(nullable = false, length = 100)
     private String pin;
-    
+
     private String nombre;
     private String celular;
     private String expedido;
@@ -61,7 +61,7 @@ public class Cliente {
     public String getNombre() { return nombre; }
     public String getCelular() { return celular; }
     public String getExpedido() { return expedido; }
-    
+
     public Long getUsuarioId() { return usuarioId; }
     public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
 }

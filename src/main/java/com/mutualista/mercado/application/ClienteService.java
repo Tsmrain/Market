@@ -17,8 +17,8 @@ public class ClienteService {
     private final ComercianteRepository comercianteRepo;
     private final AdministradorAsociacionRepository adminRepo;
 
-    public ClienteService(ClienteRepository clienteRepo, 
-                          ComercianteRepository comercianteRepo, 
+    public ClienteService(ClienteRepository clienteRepo,
+                          ComercianteRepository comercianteRepo,
                           AdministradorAsociacionRepository adminRepo) {
         this.clienteRepo = clienteRepo;
         this.comercianteRepo = comercianteRepo;

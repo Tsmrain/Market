@@ -10,12 +10,12 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
 
-public interface ProductoRepository extends CrudRepository<Producto, Long>, PagingAndSortingRepository<Producto, Long> {
-    
+public interface ProductoRepository extends org.springframework.data.jpa.repository.JpaRepository<Producto, Long> {
+
     // Filtros para la vista pública: Solo productos Activos de comerciantes Habilitados
     @Query("SELECT p FROM Comerciante c JOIN c.catalogo p WHERE c.cuentaHabilitada = true AND c.eliminado = false AND p.eliminado = false")
     Page<Producto> findByEliminadoFalse(Pageable pageable);
-    
+
     @Query("SELECT p FROM Comerciante c JOIN c.catalogo p WHERE c.cuentaHabilitada = true AND c.eliminado = false AND (LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) AND p.eliminado = false")
     Page<Producto> findByNombreContainingIgnoreCaseAndEliminadoFalse(@Param("nombre") String nombre, Pageable pageable);
 

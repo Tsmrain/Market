@@ -13,7 +13,7 @@ public interface CuotaMensualRepository extends CrudRepository<CuotaMensual, Lon
     List<CuotaMensual> findByMesAndAnio(int mes, int anio);
     List<CuotaMensual> findByEstadoAndMesAndAnio(EstadoCuota estado, int mes, int anio);
     List<CuotaMensual> findByEstado(EstadoCuota estado);
-    
+
     @Query("SELECT q FROM CuotaMensual q WHERE q.comerciante.id = :comercianteId ORDER BY q.anio DESC, q.mes DESC")
     List<CuotaMensual> findByComercianteIdOrderByAnioDescMesDesc(@Param("comercianteId") Long comercianteId);
 }

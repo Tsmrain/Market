@@ -21,7 +21,7 @@ public class SuscripcionScheduler {
     private final CuotaMensualRepository cuotaRepo;
     private final ParametroSistemaService paramService;
 
-    public SuscripcionScheduler(ComercianteRepository comercianteRepo, 
+    public SuscripcionScheduler(ComercianteRepository comercianteRepo,
                                 CuotaMensualRepository cuotaRepo,
                                 ParametroSistemaService paramService) {
         this.comercianteRepo = comercianteRepo;

@@ -34,7 +34,7 @@ public class CatalogoController {
         // 1. Mediación: Buscar objetos en la base de datos
         Comerciante comerciante = comercianteRepo.findById(idComerciante)
             .orElseThrow(() -> new RuntimeException("Comerciante no encontrado"));
-            
+
         Categoria categoria = categoriaRepo.findById(request.getIdCategoria())
             .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 

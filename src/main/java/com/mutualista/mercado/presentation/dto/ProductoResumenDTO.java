@@ -8,7 +8,7 @@ public class ProductoResumenDTO {
     private double precio;
     private String nombreCategoria;
     private String imagenPrincipal;
-    private boolean estaDisponible; 
+    private boolean estaDisponible;
     private String unidadMedida;
     private String descripcion;
     private String marca;

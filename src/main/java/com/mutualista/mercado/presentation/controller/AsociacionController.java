@@ -20,7 +20,7 @@ public class AsociacionController {
     private final AsociacionRepository asociacionRepo;
     private final ComercianteRepository comercianteRepo;
 
-    public AsociacionController(AsociacionRepository asociacionRepo, 
+    public AsociacionController(AsociacionRepository asociacionRepo,
                                 ComercianteRepository comercianteRepo) {
         this.asociacionRepo = asociacionRepo;
         this.comercianteRepo = comercianteRepo;

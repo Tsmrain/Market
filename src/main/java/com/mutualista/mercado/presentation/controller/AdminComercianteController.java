@@ -26,12 +26,12 @@ public class AdminComercianteController {
     private final CuotaMensualRepository cuotaRepo;
     private final com.mutualista.mercado.application.ParametroSistemaService paramService;
 
-    public AdminComercianteController(ComercianteRepository repo, 
-                                      AsociacionRepository asociacionRepo, 
+    public AdminComercianteController(ComercianteRepository repo,
+                                      AsociacionRepository asociacionRepo,
                                       AdministradorAsociacionRepository adminRepo,
                                       CuotaMensualRepository cuotaRepo,
-                                      com.mutualista.mercado.application.ParametroSistemaService paramService) { 
-        this.comercianteRepo = repo; 
+                                      com.mutualista.mercado.application.ParametroSistemaService paramService) {
+        this.comercianteRepo = repo;
         this.asociacionRepo = asociacionRepo;
         this.adminRepo = adminRepo;
         this.cuotaRepo = cuotaRepo;
@@ -42,9 +42,9 @@ public class AdminComercianteController {
     @Transactional(readOnly = true)
     public List<Map<String, Object>> listarComerciantes(
             @RequestHeader(value = "X-User-Id", required = false) String adminHeaderId) {
-        
+
         List<Comerciante> comerciantes;
-        
+
         if (adminHeaderId != null && !adminHeaderId.trim().isEmpty()) {
             try {
                 Long adminId = Long.parseLong(adminHeaderId);
@@ -131,7 +131,7 @@ public class AdminComercianteController {
         java.time.LocalDate hoy = java.time.LocalDate.now();
         int mesActual = hoy.getMonthValue();
         int anioActual = hoy.getYear();
-        
+
         Double tarifa = paramService.obtenerTarifaSuscripcion();
         CuotaMensual cuotaInicial = new CuotaMensual(nuevo, mesActual, anioActual, tarifa);
         cuotaInicial.registrarPago(); // Pone estado PAGADO y fechaPago = ahora
@@ -146,14 +146,14 @@ public class AdminComercianteController {
     @PutMapping("/{idComerciante}")
     @Transactional
     public org.springframework.http.ResponseEntity<?> editarComerciante(
-            @PathVariable Long idComerciante, 
+            @PathVariable Long idComerciante,
             @RequestBody EditarComercianteRequest request) {
         Comerciante c = comercianteRepo.findById(idComerciante).orElseThrow();
         String telefono = request.getTelefono();
         if (telefono == null || !telefono.matches("^[67]\\d{7}$")) {
             return org.springframework.http.ResponseEntity.badRequest().body(Map.of("error", "El número de celular debe tener exactamente 8 dígitos y comenzar con 6 o 7."));
         }
-        
+
         String ci = request.getCi();
         String expedido = request.getExpedido();
         if (ci == null || ci.trim().isEmpty() || expedido == null || expedido.trim().isEmpty()) {
@@ -168,7 +168,7 @@ public class AdminComercianteController {
 
         c.actualizarDatos(ci, expedido, request.getNombre(), telefono, request.getPin());
         c.setNumeroPuesto(request.getNumeroPuesto());
-        
+
         // Mantenemos la asociacion, cuentaHabilitada y eliminado actuales en la entidad.
         // Solo actualizamos la asociacion si se proporciona una nueva de manera explicita.
         String asociacionIdStr = request.getAsociacionId();

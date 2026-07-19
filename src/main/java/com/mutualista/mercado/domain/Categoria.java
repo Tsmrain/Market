@@ -10,7 +10,7 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
-    
+
     // REGLA 1: Baja lógica
     private boolean eliminado = false;
 
@@ -34,7 +34,7 @@ public class Categoria {
         this.nombre = nombre;
         this.categoriaPadre = categoriaPadre;
     }
-    
+
     // Comportamientos de Dominio
     public void actualizarNombre(String nuevoNombre) { this.nombre = nuevoNombre; }
     public void eliminarLogicamente() { this.eliminado = true; }

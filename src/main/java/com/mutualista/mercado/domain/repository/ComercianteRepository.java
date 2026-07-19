@@ -8,11 +8,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface ComercianteRepository extends CrudRepository<Comerciante, Long> {
+public interface ComercianteRepository extends org.springframework.data.jpa.repository.JpaRepository<Comerciante, Long> {
     // Validar login solo si no está eliminado
     @Query("SELECT c FROM Comerciante c WHERE c.ci = :ci AND c.eliminado = false")
     Optional<Comerciante> findByCiActivo(@Param("ci") String ci);
-    
+
     // Buscar para control de duplicados (Ignora si está eliminado)
     Optional<Comerciante> findByCi(String ci);
     Optional<Comerciante> findByUsuarioId(Long usuarioId);

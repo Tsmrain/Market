@@ -2,8 +2,10 @@ package com.mutualista.mercado.presentation.controller;
 
 import com.mutualista.mercado.domain.UnidadMedidaMaestra;
 import com.mutualista.mercado.domain.ParametroSistema;
+import com.mutualista.mercado.domain.DomainValidationException;
 import com.mutualista.mercado.domain.repository.UnidadMedidaMaestraRepository;
 import com.mutualista.mercado.domain.repository.ParametroSistemaRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,17 +60,25 @@ public class SuperAdminController {
     @Transactional
     public UnidadMedidaMaestra actualizarUnidad(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
         UnidadMedidaMaestra uni = unidadRepo.findById(id)
-            .orElseThrow(() -> new RuntimeException("Unidad de medida no encontrada"));
+            .orElseThrow(() -> new DomainValidationException("Unidad de medida no encontrada."));
 
-        String nombre = (String) payload.get("nombre");
-        boolean admiteDecimales = Boolean.parseBoolean(payload.get("admiteDecimales").toString());
+        String nuevoCodigo = payload.get("codigo") != null ? payload.get("codigo").toString() : null;
+        String nuevoNombre = payload.get("nombre") != null ? payload.get("nombre").toString() : null;
+        boolean admiteDecimales = payload.get("admiteDecimales") != null
+            && Boolean.parseBoolean(payload.get("admiteDecimales").toString());
 
-        if (nombre == null || nombre.trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre es obligatorio.");
+        // GRASP: Information Expert — delegar validación al dominio
+        uni.actualizarDatos(nuevoCodigo, nuevoNombre);
+        // Ajustar flag admiteDecimales (no es una regla de negocio compleja, es config)
+        uni.actualizar(uni.getNombre(), admiteDecimales);
+
+        try {
+            unidadRepo.save(uni);
+            unidadRepo.flush();
+        } catch (DataIntegrityViolationException ex) {
+            throw new DomainValidationException("Ya existe otra unidad de medida con el código '" + (nuevoCodigo != null ? nuevoCodigo.toUpperCase() : "") + "'. El código debe ser único.");
         }
-
-        uni.actualizar(nombre, admiteDecimales);
-        return unidadRepo.save(uni);
+        return uni;
     }
 
     @DeleteMapping("/unidades/{id}")
@@ -97,12 +107,12 @@ public class SuperAdminController {
     public ResponseEntity<?> actualizarParametro(
             @PathVariable String clave,
             @RequestBody Map<String, String> payload) {
-        
+
         String valor = payload.get("valor");
         if (valor == null || valor.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("error", "El valor del parámetro es obligatorio."));
         }
-        
+
         ParametroSistema param = paramRepo.findById(clave)
             .orElseGet(() -> new ParametroSistema(clave, valor));
         param.setValor(valor.trim());

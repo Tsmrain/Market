@@ -35,9 +35,9 @@ public class LocalFileSystemStorageAdapter implements StorageService {
             String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
             String nombreArchivo = UUID.randomUUID().toString() + extension;
             Path rutaFisica = dir.resolve(nombreArchivo);
-            
+
             Files.write(rutaFisica, contenido);
-            
+
             // Retorna la URL lógica que el frontend consumirá
             return "/uploads/" + nombreArchivo;
         } catch (Exception e) {
@@ -54,7 +54,7 @@ public class LocalFileSystemStorageAdapter implements StorageService {
             // Extraer el nombre del archivo de la URL
             String nombreArchivo = urlArchivo.substring(urlArchivo.lastIndexOf("/") + 1);
             Path rutaFisica = java.nio.file.Paths.get(RUTA_BASE).resolve(nombreArchivo);
-            
+
             // Borrar si existe
             boolean borrado = java.nio.file.Files.deleteIfExists(rutaFisica);
             if (borrado) {

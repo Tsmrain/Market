@@ -17,7 +17,7 @@ public class ProductoDetalleDTO {
     private int cantidadInteresados;
     private double promedioEstrellas;
     private List<String> comentarios;
-    private List<String> galeriaUrls; 
+    private List<String> galeriaUrls;
     private List<Map<String, Object>> galeria;
     private List<String> imagenesUrls;
 
@@ -47,7 +47,7 @@ public class ProductoDetalleDTO {
             this.calificacion = r.getCalificacion();
             this.comentario = r.getComentario();
             this.esPropietario = false;
-            
+
             String baseUrl = "";
             try {
                 baseUrl = org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
@@ -102,7 +102,7 @@ public class ProductoDetalleDTO {
         this.imagenesUrls = producto.getGaleria().stream()
                 .map(m -> m.getUrl().startsWith("http") ? m.getUrl() : finalBaseUrl + m.getUrl())
                 .collect(Collectors.toList());
-        
+
         // Mapear reseñas detalladas
         this.resenas = producto.getResenas().stream()
                 .map(r -> new ResenaInfoDTO(r, comerciante))

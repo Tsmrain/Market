@@ -4,7 +4,7 @@ public class LoginRequest {
     private String ci;
     private String pin;
     private String expedido;
-    
+
     public String getCi() { return ci; }
     public void setCi(String ci) { this.ci = ci; }
     public String getPin() { return pin; }

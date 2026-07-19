@@ -70,7 +70,7 @@ public class PortalClienteController {
             @RequestParam(required = false) Integer estrellasMinimas,
             org.springframework.data.domain.Pageable pageable,
             jakarta.servlet.http.HttpServletResponse response) {
-        
+
         response.setHeader("Cache-Control", "no-cache");
         Double estrellas = estrellasMinimas != null ? estrellasMinimas.doubleValue() : null;
         String buscarLimpio = (buscar != null && !buscar.trim().isEmpty()) ? buscar.trim() : null;
@@ -120,7 +120,7 @@ public class PortalClienteController {
         Comerciante comerciante = comercianteRepo.findById(idComerciante).orElseThrow();
         comerciante.registrarClicContacto();
         comercianteRepo.save(comerciante);
-        
+
         String mensaje = "";
         if (idProducto != null) {
             Producto producto = productoRepo.findById(idProducto).orElseThrow();

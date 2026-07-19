@@ -23,7 +23,7 @@ public class ComerciantePerfilController {
     private final CuotaMensualRepository cuotaRepo;
     private final AuditoriaPagoRepository auditRepo;
 
-    public ComerciantePerfilController(ComercianteRepository comercianteRepo, 
+    public ComerciantePerfilController(ComercianteRepository comercianteRepo,
                                        CuotaMensualRepository cuotaRepo,
                                        AuditoriaPagoRepository auditRepo) {
         this.comercianteRepo = comercianteRepo;
@@ -44,7 +44,7 @@ public class ComerciantePerfilController {
     public ComerciantePerfilDTO actualizarPerfil(@PathVariable Long idComerciante, @RequestBody ComerciantePerfilDTO dto) {
         Comerciante c = comercianteRepo.findById(idComerciante)
             .orElseThrow(() -> new RuntimeException("Comerciante no encontrado"));
-        
+
         if (dto.getNombre() == null || dto.getNombre().trim().isEmpty() ||
             dto.getTelefono() == null || dto.getTelefono().trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre del comerciante y el teléfono de contacto son obligatorios.");
@@ -71,7 +71,7 @@ public class ComerciantePerfilController {
                 .orElseThrow(() -> new RuntimeException("Comerciante no encontrado"));
 
             List<CuotaMensual> cuotas = cuotaRepo.findByComercianteIdOrderByAnioDescMesDesc(comercianteId);
-            
+
             List<Map<String, Object>> facturas = cuotas.stream().map(c -> {
                 Map<String, Object> map = new java.util.HashMap<>();
                 map.put("id", c.getId());

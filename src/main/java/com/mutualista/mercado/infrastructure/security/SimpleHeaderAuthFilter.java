@@ -49,9 +49,9 @@ public class SimpleHeaderAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        
+
         String path = request.getRequestURI();
-        
+
         // Eximir rutas públicas críticas del filtro de tokens
         if (path.startsWith("/api/auth/")) {
             filterChain.doFilter(request, response);
@@ -62,12 +62,12 @@ public class SimpleHeaderAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7).trim();
             Optional<TokenSesion> sessionOpt = tokenProvider.validarToken(token);
-            
+
             if (sessionOpt.isPresent()) {
                 TokenSesion session = sessionOpt.get();
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 authorities.add(new SimpleGrantedAuthority("ROLE_" + session.getRol()));
-                
+
                 // Cargar nombre del actor para polimorfismo de roles
                 String nombre = "Usuario";
                 if ("SUPERADMIN".equals(session.getRol()) || "ADMIN_ASOCIACION".equals(session.getRol())) {
@@ -92,9 +92,9 @@ public class SimpleHeaderAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } else {
                 // Si el token es inválido o expiró, verificar si la ruta es pública
-                boolean isPublic = request.getMethod().equalsIgnoreCase("GET") && 
+                boolean isPublic = request.getMethod().equalsIgnoreCase("GET") &&
                                    (path.startsWith("/api/portal/") || path.startsWith("/api/productos/") || path.startsWith("/api/admin/categorias/"));
-                
+
                 if (!isPublic) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json;charset=UTF-8");
@@ -109,11 +109,11 @@ public class SimpleHeaderAuthFilter extends OncePerRequestFilter {
             if (userIdStr != null && !userIdStr.trim().isEmpty()) {
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 authorities.add(new SimpleGrantedAuthority("ROLE_CLIENTE"));
-                
+
                 Map<String, String> principal = new HashMap<>();
                 principal.put("id", userIdStr);
                 principal.put("rol", "CLIENTE");
-                
+
                 Optional<Cliente> client = clienteRepo.findById(Long.parseLong(userIdStr));
                 String nombre = client.isPresent() ? client.get().getNombre() : "Usuario Test";
                 principal.put("nombre", nombre);
@@ -124,7 +124,7 @@ public class SimpleHeaderAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
-        
+
         filterChain.doFilter(request, response);
     }
 }

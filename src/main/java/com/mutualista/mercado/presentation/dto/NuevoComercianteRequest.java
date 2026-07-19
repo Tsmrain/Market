@@ -11,22 +11,22 @@ public class NuevoComercianteRequest {
 
     public String getCi() { return ci; }
     public void setCi(String ci) { this.ci = ci; }
-    
+
     public String getExpedido() { return expedido; }
     public void setExpedido(String expedido) { this.expedido = expedido; }
-    
+
     public String getPin() { return pin; }
     public void setPin(String pin) { this.pin = pin; }
-    
+
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
-    
+
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
-    
+
     public String getAsociacionId() { return asociacionId; }
     public void setAsociacionId(String asociacionId) { this.asociacionId = asociacionId; }
-    
+
     public String getNumeroPuesto() { return numeroPuesto; }
     public void setNumeroPuesto(String numeroPuesto) { this.numeroPuesto = numeroPuesto; }
 }

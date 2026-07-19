@@ -31,7 +31,7 @@ public class AdministradorAsociacionController {
     private final ComercianteRepository comercianteRepo;
     private final CuotaMensualRepository cuotaRepo;
 
-    public AdministradorAsociacionController(AdministradorAsociacionRepository adminRepo, 
+    public AdministradorAsociacionController(AdministradorAsociacionRepository adminRepo,
                                              AsociacionRepository asociacionRepo,
                                              ComercianteRepository comercianteRepo,
                                              CuotaMensualRepository cuotaRepo) {

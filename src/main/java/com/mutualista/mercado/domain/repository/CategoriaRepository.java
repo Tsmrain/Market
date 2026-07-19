@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CategoriaRepository extends CrudRepository<Categoria, Long> {
     List<Categoria> findAll();
-    
+
     // Lista para el Administrador (Solo las que no están eliminadas lógicamente)
     List<Categoria> findByEliminadoFalse();
 

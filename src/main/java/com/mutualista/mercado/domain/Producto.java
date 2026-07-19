@@ -16,8 +16,8 @@ public class Producto {
     private double precio;
     private String marca = "";
 
-    private boolean estaDisponible = true; 
-    private boolean eliminado = false; 
+    private boolean estaDisponible = true;
+    private boolean eliminado = false;
 
     @Enumerated(EnumType.STRING)
     private EstadoProducto estado = EstadoProducto.ACTIVO;
@@ -44,7 +44,7 @@ public class Producto {
     @JoinColumn(name = "producto_id")
     private List<Multimedia> galeria = new ArrayList<>();
 
-    protected Producto() {} 
+    protected Producto() {}
 
     public Producto(String nombre, double precio, Categoria categoria) {
         this(nombre, "", precio, categoria, "UNIDAD");
@@ -65,7 +65,7 @@ public class Producto {
     // Comportamientos
     public void alternarDisponibilidad() { this.estaDisponible = !this.estaDisponible; }
     public void eliminarLogicamente() { this.eliminado = true; }
-    
+
     // REGLA 2: Actualización de datos seguros
     public void actualizarDatos(String nombre, double precio) {
         actualizarDatos(nombre, precio, this.unidadMedida, this.descripcion);
@@ -80,27 +80,47 @@ public class Producto {
     }
 
     public void actualizarDatos(String nombre, double precio, String unidadMedida, String descripcion, String marca) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new DomainValidationException("El nombre del producto no puede estar vacío.");
+        }
+        if (precio < 0) {
+            throw new DomainValidationException("El precio del producto no puede ser negativo.");
+        }
         this.nombre = nombre;
         this.precio = precio;
         this.unidadMedida = unidadMedida != null ? unidadMedida : "UNIDAD";
         this.descripcion = descripcion != null ? descripcion : "";
         this.marca = marca != null ? marca : "";
     }
-    
+
+    // GRASP: Information Expert
+    public void actualizarDatos(com.mutualista.mercado.presentation.dto.EditarProductoRequestDTO dto, UnidadMedidaMaestra unidad, String marcaFinal) {
+        actualizarDatos(dto.getNombre(), dto.getPrecio(), unidad != null ? unidad.getCodigo() : "UNIDAD", dto.getDescripcion(), marcaFinal);
+    }
+
     public void limpiarGaleria() { this.galeria.clear(); }
-    
+
     public void agregarMultimedia(String url, String tipoArchivo) {
         this.galeria.add(new Multimedia(url, tipoArchivo));
     }
-    
+
+    // GRASP: Creator e Information Expert
+    public void sincronizarMultimedia(java.util.List<String> nuevasUrls) {
+        this.galeria.clear();
+        for (String url : nuevasUrls) {
+            String tipo = url.endsWith(".mp4") ? "video" : "imagen";
+            this.galeria.add(new Multimedia(url, tipo)); // Producto es el Creator
+        }
+    }
+
     public Resena agregarResena(Cliente cliente, int calificacion, String comentario) {
         Resena nuevaResena = new Resena(cliente, calificacion, comentario);
         this.resenas.add(nuevaResena);
         return nuevaResena;
     }
-    
+
     public void agregarInteresado(Cliente cliente) { this.interesados.add(cliente); }
-    
+
     // REGLA 1: La primera foto es la portada (Information Expert)
     public String getImagenPrincipal() {
         if (galeria != null && !galeria.isEmpty()) {

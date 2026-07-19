@@ -31,8 +31,8 @@ public class RecaudacionController {
 
     private final MessageSource messageSource;
 
-    public RecaudacionController(AdministradorAsociacionRepository adminRepo, 
-                                 ComercianteRepository comercianteRepo, 
+    public RecaudacionController(AdministradorAsociacionRepository adminRepo,
+                                 ComercianteRepository comercianteRepo,
                                  CuotaMensualRepository cuotaRepo,
                                  AuditoriaPagoRepository auditRepo,
                                  MessageSource messageSource) {
@@ -50,7 +50,7 @@ public class RecaudacionController {
             @RequestParam(required = false) Long adminId,
             @RequestParam int mes,
             @RequestParam int anio) {
-        
+
         Long idBuscado = null;
         if (headerAdminId != null && !headerAdminId.trim().isEmpty()) {
             try {
@@ -88,7 +88,7 @@ public class RecaudacionController {
             dto.setNumeroPuesto(c.getNumeroPuesto());
             dto.setTelefono(c.getTelefono());
             dto.setProximaFechaPago(c.obtenerProximaFechaPago());
-            
+
             // Buscar cuota para el mes y año
             Optional<CuotaMensual> cuotaOpt = cuotaRepo.findByComercianteIdAndMesAndAnio(c.getId(), mes, anio);
             if (cuotaOpt.isPresent()) {
@@ -224,13 +224,13 @@ public class RecaudacionController {
             cuota.anularPago(motivo);
             cuota.setAnuladoPor(requester.getNombre());
             cuotaRepo.save(cuota);
-            
+
             comerciante.setCuentaHabilitada(false);
             comercianteRepo.save(comerciante);
 
             // Transaction Log de auditoria
             auditRepo.save(new AuditoriaPago(cuota, "ANULACION", requester.getNombre(), motivo));
-            
+
             return ResponseEntity.ok(Map.of("mensaje", "Pago de cuota anulado exitosamente."));
         }
 

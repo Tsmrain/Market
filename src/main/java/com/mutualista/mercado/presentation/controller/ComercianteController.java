@@ -36,16 +36,16 @@ public class ComercianteController {
                 String nombreOriginal = archivo.getOriginalFilename();
                 if (nombreOriginal == null) continue;
                 String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
-                
+
                 // 1. Delegar optimización (Information Expert)
                 byte[] bytesOptimizados = optimizador.optimizarImagen(archivo.getBytes(), extension);
-                
+
                 // 2. Delegar almacenamiento físico (Adapter / Protected Variation)
                 String urlLogica = storageService.guardarArchivo(bytesOptimizados, nombreOriginal);
-                
+
                 // 3. Delegar asociación al Dominio (Creator)
                 producto.agregarMultimedia(urlLogica, "imagen");
-                
+
             } catch (Exception e) {
                 throw new RuntimeException("Error procesando archivo", e);
             }

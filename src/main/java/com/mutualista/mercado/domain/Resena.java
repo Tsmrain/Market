@@ -35,9 +35,9 @@ public class Resena {
     public String getComentario() { return comentario; }
     public Cliente getCliente() { return cliente; }
     public LocalDateTime getFecha() { return fecha; }
-    
+
     public List<Multimedia> getEvidencias() { return evidencias; }
-    
+
     public void agregarEvidencia(String url, String tipoArchivo) {
         this.evidencias.add(new Multimedia(url, tipoArchivo));
     }
